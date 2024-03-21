@@ -33,33 +33,52 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  justify-content: space-between; /* Add this to push the footer to the bottom */
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* This makes the navbar take up the full width */
-  padding: 10px 20px; /* Adjust padding as needed */
+  padding: 10px 5%; /* Adjust padding as needed, use percentage for responsiveness */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* Other styling as needed */
 }
 
 .navbar a {
-  margin: 0 10px; /* Adjust spacing between links as needed */
+  margin: 0 20px; /* Increase the spacing between the links */
   text-decoration: none;
-  /* Other styling as needed */
+  color: black; /* Set the color to black or as needed */
+  font-weight: 500; /* Adjust the font weight as needed */
 }
 
 main {
-  flex: 1;
-  width: 100%; /* This ensures that the content takes up the full width */
-  /* Additional styling as needed */
+  flex-grow: 1; /* Ensures that the content section grows to fill space */
+  display: flex; /* Use flexbox to center and contain router-view content */
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
+  padding: 2rem; /* Add padding around the content for spacing */
+  text-align: center; /* Center-align the text for the router-view content */
 }
 
 .footer {
   text-align: center;
   padding: 1rem;
-  border-top: 1px solid #ccc; /* Style as per your screenshot */
+  border-top: 1px solid #ccc;
+  background-color: #f8f8f8; /* Match the footer background color to the image */
 }
+
+/* Add styles for the router-links to look more like buttons (if needed) */
+.navbar a.router-link-exact-active, .navbar a:hover {
+  text-decoration: underline; /* Add an underline on hover or when active */
+}
+
+/* Style adjustments for your router-view content */
+.router-view {
+  width: 100%; /* Full width */
+  max-width: 600px; /* Set a max-width for larger screens */
+  margin: auto; /* This will help center the content if it's smaller than max-width */
+}
+
+/* You might need additional styling specific to your content components */
 </style>
+
