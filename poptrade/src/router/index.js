@@ -1,15 +1,36 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '@/views/HomeView.vue';
+import Marketplace from '@/views/Marketplace.vue'; // Placeholder for your marketplace component
+import Offers from '@/views/Offers.vue'; // Placeholder for your offers component
+import Login from '@/views/Login.vue'; // Placeholder for your login component
+
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: HomeView,
+  },
+  {
+    path: '/marketplace',
+    name: 'Marketplace',
+    component: Marketplace,
+  },
+  {
+    path: '/offers',
+    name: 'Offers',
+    component: Offers,
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
+  // ...other routes as needed
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    }
-  ]
-})
+  routes,
+});
 
-export default router
+export default router;

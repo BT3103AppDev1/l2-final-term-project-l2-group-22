@@ -1,24 +1,33 @@
 <template>
-    <div class="home-view">
-
+    <div class="home">
+      <h1>Welcome to POPTRADE</h1>
+      <p>Your one-stop marketplace for trading POPMARTS.</p>
     </div>
   </template>
   
   <script>
-  // Import the Navbar component
-  import Navbar from './components/Navbar.vue';
-  
   export default {
     name: 'HomeView',
-    components: {
-    }
   };
   </script>
   
   <style scoped>
-  /* Add styles specific to HomeView if necessary */
-  .home-view {
-    /* Your styles here */
+  .home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .home h1 {
+    color: red;
+    margin-bottom: 0.5em;
+  }
+  
+  .home p {
+    color: #000;
   }
   </style>
   
