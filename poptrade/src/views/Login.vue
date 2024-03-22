@@ -25,7 +25,7 @@ import 'firebaseui/dist/firebaseui.css'
             ui = new firebaseui.auth.AuthUI(firebase.auth());
         }
         var uiConfig = {
-            signInSuccessURL: '/Home',
+            signInSuccessURL: '/',
             signInOptions : [
                 firebase.auth.GoogleAuthProvider.PROVIDER_ID,
                 firebase.auth.EmailAuthProvider.PROVIDER_ID,
@@ -36,14 +36,15 @@ import 'firebaseui/dist/firebaseui.css'
   };
   </script>
   
-  <style scoped>
+<style scoped>
 .login {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #f9f9f9; /* Light grey background for contrast */
+  background: white; /* Light grey background for contrast */
   font-family: 'Open Sans', sans-serif; /* A modern sans-serif font */
+  width: 100%;
 }
 
 .login-container {
@@ -52,6 +53,8 @@ import 'firebaseui/dist/firebaseui.css'
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   text-align: center;
+  width: 100%; /* Full width */
+  max-width: 400px; /* Maximum width for better appearance */
 }
 
 h1 {

@@ -1,14 +1,13 @@
 <template>
   <div id="app">
     <header class="navbar">
-      <!-- Use 'router-link' for navigation -->
-      <router-link to="/">POPTRADE</router-link>
+      <router-link to="/" class="poptrade-link">POPTRADE</router-link>
       <router-link to="/marketplace">Marketplace</router-link>
       <router-link to="/offers">Offers</router-link>
       <router-link to="/login">Register/Login</router-link>
+      
     </header>
 
-    <!-- Content rendered by Vue Router -->
     <main>
       <router-view />
     </main>
@@ -24,61 +23,88 @@
 <script>
 export default {
   name: 'App',
-  // Your component's logic here
 };
 </script>
 
 <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
 #app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  justify-content: space-between; /* Add this to push the footer to the bottom */
+  justify-content: space-between;
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 5%; /* Adjust padding as needed, use percentage for responsiveness */
+  padding: 10px 5%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f8f8f8;
+  height: 50px; /* Added height */
 }
 
 .navbar a {
-  margin: 0 20px; /* Increase the spacing between the links */
+  margin: 0 20px;
   text-decoration: none;
-  color: black; /* Set the color to black or as needed */
-  font-weight: 500; /* Adjust the font weight as needed */
+  color: black;
+  font-weight: 500;
+  font-size: 1.3em;
+}
+
+.poptrade-link { /* Added class for Poptrade */
+  font-family: 'Oswald', sans-serif;
+  color: red !important;
+  font-size: 1.75em !important;
+  font-weight: 900 !important;
+}
+
+.navbar a.router-link-exact-active, .navbar a:hover {
+  text-decoration: underline;
 }
 
 main {
-  flex-grow: 1; /* Ensures that the content section grows to fill space */
-  display: flex; /* Use flexbox to center and contain router-view content */
-  justify-content: center; /* Centers content horizontally */
-  align-items: center; /* Centers content vertically */
-  padding: 2rem; /* Add padding around the content for spacing */
-  text-align: center; /* Center-align the text for the router-view content */
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.router-view {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
 }
 
 .footer {
   text-align: center;
   padding: 1rem;
   border-top: 1px solid #ccc;
-  background-color: #f8f8f8; /* Match the footer background color to the image */
+  background-color: #f8f8f8;
 }
 
-/* Add styles for the router-links to look more like buttons (if needed) */
-.navbar a.router-link-exact-active, .navbar a:hover {
-  text-decoration: underline; /* Add an underline on hover or when active */
-}
+/* Responsive styles for smaller screens */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 2%;
+  }
 
-/* Style adjustments for your router-view content */
-.router-view {
-  width: 100%; /* Full width */
-  max-width: 600px; /* Set a max-width for larger screens */
-  margin: auto; /* This will help center the content if it's smaller than max-width */
-}
+  .navbar a {
+    margin: 0 10px;
+  }
 
-/* You might need additional styling specific to your content components */
+  main {
+    padding: 1rem;
+  }
+}
 </style>
-

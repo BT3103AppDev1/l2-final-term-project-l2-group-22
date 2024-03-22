@@ -3,6 +3,7 @@ import HomeView from '@/views/HomeView.vue';
 import Marketplace from '@/views/Marketplace.vue'; // Placeholder for your marketplace component
 import Offers from '@/views/Offers.vue'; // Placeholder for your offers component
 import Login from '@/views/Login.vue'; // Placeholder for your login component
+import Profile from '@/views/Profile.vue';
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
     name: 'Login',
     component: Login,
   },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
+  }
   // ...other routes as needed
 ];
 
