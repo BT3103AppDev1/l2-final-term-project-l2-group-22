@@ -37,13 +37,14 @@ import 'firebaseui/dist/firebaseui.css'
   </script>
   
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
 .login {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   background: white; /* Light grey background for contrast */
-  font-family: 'Open Sans', sans-serif; /* A modern sans-serif font */
+  font-family: 'Oswakd', sans-serif; /* A modern sans-serif font */
   width: 100%;
 }
 
@@ -61,12 +62,14 @@ h1 {
   font-size: 2.5em;
   color: #333;
   margin-bottom: 0.5em;
+  font-family: 'Oswald', sans-serif;
 }
 
 p {
   font-size: 1em;
   color: #666;
   margin-bottom: 2em;
+  font-family: 'Oswald', sans-serif;
 }
 
 /* Specific styles for FirebaseUI Auth container */

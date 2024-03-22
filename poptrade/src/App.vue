@@ -4,12 +4,13 @@
       <router-link to="/" class="poptrade-link">POPTRADE</router-link>
       <router-link to="/marketplace">Marketplace</router-link>
       <router-link to="/offers">Offers</router-link>
-      <router-link to="/login">Register/Login</router-link>
+      <router-link to="/profile" v-if="currentUser">{{ currentUser.email }}</router-link>
+  <router-link to="/login" v-else>Register/Login</router-link>
       
     </header>
 
     <main>
-      <router-view />
+      <router-view @sign-out="signOut" />
     </main>
 
     <footer class="footer">
@@ -21,8 +22,27 @@
 </template>
 
 <script>
+import firebase from '@/uifire.js';
 export default {
   name: 'App',
+  data() {
+    return {
+      currentUser: null,
+    };
+  },
+  mounted() {
+    firebase.auth().onAuthStateChanged((user) => {
+      this.currentUser = user;
+    });
+  },
+  methods: {
+    signOut() {
+      firebase.auth().signOut().then(() => {
+        this.currentUser = null;
+        this.$router.push('/login');
+      });
+    },
+  },
 };
 </script>
 
@@ -57,7 +77,7 @@ body {
   text-decoration: none;
   color: black;
   font-weight: 500;
-  font-size: 1.3em;
+  font-size: 1.1em;
 }
 
 .poptrade-link { /* Added class for Poptrade */
