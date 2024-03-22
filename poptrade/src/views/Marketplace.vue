@@ -1,4 +1,5 @@
 <template>
+
 	<div class="marketplace">
 		<h1>Marketplace</h1>
 		<!-- Placeholder content for Marketplace -->
@@ -22,3 +23,4 @@ export default {
 <style scoped>
 /* Marketplace specific styles */
 </style>
+
