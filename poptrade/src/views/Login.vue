@@ -37,13 +37,13 @@ import 'firebaseui/dist/firebaseui.css'
   </script>
   
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
 .login {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background: white; /* Light grey background for contrast */
-  font-family: 'Open Sans', sans-serif; /* A modern sans-serif font */
+  background: white; 
+  font-family: 'Oswakd', sans-serif; 
   width: 100%;
 }
 
@@ -53,43 +53,45 @@ import 'firebaseui/dist/firebaseui.css'
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   text-align: center;
-  width: 100%; /* Full width */
-  max-width: 400px; /* Maximum width for better appearance */
+  width: 100%; 
+  max-width: 400px; 
 }
 
 h1 {
   font-size: 2.5em;
   color: #333;
   margin-bottom: 0.5em;
+  font-family: 'Oswald', sans-serif;
 }
 
 p {
   font-size: 1em;
   color: #666;
   margin-bottom: 2em;
+  font-family: 'Oswald', sans-serif;
 }
 
-/* Specific styles for FirebaseUI Auth container */
+
 #firebaseui-auth-container {
   margin-top: 50px;
   width: 100%;
 }
 
-/* Styles for the FirebaseUI buttons and inputs */
+
 .firebaseui-idp-button,
 .firebaseui-id-submit,
 .firebaseui-idp-google,
 .firebaseui-id-idp-button {
-  width: 100% !important; /* Full-width buttons */
-  margin: 10px 0 !important; /* Margin for spacing */
+  width: 100% !important; 
+  margin: 10px 0 !important; 
 }
 
-/* Enhance input fields */
+
 .firebaseui-textfield.mdl-textfield .firebaseui-input {
-  border: 1px solid #ddd !important; /* Border color for inputs */
-  border-radius: 4px !important; /* Rounded corners for inputs */
-  padding: 10px !important; /* Padding inside inputs */
-  height: auto !important; /* Adjust height for better appearance */
+  border: 1px solid #ddd !important; 
+  border-radius: 4px !important; 
+  padding: 10px !important; 
+  height: auto !important; 
 }
 </style>
   

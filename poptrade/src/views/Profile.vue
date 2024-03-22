@@ -2,7 +2,7 @@
     <div>
       <h1>Profile</h1>
       <p>Welcome, {{ user.email }}</p>
-      <button @click="signOut">Sign Out</button>
+      <button @click="emitSignOut">Sign Out</button>
     </div>
   </template>
   
@@ -23,13 +23,8 @@
       });
     },
     methods: {
-      signOut() {
-        firebase
-          .auth()
-          .signOut()
-          .then(() => {
-            this.$router.push('/');
-          });
+      emitSignOut() {
+        this.$emit('sign-out');
       },
     },
   };
@@ -37,3 +32,4 @@
   
   <style scoped>
   </style>
+  

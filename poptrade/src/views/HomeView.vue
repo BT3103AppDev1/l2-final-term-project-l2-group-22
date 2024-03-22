@@ -12,6 +12,8 @@
   </script>
   
   <style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+
   .home {
     display: flex;
     flex-direction: column;
@@ -24,6 +26,8 @@
   .home h1 {
     color: red;
     margin-bottom: 0.5em;
+    font-size: 5em;
+    font-family: "Oswald";
   }
   
   .home p {
