@@ -2,7 +2,6 @@
     <div>
       <h1>Profile</h1>
       <p>Welcome, {{ user.email }}</p>
-      <!-- Emit an event to the parent component when clicked -->
       <button @click="emitSignOut">Sign Out</button>
     </div>
   </template>
@@ -25,7 +24,6 @@
     },
     methods: {
       emitSignOut() {
-        // Emit the signOut event instead of directly calling the sign out method
         this.$emit('sign-out');
       },
     },
@@ -33,6 +31,5 @@
   </script>
   
   <style scoped>
-    /* Your styles here */
   </style>
   
