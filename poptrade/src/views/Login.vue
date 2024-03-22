@@ -42,7 +42,6 @@ import 'firebaseui/dist/firebaseui.css'
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
   background: white; 
   font-family: 'Oswakd', sans-serif; 
   width: 100%;
