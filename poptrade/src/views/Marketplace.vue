@@ -48,5 +48,9 @@ export default {
 
 <style scoped>
 /* Marketplace specific styles */
+.marketplace {
+	align-items: start;
+	justify-content: start;
+}
 </style>
 >>>>>>> 93fb5c6ae257c7dd63a09b9aaf70b1bb7acb8e47
