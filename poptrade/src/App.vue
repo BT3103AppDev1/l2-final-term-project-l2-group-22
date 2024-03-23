@@ -25,28 +25,27 @@
 <script>
 import firebase from "@/uifire.js";
 export default {
-	name: "App",
-	data() {
-		return {
-			currentUser: null,
-		};
-	},
-	mounted() {
-		firebase.auth().onAuthStateChanged((user) => {
-			this.currentUser = user;
-		});
-	},
-	methods: {
-		signOut() {
-			firebase
-				.auth()
-				.signOut()
-				.then(() => {
-					this.currentUser = null;
-					this.$router.push("/login");
-				});
-		},
-	},
+
+  name: 'App',
+  data() {
+    return {
+      currentUser: null,
+    };
+  },
+  mounted() {
+    firebase.auth().onAuthStateChanged((user) => {
+      this.currentUser = user;
+    });
+  },
+  methods: {
+    signOut() {
+      firebase.auth().signOut().then(() => {
+        this.currentUser = null;
+        this.$router.push('/login');
+      });
+    },
+  },
+
 };
 </script>
 
