@@ -1,9 +1,11 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-const app = createApp(App)
+const auth = getAuth();
 
-app.use(router)
-
-app.mount('#app')
+onAuthStateChanged(auth, () => {
+  // Initialize Vue app inside the onAuthStateChanged callback
+  createApp(App).use(router).mount("#app");
+});
