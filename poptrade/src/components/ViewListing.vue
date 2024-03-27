@@ -45,7 +45,9 @@
 
 					<br />
 
-					<button id="make-offer-button">Make Offer</button>
+					<button id="make-offer-button" v-on:click="makeOffer">
+						Make Offer
+					</button>
 				</div>
 			</div>
 		</div>
@@ -53,7 +55,12 @@
 </template>
 
 <script>
+import OfferTrade from "../components/OfferTrade.vue";
 export default {
+	name: "ViewListing",
+	components: {
+		OfferTrade,
+	},
 	data() {
 		return {
 			imageSrc:
@@ -75,9 +82,8 @@ export default {
 		};
 	},
 	methods: {
-		goToViewListing() {
-			// Navigate to ViewListing.vue
-			this.$router.push({ name: "ViewListing" }); // Assuming 'ViewListing' is the name of the route for ViewListing.vue
+		makeOffer() {
+			this.$router.push({ name: "OfferTrade" });
 		},
 	},
 };
