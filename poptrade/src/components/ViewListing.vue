@@ -110,7 +110,7 @@ export default {
 	align-items: center;
 	justify-content: center;
 	background-color: white;
-	padding-left: 200px;
+
 	border-radius: 5px;
 	margin-bottom: 1rem;
 	text-align: left;
