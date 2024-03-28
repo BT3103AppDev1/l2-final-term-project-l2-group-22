@@ -1,7 +1,7 @@
 <template>
     <div class="home">
       <h1>Welcome to POPTRADE</h1>
-      <p>Your one-stop marketplace for trading POPMARTS.</p>
+      <p>Your one-stop marketplace for trading POPMARTS</p>
     </div>
   </template>
   
@@ -32,6 +32,8 @@
   
   .home p {
     color: #000;
+    font-family: "Oswald";
+    font-size: 1.7em;
   }
   </style>
   

@@ -5,6 +5,7 @@ import Offers from "@/views/Offers.vue"; // Placeholder for your offers componen
 import Login from "@/views/Login.vue"; // Placeholder for your login component
 import Profile from "@/views/Profile.vue";
 import ViewListing from "../components/ViewListing.vue";
+import Register from "@/views/Register.vue";
 
 const routes = [
 	{
@@ -36,6 +37,11 @@ const routes = [
 		path: "/viewlisting",
 		name: "ViewListing", // This should match the name used in the $router.push method
 		component: ViewListing,
+	},
+  {
+		path: "/register",
+		name: "Register", 
+		component: Register,
 	},
 	// ...other routes as needed
 ];
