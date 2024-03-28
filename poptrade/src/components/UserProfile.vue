@@ -69,28 +69,48 @@ export default {
 }
 
 .profile-container {
-  padding: 2em;
-  text-align: center;
-  width: 100%;
-  max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Space between elements */
+  padding: 1em;
+  text-align: left;
+  max-width: 600px; /* Adjust based on your preference */
+  border: 1px solid #ccc; /* Optional: adds a border around the profile */
+  border-radius: 8px; /* Optional: rounds the corners of the border */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
 }
 
 .profile-image {
-  width: 100px;
-  height: 100px;
+  width: 80px; /* Smaller profile image */
+  height: 80px; /* Maintain aspect ratio */
   border-radius: 50%;
-  margin-bottom: 1em;
+  object-fit: cover; /* Ensures the image covers the space without stretching */
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Space between text elements */
 }
 
 h1,
-h2 {
+h2,
+p {
+  margin: 0; /* Removes default margins */
   font-family: "Oswald", sans-serif;
+}
+
+h1 {
+  font-size: 1.5rem; /* Smaller heading */
   color: #333;
 }
 
+h2 {
+  font-size: 1.25rem; /* Smaller subheading */
+}
+
 p {
-  font-size: 1em;
+  font-size: 0.9rem; /* Smaller paragraph text */
   color: #666;
-  font-family: "Oswald", sans-serif;
 }
 </style>

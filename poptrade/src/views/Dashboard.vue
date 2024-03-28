@@ -1,7 +1,23 @@
 <template>
   <div class="dashboard" v-if="user">
     <user-profile :user="user"></user-profile>
-    <button @click="goToManageInventory">Manage Inventory</button>
+    <div class="header-container">
+      <h2 class="header-title">My Listings</h2>
+      <button @click="goToManageInventory" class="manage-button">
+        Manage Inventory
+      </button>
+    </div>
+    <div class="listings">
+      <div v-for="listing in listings" :key="listing.id" class="listing-card">
+        <img
+          :src="listing.imageURL"
+          alt="Listing Image"
+          class="listing-image"
+        />
+        <h3>{{ listing.name }}</h3>
+        <!-- Add more listing details as needed -->
+      </div>
+    </div>
   </div>
 </template>
 
@@ -9,38 +25,51 @@
 import { ref, onMounted } from "vue";
 import firebase from "@/uifire.js";
 import UserProfile from "../components/UserProfile.vue";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 export default {
   name: "Dashboard",
   components: {
-    UserProfile, // This is the correct usage, assuming UserProfile.vue is correctly exported
+    UserProfile,
   },
 
   setup() {
     const user = ref(null);
+    const listings = ref([]);
 
-    onMounted(() => {
-      firebase.auth().onAuthStateChanged((firebaseUser) => {
-        if (firebaseUser) {
-          // Assuming firebaseUser has the properties you need
-          user.value = {
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-            email: firebaseUser.email, // Added email as an example
-          };
-          // Optionally, fetch additional profile data from Firestore
-        } else {
-          user.value = null;
-        }
-      });
-    });
+    const firestore = getFirestore();
 
-    return { user };
+    const fetchListings = async () => {
+      const firebaseUser = firebase.auth().currentUser;
+      if (firebaseUser) {
+        user.value = {
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          email: firebaseUser.email,
+        };
+        const listingsRef = collection(
+          firestore,
+          "users",
+          firebaseUser.uid,
+          "listings"
+        );
+        const snapshot = await getDocs(listingsRef);
+        listings.value = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      } else {
+        user.value = null;
+      }
+    };
+
+    onMounted(fetchListings);
+
+    return { user, listings };
   },
   methods: {
     goToManageInventory() {
-      // Programmatic navigation to ViewListing.vue
-      this.$router.push({ name: "ManageInventory" }); //
+      this.$router.push({ name: "ManageInventory" });
     },
   },
 };
@@ -49,37 +78,63 @@ export default {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 
-.user-profile {
+.dashboard {
+  padding: 20px;
+}
+
+.header-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Oswald", sans-serif;
-  width: 100%;
+  justify-content: space-between;
+  align-items: center; /* Aligns items vertically in the center */
 }
 
-.profile-container {
-  padding: 2em;
+.header-title {
+  margin: 0; /* Removes default margin from h2 */
+  font-family: "Oswald", sans-serif;
+  font-size: 24px; /* Adjust based on your preference */
+  padding: 50px;
+}
+
+.listings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px; /* Creates consistent space between the listings */
+}
+
+.listing-card {
+  width: 180px; /* Adjust the width as needed */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
   text-align: center;
+  margin-bottom: 20px; /* Adjust or remove if gap property is sufficient */
+}
+
+.listing-image {
   width: 100%;
-  max-width: 400px;
+  height: auto;
+  border-radius: 4px; /* Optional: Adds slight rounding to the image corners */
+  margin-bottom: 10px;
 }
 
-.profile-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 1em;
+.manage-button,
+.button {
+  /* This selector targets both your manage button and any other button */
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-family: "Oswald", sans-serif; /* Oswald font for buttons */
 }
 
-h1,
-h2 {
-  font-family: "Oswald", sans-serif;
-  color: #333;
+.manage-button:hover,
+.button:hover {
+  /* Hover effects for both manage and other buttons */
+  background-color: #45a049;
 }
 
-p {
-  font-size: 1em;
-  color: #666;
-  font-family: "Oswald", sans-serif;
-}
+/* Additional styles can go here */
 </style>
