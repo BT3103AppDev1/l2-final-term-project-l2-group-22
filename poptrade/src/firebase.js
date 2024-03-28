@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -14,11 +16,13 @@ const firebaseConfig = {
   storageBucket: "poptrade-c2650.appspot.com",
   messagingSenderId: "327732712069",
   appId: "1:327732712069:web:011bc4cfb211fafcd8cfec",
-  measurementId: "G-E2H66S2NVC"
+  measurementId: "G-E2H66S2NVC",
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
+
+export default firebaseApp;
 
 // Initialize services
 const auth = getAuth(app);
