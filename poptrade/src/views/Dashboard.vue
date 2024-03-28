@@ -23,7 +23,8 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import firebase from "@/uifire.js";
+import { firebase, auth } from '@/firebase.js';
+
 import UserProfile from "../components/UserProfile.vue";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
@@ -40,7 +41,7 @@ export default {
     const firestore = getFirestore();
 
     const fetchListings = async () => {
-      const firebaseUser = firebase.auth().currentUser;
+      const firebaseUser = auth.currentUser;
       if (firebaseUser) {
         user.value = {
           displayName: firebaseUser.displayName,

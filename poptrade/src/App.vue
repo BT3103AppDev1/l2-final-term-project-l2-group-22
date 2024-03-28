@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import firebase from "@/uifire.js";
+import { firebase, auth } from '@/firebase.js';
 export default {
 
   name: 'App',
@@ -33,13 +33,13 @@ export default {
     };
   },
   mounted() {
-    firebase.auth().onAuthStateChanged((user) => {
+    auth.onAuthStateChanged((user) => {
       this.currentUser = user;
     });
   },
   methods: {
     signOut() {
-      firebase.auth().signOut().then(() => {
+      auth.signOut().then(() => {
         this.currentUser = null;
         this.$router.push('/login');
       });

@@ -7,7 +7,8 @@
   </template>
   
   <script>
-  import firebase from '@/uifire.js';
+  import { firebase, auth } from '@/firebase.js';
+
   
   export default {
     data() {
@@ -16,7 +17,7 @@
       };
     },
     created() {
-      firebase.auth().onAuthStateChanged((user) => {
+      auth.onAuthStateChanged((user) => {
         if (user) {
           this.user = user;
         }

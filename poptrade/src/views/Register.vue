@@ -13,7 +13,7 @@
   </template>
   
   <script>
-  import firebase from '@/uifire.js';
+  import { firebase, auth } from '@/firebase.js';
   import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
   
   export default {
