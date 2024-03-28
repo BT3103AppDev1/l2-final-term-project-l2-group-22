@@ -1,57 +1,68 @@
 <template>
-  <div class="container">
+  <div class="page-container">
+    <!-- Listings Section -->
     <div class="listings-container">
       <h2>Edit your Listings:</h2>
       <div class="listings">
         <div v-for="listing in listings" :key="listing.id" class="listing-card">
           <img :src="listing.imageURL" alt="Item Image" class="listing-image" />
-          <h3>{{ listing.name }}</h3>
-          <p>{{ listing.collection }}</p>
+          <div class="listing-details">
+            <h3>{{ listing.name }}</h3>
+            <p>{{ listing.collection }}</p>
+          </div>
           <button @click="removeListing(listing.id)">Remove</button>
         </div>
       </div>
     </div>
 
+    <!-- Form Section -->
     <div class="form-container">
       <h2>List your item</h2>
       <form @submit.prevent="submitListing">
-        <label for="collection">Collection:</label>
-        <select
-          id="collection"
-          v-model="selectedCollection"
-          @change="updateItems"
-          required
-        >
-          <option value="">Select a collection</option>
-          <option value="Animal Kingdom">Animal Kingdom</option>
-          <option value="Letters From Snowman">Letters From Snowman</option>
-          <!-- Add more collections as needed -->
-        </select>
+        <!-- Collection Selector -->
+        <div class="form-group">
+          <label for="collection">Collection:</label>
+          <select id="collection" v-model="selectedCollection" required>
+            <option value="">Select a collection</option>
+            <option value="Animal Kingdom">Animal Kingdom</option>
+            <option value="Letters From Snowman">Letters From Snowman</option>
+            <!-- Add more collections as needed -->
+          </select>
+        </div>
 
-        <label for="itemName">Item Name:</label>
-        <select id="itemName" v-model="itemName" required>
-          <option value="">Select an item</option>
-          <option v-for="item in items" :value="item">{{ item }}</option>
-          <!-- Dynamically add items based on the selected collection -->
-        </select>
+        <!-- Item Name Selector -->
+        <div class="form-group">
+          <label for="itemName">Item Name:</label>
+          <select id="itemName" v-model="itemName" required>
+            <option value="">Select an item</option>
+            <option v-for="item in items" :value="item">{{ item }}</option>
+            <!-- Dynamically add items based on the selected collection -->
+          </select>
+        </div>
 
-        <label for="condition">Condition:</label>
-        <select id="condition" v-model="itemCondition" required>
-          <option value="">Select condition</option>
-          <option value="Mint">Mint</option>
-          <option value="Used">Used</option>
-          <!-- Add more conditions as needed -->
-        </select>
+        <!-- Condition Selector -->
+        <div class="form-group">
+          <label for="condition">Condition:</label>
+          <select id="condition" v-model="itemCondition" required>
+            <option value="">Select condition</option>
+            <option value="Mint">Mint</option>
+            <option value="Used">Used</option>
+            <!-- Add more conditions as needed -->
+          </select>
+        </div>
 
-        <label for="description">Description:</label>
-        <textarea
-          id="description"
-          v-model="itemDescription"
-          placeholder="Describe your item..."
-          required
-        ></textarea>
+        <!-- Item Description Input -->
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea
+            id="description"
+            v-model="itemDescription"
+            placeholder="Describe your item..."
+            required
+          ></textarea>
+        </div>
 
-        <input type="submit" value="Upload now" />
+        <input type="submit" value="Upload now" class="submit-btn" />
       </form>
     </div>
   </div>
@@ -135,6 +146,11 @@ export default {
             imageURL: imageURL, // Use the determined image URL
           });
           console.log("New listing added!");
+          // After successful submission, clear the form by resetting the model values
+          selectedCollection.value = "";
+          itemName.value = "";
+          itemCondition.value = "";
+          itemDescription.value = "";
           await fetchListings();
         } catch (error) {
           console.error("Error adding new listing:", error);
@@ -205,44 +221,68 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.page-container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
   margin: 20px;
 }
 
 .listings-container {
-  flex: 1;
-  max-width: calc(50% - 10px);
-  margin-right: 20px;
+  width: 100%;
+  max-width: 800px; /* Adjust as needed */
+  margin-bottom: 30px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .listings {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 20px;
 }
 
 .listing-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .listing-image {
   width: 100%;
-  height: auto;
-  margin-bottom: 10px;
+  display: block;
+}
+
+.listing-details {
+  padding: 10px;
+  text-align: center;
+}
+
+.listing-details h3 {
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+.listing-details p {
+  font-size: 0.8rem;
 }
 
 button {
   background-color: #f44336;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 10px 15px;
+  padding: 10px 20px;
   cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  border-radius: 20px;
+  width: calc(100% - 20px);
   margin-top: 10px;
 }
 
@@ -251,55 +291,48 @@ button:hover {
 }
 
 .form-container {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  width: 100%;
+  max-width: 800px; /* Adjust as needed */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin-top: 20px;
 }
 
-.form-container h2 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 20px;
+.form-group {
+  margin-bottom: 15px;
 }
 
-.form-container form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-container label {
+label {
+  display: block;
   margin-bottom: 5px;
+}
+
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  height: 100px;
+}
+
+.submit-btn {
+  width: 100%;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-transform: uppercase;
   font-weight: bold;
 }
 
-.form-container input[type="text"],
-.form-container select,
-.form-container textarea {
-  margin-bottom: 15px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.form-container textarea {
-  height: 100px;
-  resize: vertical;
-}
-
-.form-container input[type="submit"] {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-.form-container input[type="submit"]:hover {
+.submit-btn:hover {
   background-color: #45a049;
 }
 </style>
