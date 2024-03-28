@@ -16,19 +16,23 @@
       <h2>List your item</h2>
       <form @submit.prevent="submitListing">
         <label for="collection">Collection:</label>
-        <select id="collection" v-model="selectedCollection" required>
+        <select
+          id="collection"
+          v-model="selectedCollection"
+          @change="updateItems"
+          required
+        >
           <option value="">Select a collection</option>
-          <option value="Letters From Snowman">Letters From Snowman</option>
           <option value="Animal Kingdom">Animal Kingdom</option>
+          <option value="Letters From Snowman">Letters From Snowman</option>
           <!-- Add more collections as needed -->
         </select>
 
         <label for="itemName">Item Name:</label>
         <select id="itemName" v-model="itemName" required>
           <option value="">Select an item</option>
-          <option value="Making Snowman">Making Snowman</option>
-          <option value="Merry Christmas">Merry Christmas</option>
-          <!-- Add more items as needed -->
+          <option v-for="item in items" :value="item">{{ item }}</option>
+          <!-- Dynamically add items based on the selected collection -->
         </select>
 
         <label for="condition">Condition:</label>
@@ -38,15 +42,6 @@
           <option value="Used">Used</option>
           <!-- Add more conditions as needed -->
         </select>
-
-        <label for="imageURL">Image URL:</label>
-        <input
-          type="text"
-          id="imageURL"
-          v-model="itemImageURL"
-          placeholder="https://example.com/image.jpg"
-          required
-        />
 
         <label for="description">Description:</label>
         <textarea
@@ -63,7 +58,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import {
   getFirestore,
   collection,
@@ -83,24 +78,63 @@ export default {
     const itemCondition = ref("");
     const itemDescription = ref("");
     const itemImageURL = ref("");
+    const items = ref([]);
 
     const listings = ref([]);
     const firestore = getFirestore();
     const auth = getAuth();
 
+    const collectionItemsWithImageURLs = {
+      "Animal Kingdom": {
+        "Foodie Giraffe": {
+          imageUrl:
+            "https://popmart.sg/cdn/shop/files/DIMOOAnimalKingdomSeriesFiguresDIMOO__Feed15_1800x1800.jpg?v=1711085552",
+        },
+        "Taichi Panda": {
+          imageUrl:
+            "https://popmart.sg/cdn/shop/files/DIMOOAnimalKingdomSeriesFiguresDIMOO__Feed10_1800x1800.jpg?v=1711085552",
+        },
+        // Add more items and their image URLs
+      },
+      "Letters From Snowman": {
+        "Making Snowman": {
+          imageUrl:
+            "https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries_5_1800x1800.jpg?v=1701438768",
+        },
+        "Merry Christmas": {
+          imageUrl:
+            "https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries_6_1800x1800.jpg?v=1701438768",
+        },
+        // Add more items and their image URLs
+      },
+      // Add more collections and their items with image URLs here
+    };
+    // Watch for changes in selectedCollection and update the items list accordingly
+    watch(selectedCollection, (newValue) => {
+      if (newValue && collectionItemsWithImageURLs[newValue]) {
+        items.value = Object.keys(collectionItemsWithImageURLs[newValue]);
+      } else {
+        items.value = [];
+      }
+      itemName.value = ""; // Reset selected item when collection changes
+    });
     const submitListing = async () => {
       const user = auth.currentUser;
       if (user) {
+        // Retrieve the image URL based on selected collection and item name
+        const imageURL =
+          collectionItemsWithImageURLs[selectedCollection.value][itemName.value]
+            ?.imageUrl || "";
+
         try {
           await addDoc(collection(firestore, "users", user.uid, "listings"), {
             collection: selectedCollection.value,
             name: itemName.value,
             condition: itemCondition.value,
             description: itemDescription.value,
-            imageURL: itemImageURL.value,
+            imageURL: imageURL, // Use the determined image URL
           });
           console.log("New listing added!");
-          // Fetch listings again to update the list
           await fetchListings();
         } catch (error) {
           console.error("Error adding new listing:", error);
@@ -126,6 +160,7 @@ export default {
         }));
       }
     };
+    console.log(listings);
 
     onMounted(fetchListings);
 
@@ -158,6 +193,7 @@ export default {
       listings,
       selectedCollection,
       itemName,
+      items,
       itemCondition,
       itemDescription,
       itemImageURL,
