@@ -2,7 +2,11 @@
   <div class="user-profile" v-if="user">
     <div class="profile-container">
       <h1>User Profile</h1>
-      <img :src="user.photoURL" alt="Profile Image" class="profile-image" />
+      <img
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReYctZuBY4c58lgxVJqjssfyMmghW2aRr62Q&usqp=CAU"
+        alt="Profile Image"
+        class="profile-image"
+      />
       <h2>{{ user.displayName }}</h2>
       <p>Email: {{ user.email }}</p>
       <!-- Additional user details can be added here -->
@@ -19,14 +23,11 @@
 <script>
 import { ref, onMounted } from "vue";
 import firebase from "@/uifire.js";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
-import firebaseApp from "@/firebase";
 
 export default {
   name: "UserProfile",
   setup() {
     const user = ref(null);
-    const firestore = getFirestore(firebaseApp);
 
     onMounted(() => {
       firebase.auth().onAuthStateChanged(async (firebaseUser) => {
@@ -34,17 +35,8 @@ export default {
           // User is signed in
           user.value = {
             displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
             email: firebaseUser.email,
           };
-
-          // Fetch additional profile data from Firestore
-          const userDocRef = doc(firestore, "users", firebaseUser.uid);
-          const userDoc = await getDoc(userDocRef);
-          if (userDoc.exists()) {
-            // Merge the additional data with the authentication data
-            user.value = { ...user.value, ...userDoc.data() };
-          }
         } else {
           // User is signed out
           user.value = null;
