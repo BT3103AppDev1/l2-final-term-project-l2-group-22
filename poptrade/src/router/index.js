@@ -9,6 +9,7 @@ import Profile from "@/views/Profile.vue";
 import Dashboard from "@/views/Dashboard.vue";
 import UserProfile from "@/components/UserProfile.vue";
 import ViewListing from "../components/ViewListing.vue";
+import Register from "@/views/Register.vue";
 import ManageInventory from "@/views/ManageInventory.vue";
 import OfferTrade from "../components/OfferTrade.vue";
 
@@ -45,6 +46,12 @@ const routes = [
 		name: "ViewListing", // This should match the name used in the $router.push method
 		component: ViewListing,
 	},
+  {
+		path: "/register",
+		name: "Register", 
+		component: Register,
+	},
+	// ...other routes as needed
 
 	{
 		path: "/offertrade",

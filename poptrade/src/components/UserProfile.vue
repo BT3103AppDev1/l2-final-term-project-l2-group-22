@@ -22,7 +22,8 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import firebase from "@/uifire.js";
+import { firebase, auth } from '@/firebase.js';
+
 
 export default {
   name: "UserProfile",
@@ -30,7 +31,7 @@ export default {
     const user = ref(null);
 
     onMounted(() => {
-      firebase.auth().onAuthStateChanged(async (firebaseUser) => {
+      auth.onAuthStateChanged(async (firebaseUser) => {
         if (firebaseUser) {
           // User is signed in
           user.value = {

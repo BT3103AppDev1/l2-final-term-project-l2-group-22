@@ -11,30 +11,53 @@
   </template>
   
   <script>
-import firebase from '@/uifire.js';
-import 'firebase/compat/auth';
-import * as firebaseui from 'firebaseui'
-import 'firebaseui/dist/firebaseui.css'
+import { firebase, auth, db } from "@/firebase.js";
+import * as firebaseui from "firebaseui";
+import "firebaseui/dist/firebaseui.css";
+import { GoogleAuthProvider, EmailAuthProvider } from "firebase/auth";
 
-  export default {
-    name: 'Login',
 
-    mounted() {
-        var ui = firebaseui.auth.AuthUI.getInstance();
-        if (!ui) {
-            ui = new firebaseui.auth.AuthUI(firebase.auth());
-        }
-        var uiConfig = {
-            signInSuccessURL: '/',
-            signInOptions : [
-                firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                firebase.auth.EmailAuthProvider.PROVIDER_ID,
-            ]
-        }
-        ui.start("#firebaseui-auth-container", uiConfig)
+export default {
+  name: 'Login',
+
+  mounted() {
+    let ui = firebaseui.auth.AuthUI.getInstance();
+
+    if (!ui) {
+      ui = new firebaseui.auth.AuthUI(auth);
     }
-  };
-  </script>
+
+    const uiConfig = {
+      signInSuccessURL: '/', // Default redirect, might not be needed
+      signInOptions: [
+        GoogleAuthProvider.PROVIDER_ID,
+        EmailAuthProvider.PROVIDER_ID,
+      ],
+    };
+
+    ui.start("#firebaseui-auth-container", uiConfig);
+
+    // Listen for the signInSuccess event
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+        console.log(userDocSnapshot);
+
+        if (!userDocSnapshot.exists()) {
+          // User does not exist, redirect to registration page manually
+          this.$router.push('/register');
+        } else {
+          // For existing users, you might redirect them to a profile page or simply return true
+          // to follow signInSuccessURL or no redirection if URL is not set
+          // Firebase UI will handle the redirectif signInSuccessURL is set
+        }
+      }
+    });
+  },
+};
+</script>
+
   
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
