@@ -83,7 +83,19 @@ export default {
 	},
 	methods: {
 		makeOffer() {
-			this.$router.push({ name: "OfferTrade" });
+			this.$router.push({
+				name: "OfferTrade",
+				params: {
+					character: this.character,
+					series: this.series,
+					condition: this.condition,
+					listerID: this.listerID,
+					location: this.location,
+					numberOfReviews: this.numberOfReviews,
+					numberOfTrade: this.numberOfTrade,
+					wishlistItems: this.wishlistItems,
+				},
+			});
 		},
 	},
 };
