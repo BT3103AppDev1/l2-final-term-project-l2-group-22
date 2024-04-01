@@ -11,15 +11,9 @@
 				<div class="item-details">
 					<h1 class="item-title">{{ character }}</h1>
 					<h1 class="item-brand">{{ series }}</h1>
+					<p class="item-figurine">Figurine: {{ figurine }}</p>
 					<p class="item-condition">Condition: {{ condition }}</p>
 					<div class="item-seller-box">
-						<!-- <div class="seller-profile-pic">
-							<img
-								:src="profilePicSrc"
-								alt="Profile Picture"
-								class="profile-pic-inner"
-							/>
-						</div> -->
 						<div class="seller-details">
 							<p class="item-seller">
 								Listed by:
@@ -55,18 +49,15 @@
 </template>
 
 <script>
-import OfferTrade from "../components/OfferTrade.vue";
 export default {
 	name: "ViewListing",
-	components: {
-		OfferTrade,
-	},
 	data() {
 		return {
 			imageSrc:
 				"https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755",
 			character: "Dimoo",
-			series: "Dimoo Letters from Snowman Series",
+			series: "Letters from Snowman",
+			figurine: "Merry Christmas",
 			condition: "Brand New",
 			listerID: "abcdefg",
 			location: "Singapore, Singapore",
@@ -85,14 +76,14 @@ export default {
 		makeOffer() {
 			this.$router.push({
 				name: "OfferTrade",
-				params: {
+
+				props: {
+					imageSrc: this.imageSrc,
 					character: this.character,
 					series: this.series,
+					figurine: this.figurine,
 					condition: this.condition,
 					listerID: this.listerID,
-					location: this.location,
-					numberOfReviews: this.numberOfReviews,
-					numberOfTrade: this.numberOfTrade,
 					wishlistItems: this.wishlistItems,
 				},
 			});
@@ -175,26 +166,20 @@ export default {
 	flex: 6;
 }
 
-/* .seller-profile-pic img {
-	width: 80%;
-	height: 80%;
-	object-fit: cover;
-} */
-
-/* .seller-profile-pic {
-	flex: 1;
-	margin-top: 0.3rem;
-} */
-
 .wishlist-images {
 	display: flex;
 	justify-content: flex-start;
 }
 
 .wishlist-images img {
-	width: 100px; /* Adjust width of each wishlist image */
-	height: 120px; /* Adjust height of each wishlist image */
-	margin-right: 10px; /* Add some margin between wishlist images */
-	border-radius: 5px; /* Add border radius to wishlist images */
+	width: 100px;
+	height: 120px;
+	margin-right: 10px;
+	border-radius: 5px;
+}
+
+.item-figurine {
+	margin-top: 2px;
+	font-weight: bold;
 }
 </style>
