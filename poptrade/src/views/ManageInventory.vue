@@ -19,14 +19,25 @@
     <div class="form-container">
       <h2>List your item</h2>
       <form @submit.prevent="submitListing">
+
+        <!-- Character Selector -->
+        <div class="form-group">
+          <label for="character">Character:</label>
+          <select id="character" v-model="selectedCharacter" required>
+            <option value="">Select a character</option>
+            <option value="Dimoo">Dimoo</option>
+            <option value="Hirono">Hirono</option>
+            <!-- Add more characters as needed -->
+          </select>
+        </div>
+
         <!-- Collection Selector -->
         <div class="form-group">
           <label for="collection">Collection:</label>
           <select id="collection" v-model="selectedCollection" required>
             <option value="">Select a collection</option>
-            <option value="Animal Kingdom">Animal Kingdom</option>
-            <option value="Letters From Snowman">Letters From Snowman</option>
-            <!-- Add more collections as needed -->
+            <option v-for="collection in collections" :value="collection">{{ collection }}</option>
+            <!-- Dynamically add collections based on the selected character -->
           </select>
         </div>
 
@@ -76,9 +87,11 @@ import {
   getDocs,
   addDoc,
   deleteDoc,
-  doc,
+  doc
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+
+import { db } from '@/firebase.js';
 
 export default {
   name: "ManageListings",
@@ -89,46 +102,56 @@ export default {
     const itemCondition = ref("");
     const itemDescription = ref("");
     const itemImageURL = ref("");
+    const selectedCharacter = ref("");
     const items = ref([]);
-
+    const collections = ref([]);
     const listings = ref([]);
     const firestore = getFirestore();
     const auth = getAuth();
 
-    const collectionItemsWithImageURLs = {
-      "Animal Kingdom": {
-        "Foodie Giraffe": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOAnimalKingdomSeriesFiguresDIMOO__Feed15_1800x1800.jpg?v=1711085552",
-        },
-        "Taichi Panda": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOAnimalKingdomSeriesFiguresDIMOO__Feed10_1800x1800.jpg?v=1711085552",
-        },
-        // Add more items and their image URLs
-      },
-      "Letters From Snowman": {
-        "Making Snowman": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries_5_1800x1800.jpg?v=1701438768",
-        },
-        "Merry Christmas": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries_6_1800x1800.jpg?v=1701438768",
-        },
-        // Add more items and their image URLs
-      },
-      // Add more collections and their items with image URLs here
-    };
-    // Watch for changes in selectedCollection and update the items list accordingly
-    watch(selectedCollection, (newValue) => {
+
+
+    const collectionItemsWithImageURLs = ref({});
+
+    // Fetch data from Firestore on component mount
+    onMounted(async () => {
+      const characters = collection(db, 'Popmarts');
+      const characters2 = await getDocs(characters);
+      for (const char of characters2.docs) {
+        collectionItemsWithImageURLs[char.id] = ({});
+        const collections = collection(db, `Popmarts/${char.id}/Collection`);
+        const collections2 = await getDocs(collections);
+        for (const coll of collections2.docs) {
+          const figurines = collection(db, `Popmarts/${char.id}/Collection/${coll.id}/Figurine`);
+          const figurines2 = await getDocs(figurines);
+          const lst = ref([]);
+          for (const fig of figurines2.docs) {
+            lst.value.push(fig.id);
+          }
+          collectionItemsWithImageURLs[char.id][coll.id] = lst;    
+        }
+      };
+    });
+
+    watch(selectedCharacter, (newValue) => {
       if (newValue && collectionItemsWithImageURLs[newValue]) {
-        items.value = Object.keys(collectionItemsWithImageURLs[newValue]);
+        collections.value = Object.keys(collectionItemsWithImageURLs[newValue]);
+      } else {
+        collections.value = [];
+      }
+      collection.value = ""; 
+    });
+
+    watch(selectedCollection, (newValue) => {
+      if (newValue && collectionItemsWithImageURLs[selectedCharacter][newValue]) {
+        items.value = Object.keys(collectionItemsWithImageURLs[selectedCharacter][newValue]);
       } else {
         items.value = [];
       }
-      itemName.value = ""; // Reset selected item when collection changes
+      itemName.value = "";
     });
+
+
     const submitListing = async () => {
       const user = auth.currentUser;
       if (user) {
@@ -213,12 +236,15 @@ export default {
       itemCondition,
       itemDescription,
       itemImageURL,
+      collections,
+      collection,
       removeListing,
       submitListing,
     };
   },
 };
 </script>
+
 
 <style scoped>
 .page-container {
