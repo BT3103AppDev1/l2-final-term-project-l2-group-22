@@ -19,14 +19,25 @@
     <div class="form-container">
       <h2>List your item</h2>
       <form @submit.prevent="submitListing">
+        <!-- Popmart Selector -->
+        <div class="form-group">
+          <label for="popmart">Popmart:</label>
+          <select id="popmart" v-model="selectedPopmart" required>
+            <option value="">Select a Popmart</option>
+            <option v-for="popmart in popmarts" :value="popmart">
+              {{ popmart }}
+            </option>
+          </select>
+        </div>
+
         <!-- Collection Selector -->
         <div class="form-group">
           <label for="collection">Collection:</label>
           <select id="collection" v-model="selectedCollection" required>
             <option value="">Select a collection</option>
-            <option value="Animal Kingdom">Animal Kingdom</option>
-            <option value="Letters From Snowman">Letters From Snowman</option>
-            <!-- Add more collections as needed -->
+            <option v-for="collection in collections" :value="collection">
+              {{ collection }}
+            </option>
           </select>
         </div>
 
@@ -35,8 +46,9 @@
           <label for="itemName">Item Name:</label>
           <select id="itemName" v-model="itemName" required>
             <option value="">Select an item</option>
-            <option v-for="item in items" :value="item">{{ item }}</option>
-            <!-- Dynamically add items based on the selected collection -->
+            <option v-for="item in items" :value="item.name">
+              {{ item.name }}
+            </option>
           </select>
         </div>
 
@@ -47,7 +59,6 @@
             <option value="">Select condition</option>
             <option value="Mint">Mint</option>
             <option value="Used">Used</option>
-            <!-- Add more conditions as needed -->
           </select>
         </div>
 
@@ -82,71 +93,136 @@ import { getAuth } from "firebase/auth";
 
 export default {
   name: "ManageListings",
-
   setup() {
+    const selectedPopmart = ref("");
     const selectedCollection = ref("");
     const itemName = ref("");
     const itemCondition = ref("");
     const itemDescription = ref("");
-    const itemImageURL = ref("");
-    const items = ref([]);
 
+    const popmarts = ref([]);
+    const collections = ref([]);
+    const items = ref([]);
     const listings = ref([]);
+
     const firestore = getFirestore();
     const auth = getAuth();
 
-    const collectionItemsWithImageURLs = {
-      "Animal Kingdom": {
-        "Foodie Giraffe": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOAnimalKingdomSeriesFiguresDIMOO__Feed15_1800x1800.jpg?v=1711085552",
-        },
-        "Taichi Panda": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOAnimalKingdomSeriesFiguresDIMOO__Feed10_1800x1800.jpg?v=1711085552",
-        },
-        // Add more items and their image URLs
-      },
-      "Letters From Snowman": {
-        "Making Snowman": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries_5_1800x1800.jpg?v=1701438768",
-        },
-        "Merry Christmas": {
-          imageUrl:
-            "https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries_6_1800x1800.jpg?v=1701438768",
-        },
-        // Add more items and their image URLs
-      },
-      // Add more collections and their items with image URLs here
-    };
-    // Watch for changes in selectedCollection and update the items list accordingly
-    watch(selectedCollection, (newValue) => {
-      if (newValue && collectionItemsWithImageURLs[newValue]) {
-        items.value = Object.keys(collectionItemsWithImageURLs[newValue]);
-      } else {
-        items.value = [];
+    // Fetches Popmart names from Firestore
+    const fetchPopmarts = async () => {
+      try {
+        const popmartsRef = collection(firestore, "Popmarts");
+        const querySnapshot = await getDocs(popmartsRef);
+        popmarts.value = querySnapshot.docs.map((doc) => doc.id);
+      } catch (error) {
+        console.error("Failed to fetch Popmarts:", error);
       }
-      itemName.value = ""; // Reset selected item when collection changes
-    });
-    const submitListing = async () => {
+    };
+
+    // Fetches listings for the authenticated user
+    const fetchListings = async () => {
       const user = auth.currentUser;
       if (user) {
-        // Retrieve the image URL based on selected collection and item name
-        const imageURL =
-          collectionItemsWithImageURLs[selectedCollection.value][itemName.value]
-            ?.imageUrl || "";
-
         try {
+          const listingsRef = collection(
+            firestore,
+            "users",
+            user.uid,
+            "listings"
+          );
+          const querySnapshot = await getDocs(listingsRef);
+          listings.value = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+        } catch (error) {
+          console.error("Failed to fetch listings:", error);
+        }
+      }
+    };
+
+    // Watches for changes in the selected Popmart and fetches corresponding collections
+    watch(selectedPopmart, async (newPopmart) => {
+      if (newPopmart) {
+        try {
+          const collectionsRef = collection(
+            firestore,
+            "Popmarts",
+            newPopmart,
+            "Collection"
+          );
+          const querySnapshot = await getDocs(collectionsRef);
+          collections.value = querySnapshot.docs.map((doc) => doc.id);
+          items.value = []; // Clears items when a new Popmart is selected
+        } catch (error) {
+          console.error(
+            `Failed to fetch collections for ${newPopmart}:`,
+            error
+          );
+          collections.value = [];
+          items.value = [];
+        }
+      } else {
+        collections.value = [];
+        items.value = [];
+      }
+    });
+
+    // Watches for changes in the selected collection and fetches corresponding items
+    watch(
+      [selectedPopmart, selectedCollection],
+      async ([newPopmart, newCollection]) => {
+        if (newCollection && newPopmart) {
+          try {
+            const figurinesRef = collection(
+              firestore,
+              "Popmarts",
+              newPopmart,
+              "Collection",
+              newCollection,
+              "Figurine"
+            );
+            const querySnapshot = await getDocs(figurinesRef);
+            items.value = querySnapshot.docs.map((doc) => ({
+              name: doc.id,
+              imageURL: doc.data().imageURL,
+            }));
+          } catch (error) {
+            console.error(
+              `Failed to fetch items for ${newCollection} in ${newPopmart}:`,
+              error
+            );
+            items.value = [];
+          }
+        } else {
+          items.value = [];
+        }
+      }
+    );
+
+    // Submits a new listing to Firestore
+    const submitListing = async () => {
+      const user = auth.currentUser;
+      if (
+        user &&
+        selectedPopmart.value &&
+        selectedCollection.value &&
+        itemName.value
+      ) {
+        try {
+          const selectedFigurine = items.value.find(
+            (item) => item.name === itemName.value
+          );
           await addDoc(collection(firestore, "users", user.uid, "listings"), {
+            popmart: selectedPopmart.value,
             collection: selectedCollection.value,
             name: itemName.value,
             condition: itemCondition.value,
             description: itemDescription.value,
-            imageURL: imageURL, // Use the determined image URL
+            imageURL: selectedFigurine ? selectedFigurine.imageURL : "",
           });
-          console.log("New listing added!");
-          // After successful submission, clear the form by resetting the model values
+          alert("New listing added!"); // User feedback
+          selectedPopmart.value = ""; // Reset form fields
           selectedCollection.value = "";
           itemName.value = "";
           itemCondition.value = "";
@@ -154,65 +230,49 @@ export default {
           await fetchListings();
         } catch (error) {
           console.error("Error adding new listing:", error);
+          alert("Failed to add listing. Please try again."); // User feedback
         }
       } else {
-        console.log("User is not authenticated");
+        alert("Please fill in all required fields."); // User feedback
       }
     };
 
-    const fetchListings = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const listingsRef = collection(
-          firestore,
-          "users",
-          user.uid,
-          "listings"
-        );
-        const querySnapshot = await getDocs(listingsRef);
-        listings.value = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      }
-    };
-    console.log(listings);
-
-    onMounted(fetchListings);
-
+    // Removes a listing from Firestore and the local state
     const removeListing = async (listingId) => {
       const user = auth.currentUser;
       if (user) {
-        const listingDocRef = doc(
-          firestore,
-          "users",
-          user.uid,
-          "listings",
-          listingId
-        );
         try {
-          await deleteDoc(listingDocRef);
-          // Remove the listing from the local state
+          await deleteDoc(
+            doc(firestore, "users", user.uid, "listings", listingId)
+          );
           listings.value = listings.value.filter(
             (listing) => listing.id !== listingId
           );
-          console.log(`Listing with ID ${listingId} has been removed.`);
+          alert(`Listing with ID ${listingId} has been removed.`); // User feedback
         } catch (error) {
           console.error("Error removing listing:", error);
+          alert("Failed to remove listing. Please try again."); // User feedback
         }
       } else {
-        console.log("User is not authenticated");
+        alert("User is not authenticated."); // User feedback
       }
     };
 
+    onMounted(async () => {
+      await fetchPopmarts();
+      await fetchListings();
+    });
+
     return {
-      listings,
+      selectedPopmart,
       selectedCollection,
       itemName,
-      items,
       itemCondition,
       itemDescription,
-      itemImageURL,
+      popmarts,
+      collections,
+      items,
+      listings,
       removeListing,
       submitListing,
     };
