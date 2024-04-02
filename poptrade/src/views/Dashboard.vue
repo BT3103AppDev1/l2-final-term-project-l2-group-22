@@ -18,15 +18,27 @@
         <!-- Add more listing details as needed -->
       </div>
     </div>
+    <div class="header-container">
+      <h2 class="header-title">My Wishlist</h2>
+      <button @click="goToManageWishlist" class="manage-button">
+        Manage Wishlist
+      </button>
+    </div>
+    <div class="wishlist">
+      <div v-for="item in wishlist" :key="item.id" class="listing-card">
+        <img :src="item.imageURL" alt="Item Image" class="listing-image" />
+        <h3>{{ item.name }}</h3>
+        <!-- Add more wishlist details as needed -->
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
-import { firebase, auth } from '@/firebase.js';
-
-import UserProfile from "../components/UserProfile.vue";
+import { auth } from "@/firebase.js";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import UserProfile from "../components/UserProfile.vue";
 
 export default {
   name: "Dashboard",
@@ -37,10 +49,11 @@ export default {
   setup() {
     const user = ref(null);
     const listings = ref([]);
-
+    const wishlist = ref([]);
     const firestore = getFirestore();
 
-    const fetchListings = async () => {
+    // Unified fetchData function for fetching either listings or wishlist
+    const fetchData = async (dataType, setData) => {
       const firebaseUser = auth.currentUser;
       if (firebaseUser) {
         user.value = {
@@ -48,29 +61,31 @@ export default {
           photoURL: firebaseUser.photoURL,
           email: firebaseUser.email,
         };
-        const listingsRef = collection(
+
+        const dataRef = collection(
           firestore,
           "users",
           firebaseUser.uid,
-          "listings"
+          dataType
         );
-        const snapshot = await getDocs(listingsRef);
-        listings.value = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      } else {
-        user.value = null;
+        const snapshot = await getDocs(dataRef);
+        setData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       }
     };
 
-    onMounted(fetchListings);
+    onMounted(() => {
+      fetchData("listings", (data) => (listings.value = data));
+      fetchData("wishlist", (data) => (wishlist.value = data));
+    });
 
-    return { user, listings };
+    return { user, listings, wishlist };
   },
   methods: {
     goToManageInventory() {
       this.$router.push({ name: "ManageInventory" });
+    },
+    goToManageWishlist() {
+      this.$router.push({ name: "ManageWishlist" });
     },
   },
 };
