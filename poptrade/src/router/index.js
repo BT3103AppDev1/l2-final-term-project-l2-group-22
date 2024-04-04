@@ -87,22 +87,55 @@ const router = createRouter({
 const auth = getAuth();
 const user = ref(null);
 
-router.beforeEach((to, from, next) => {
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+
+// This function checks if the user's profile is complete
+async function checkUserProfileComplete(userId) {
+  const db = getFirestore();
+  const docRef = doc(db, "users", userId);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const userData = docSnap.data();
+    // Check if all required fields are present and not empty
+    return (
+      userData.username &&
+      userData.firstName &&
+      userData.lastName &&
+      userData.phoneNumber &&
+      userData.telegramHandle
+    );
+  } else {
+    // No user document found
+    return false;
+  }
+}
+
+router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const isAuthenticated = auth.currentUser;
+
+  let isProfileComplete = false;
+  if (isAuthenticated) {
+    isProfileComplete = await checkUserProfileComplete(auth.currentUser.uid);
+  }
+
   if (to.path === "/") {
-    if (isAuthenticated) {
-      // If the user is authenticated, redirect to the Dashboard
-      next("/dashboard");
+    if (!isAuthenticated) {
+      // User is not authenticated, redirect to login or stay on home page
+      next("/login"); // or `next();` if you want them to stay on the home page
     } else {
-      // If the user is not authenticated, allow them to proceed to the root page (e.g., HomeView)
-      next();
+      // User is authenticated, check if profile is complete
+      next(isProfileComplete ? "/dashboard" : "/register");
     }
   } else if (requiresAuth && !isAuthenticated) {
-    // If the user is not authenticated and tries to access a protected route, redirect to Login
+    // If the route requires auth and the user is not authenticated, redirect to login
     next("/login");
   } else if (to.path === "/login" && isAuthenticated) {
-    // If the user is authenticated and tries to access the Login page, redirect to Dashboard
+    // User is authenticated and tries to access login, redirect based on profile completion
+    next(isProfileComplete ? "/dashboard" : "/register");
+  } else if (to.path === "/register" && isAuthenticated && isProfileComplete) {
+    // User is authenticated, has a complete profile, and tries to access register, redirect to dashboard
     next("/dashboard");
   } else {
     // In all other cases, allow the route transition
