@@ -42,7 +42,7 @@ const routes = [
     meta: { requiresAuth: true }, // Requires authentication to access
   },
   {
-    path: "/viewlisting",
+    path: "/viewlisting/:id",
     name: "ViewListing", // This should match the name used in the $router.push method
     component: ViewListing,
   },

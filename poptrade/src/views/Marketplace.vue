@@ -1,165 +1,181 @@
 <template>
-	<div class="marketplace">
-		<h1>Marketplace</h1>
-
-		<!-- Placeholder content for Marketplace -->
-		<h3>Newest Listings</h3>
-		
-		<!-- <div class="categories">
-			<div v-for="(category, index) in categories" :key="index" class="category">
-			<h2>{{ category.name }}</h2>
-			<div class="listings-row">
-				<div
-					class="listing"
-					v-for="(listing, index) in category.listings.slice(0, 5)"
-					:key="listing.id"
-					@click="goToViewListing(listing.id)"
-				>
-				<img :src="listing.imageSrc" :alt="listing.name" class="listing-image"/>
-				</div>
-			</div>
-			</div>
-		</div> -->
-
-		<div class="newestListings">
-			<button id="b1" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b2" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b3" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b4" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b5" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-		</div>
-
-		<h3>Listings by Collections</h3>
-
-		<div class="collectionListings">
-			<button id="b6" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b7" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b8" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b9" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b10" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-		</div>
-
-		<h3>Listings from Top Traders</h3>
-
-		<div class="topTradersListings">
-			<button id="b11" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b12" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b13" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b14" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-
-			<button id="b15" @click="goToViewListing">
-				<img src="https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755" alt="Button Image" />
-			</button>
-		</div>
-		<!-- just to check what ViewListing -->
-		<!-- <ViewListing /> -->
-	</div>
+  <div class="marketplace">
+    <h1>Marketplace</h1>
+    <div class="listings-row">
+      <div
+        v-for="listing in listings"
+        :key="listing.id"
+        class="listing"
+        @click="goToViewListing(listing.id)"
+      >
+        <img
+          :src="listing.imageURL"
+          :alt="listing.name"
+          class="listing-image"
+        />
+        <p>{{ listing.name }}</p>
+      </div>
+    </div>
+  </div>
 </template>
-
 <script>
-import ViewListing from "../components/ViewListing.vue";
-import OfferTrade from "../components/OfferTrade.vue";
+import { ref, onMounted } from "vue";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { useRouter } from "vue-router"; // Import useRouter from 'vue-router
+import { getAuth, onAuthStateChanged } from "firebase/auth"; // Import onAuthStateChanged
+
 export default {
-	name: "Marketplace",
-	components: {
-		ViewListing,
-	},
-	// You might include component logic here later
-	methods: {
-		goToViewListing() {
-			// Programmatic navigation to ViewListing.vue
-			this.$router.push({ name: "ViewListing" }); // Assuming 'ViewListing' is the name of the route for ViewListing.vue
-		},
-	},
+  name: "Marketplace",
+  setup() {
+    const listings = ref([]);
+    const firestore = getFirestore();
+    const router = useRouter(); // Use useRouter to access the router instance
+    const auth = getAuth(); // Use getAuth to access the auth instance
+
+    const fetchListings = async () => {
+      const allListings = ref([]); // Moved inside function for reactivity on each call
+      let currentUserUid = auth.currentUser ? auth.currentUser.uid : null;
+      console.log("Current user UID:", currentUserUid); // Log current user UID
+
+      // If the currentUserUid is not available yet, wait for onAuthStateChanged
+      if (!currentUserUid) {
+        console.log("Waiting for auth state change...");
+        await new Promise((resolve) => {
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              currentUserUid = user.uid;
+              console.log("User signed in:", currentUserUid); // Log the signed in user UID
+              resolve();
+            } else {
+              console.log("No user signed in.");
+              resolve();
+            }
+          });
+        });
+      }
+
+      try {
+        const usersRef = collection(firestore, "users");
+        console.log("Fetching users...");
+        const usersSnapshot = await getDocs(usersRef);
+        console.log(`Found ${usersSnapshot.docs.length} users`);
+
+        for (const userDoc of usersSnapshot.docs) {
+          console.log("Checking user:", userDoc.id);
+          if (allListings.value.length >= 5) {
+            console.log("Collected 5 listings, breaking...");
+            break;
+          }
+
+          if (userDoc.id === currentUserUid) {
+            console.log("Skipping current user listings");
+            continue;
+          }
+
+          const listingsRef = collection(
+            firestore,
+            "users",
+            userDoc.id,
+            "listings"
+          );
+          console.log(`Fetching listings for user ${userDoc.id}`);
+          const listingsSnapshot = await getDocs(listingsRef);
+
+          for (const listingDoc of listingsSnapshot.docs) {
+            if (allListings.value.length < 5) {
+              console.log("Adding listing:", listingDoc.id);
+              allListings.value.push({
+                id: listingDoc.id,
+                ...listingDoc.data(),
+              });
+            } else {
+              console.log("Reached 5 listings, breaking...");
+              break;
+            }
+          }
+        }
+
+        console.log("Final listings:", allListings.value);
+      } catch (error) {
+        console.error("Failed to fetch listings:", error);
+      }
+
+      return allListings; // Return the reactive listings reference
+    };
+
+    onMounted(async () => {
+      const fetchedListings = await fetchListings(); // Use the returned reactive listings reference
+      listings.value = fetchedListings.value.slice(0, 5); // Set the main reactive listings reference
+    });
+
+    const goToViewListing = (listingId) => {
+      router.push({ name: "ViewListing", params: { id: listingId } });
+    };
+
+    return {
+      listings,
+      goToViewListing,
+    };
+  },
 };
 </script>
 
 <style scoped>
 /* Header styles */
 .marketplace h1 {
-  color: red; /* Color of the Marketplace header, change as needed */
+  color: red;
   text-align: center;
-  font-size: 2em; /* Size of the Marketplace header */
+  font-size: 2em;
   margin: 0.5em 0;
 }
 
-/* Button styles */
-button {
-  display: block;
-  margin: 10px 30px 30px 30px; /* Centers the button */
-  padding: 5px; /* Padding inside the button */
-  background-color: #000; /* Button background color */
-  color: #fff; /* Button text color */
-  border: none;
-  border-radius: 5px; /* Rounded corners of the button */
+/* Adjusted button styles to class listings */
+.listing {
   cursor: pointer;
-  font-size: 1em;
 }
 
-button img {
-	width: 180px;
-	height: 225px;
+.listing img {
+  max-width: 100%;
+  border-radius: 5px;
 }
 
-button:hover {
-  background-color: #555; /* Button hover state color */
+/* Layout styles for listings */
+.listings-row {
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping by default */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  gap: 10px; /* Spacing between listings */
+  padding: 10px 0;
 }
 
-/* Layout styles */
+.listing {
+  flex: 0 0 auto; /* Do not grow, do not shrink, and do not allow flex-basis to be auto-sized */
+  margin: 0 5px; /* Horizontal margin for spacing */
+  width: 180px; /* Fixed width */
+  text-align: center; /* Center the text within each listing */
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .listing {
+    width: 120px; /* Smaller width on small screens */
+  }
+}
+
+/* Global layout adjustments */
 .marketplace {
-	display: flex;
-	flex-direction: column; /* Stacks items vertically */
-	align-items: center; /* Centers items horizontally */
-	align-self: flex-start;
-	justify-content: center; /* Centers items vertically if there's extra space */
-	padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
-.newestListings, .collectionListings, .topTradersListings {
-	display: flex;
-	flex-direction: row;
-	align-items: center; /* Centers items horizontally */
-	align-self: flex-start;
-	justify-content: center; /* Centers items vertically if there's extra space */
-}
-
+/* Remove button styles as they are not being used for listings */
 </style>
