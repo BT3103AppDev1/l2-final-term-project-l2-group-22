@@ -99,7 +99,6 @@ export default {
           this.character = listingData.popmart;
           this.series = listingData.collection;
           this.imageSrc = listingData.imageURL;
-          console.log(this.imageSrc);
           this.figurine = listingData.name;
           this.condition = listingData.condition;
           this.description = listingData.description;
@@ -140,7 +139,6 @@ export default {
         if (docSnap.exists()) {
           const { firstName, lastName } = docSnap.data();
           this.userName = `${firstName} ${lastName}`;
-          console.log(this.userName); // Assuming the field for the user's name is 'name'
         } else {
           console.log("No such document!");
           this.userName = "";
