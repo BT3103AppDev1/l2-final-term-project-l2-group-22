@@ -55,9 +55,10 @@ const routes = [
   // ...other routes as needed
 
   {
-    path: "/offertrade",
+    path: "/offertrade/:userId/:listingId",
     name: "OfferTrade",
     component: OfferTrade,
+    props: true,
   },
 
   {

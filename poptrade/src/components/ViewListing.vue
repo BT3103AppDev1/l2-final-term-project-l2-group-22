@@ -131,15 +131,7 @@ export default {
     makeOffer() {
       this.$router.push({
         name: "OfferTrade",
-
-        props: {
-          imageSrc: this.imageSrc,
-          character: this.character,
-          series: this.series,
-          figurine: this.figurine,
-          condition: this.condition,
-          wishlistItems: this.wishlistItems,
-        },
+        params: { userId: this.userId, listingId: this.listingId },
       });
     },
   },
