@@ -1,93 +1,167 @@
 <script>
 import ViewListing from "../components/ViewListing.vue";
+import {
+	getFirestore,
+	doc,
+	getDoc,
+	collection,
+	getDocs,
+	addDoc,
+} from "firebase/firestore";
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default {
 	name: "OfferTrade",
+	props: {
+		userId: String,
+		listingId: String,
+	},
 	components: {
 		ViewListing,
 	},
 	data() {
 		return {
-			imageSrc:
-				"https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755",
-			character: "Dimoo",
-			series: "Letters from Snowman Series",
-			figurine: "Merry Christmas",
-			condition: "Mint",
-			listerID: "abcdefg",
-			location: "Singapore, Singapore",
-			numberOfReviews: "22",
-			numberOfTrade: "32",
-			wishlistItems: [
-				"https://popmart.sg/cdn/shop/files/1_20_45f620a8-a1d5-43df-aeff-84afdecad54b_1800x1800.jpg?v=1703232251",
-				"https://popmart.sg/cdn/shop/files/TheMonsters-NaughtyPlantsVinylFaceBlindBox_1_1800x1800.jpg?v=1685354421",
-				"https://popmart.sg/cdn/shop/files/PuckyForestPartySeries-VinylPlushPendantBlindBox_5_1800x1800.png.jpg?v=1696562315",
-			],
-			// imageSrc: this.imageSrc,
-			// character: this.character,
-			// series: this.series,
-			// figurine: this.figurine,
-			// condition: this.condition,
-			// listerID: this.listerID,
-			// wishlistItems: this.wishlistItems,
+			character: "",
+			series: "",
+			imageSrc: "",
+			figurine: "",
+			condition: "",
+			description: "",
+			wishlistItems: [],
+			location: "Loading...", // Default value indicating data is being fetched
+			numberOfReviews: 0, // Default value, assuming it will be updated
+			numberOfTrade: 0, // Default value, assuming it will be updated
+			userName: "",
+			inventory: [],
 			confirmSelection: false,
 			selectedItems: [],
-			confirmSelection: false,
-			inventory: [
-				[
-					"https://popmart.sg/cdn/shop/files/DIMOOHolidayRabbitActionFigureDIMOO__Feed1_750x.jpg?v=1711092788",
-					"Dimoo",
-					"Animal Kingdom",
-					"Monkey Catches the Moon",
-				],
-				[
-					"https://popmart.sg/cdn/shop/files/DIMOOAnimalKingdomSeriesFiguresDIMOO__Feed2_750x.jpg?v=1711085552",
-					"Dimoo",
-					"Letters from Snowman",
-					"Tears of Eos",
-				],
-				[
-					"https://popmart.sg/cdn/shop/files/1_17_66802510-4a3c-47ae-8b75-ba14485416fb_750x.png.jpg?v=1685331433",
-					"Skull Panda",
-					"The Warmth",
-					"Taste From the Memory",
-				],
-				[
-					"https://popmart.sg/cdn/shop/products/HironoLittleMischiefSeries_11_750x.jpg?v=1661411803",
-					"Hironi",
-					"Reshape",
-					"Paradise Lost",
-				],
-				[
-					"https://popmart.sg/cdn/shop/products/1_2_377b6fcf-77de-4a61-afb0-49dd84f4229f_750x.jpg?v=1647526756",
-					"Hironi",
-					"Reshape",
-					"Burst",
-				],
-				[
-					"https://popmart.sg/cdn/shop/products/MEGAReserveSeries1000SPACEMOLLYLittlePainter_5_750x.jpg?v=1669008093",
-					"Dimoo",
-					"Letters from Snowman",
-					"Winter Dream",
-				],
-			],
 		};
+	},
+	created() {
+		this.fetchListingDetails();
 	},
 
 	methods: {
+		async fetchListingDetails() {
+			const db = getFirestore();
+			const listingRef = doc(
+				db,
+				"users",
+				this.userId,
+				"listings",
+				this.listingId
+			);
+
+			try {
+				const docSnap = await getDoc(listingRef);
+				if (docSnap.exists()) {
+					const listingData = docSnap.data();
+					this.character = listingData.popmart;
+					this.series = listingData.collection;
+					this.imageSrc = listingData.imageURL;
+					this.figurine = listingData.name;
+					this.condition = listingData.condition;
+					this.description = listingData.description;
+					this.location = "Singapore";
+					this.numberOfReviews = 10;
+					this.numberOfTrade = 10;
+					await this.fetchWishlistDetails(); // Fetch wishlist details after listing details
+					await this.fetchUserDetails();
+					await this.fetchInventory();
+				} else {
+					console.log("No such document!");
+				}
+			} catch (error) {
+				console.error("Error fetching listing details:", error);
+			}
+		},
+
+		async fetchInventory() {
+			const db = getFirestore();
+			const auth = getAuth();
+			const currentUserUid = auth.currentUser?.uid;
+			console.log(currentUserUid);
+			const inventoryRef = collection(db, "users", currentUserUid, "listings");
+			try {
+				const querySnapshot = await getDocs(inventoryRef);
+				console.log("Trying to fetch inventory");
+				this.inventory = querySnapshot.docs.map((doc) => ({
+					id: doc.id,
+					...doc.data(),
+				}));
+			} catch (error) {
+				console.error("Error fetching inventory details:", error);
+				this.inventory = []; // Reset to empty array in case of error
+			}
+		},
+
+		async fetchWishlistDetails() {
+			const db = getFirestore();
+			const wishlistRef = collection(db, "users", this.userId, "wishlist");
+			// console.log(wishlistRef);
+			try {
+				const querySnapshot = await getDocs(wishlistRef);
+				// console.log(querySnapshot);
+				this.wishlistItems = querySnapshot.docs.map(
+					(doc) => doc.data().imageURL
+				);
+			} catch (error) {
+				console.error("Error fetching wishlist details:", error);
+				this.wishlistItems = []; // Reset to empty array in case of error
+			}
+		},
+
+		async fetchUserDetails() {
+			const db = getFirestore();
+			const userDocRef = doc(db, "users", this.userId);
+
+			try {
+				const docSnap = await getDoc(userDocRef);
+				// console.log(docSnap);
+				if (docSnap.exists()) {
+					const { firstName, lastName } = docSnap.data();
+					this.userName = `${firstName} ${lastName}`;
+				} else {
+					console.log("No such document!");
+					this.userName = "";
+				}
+			} catch (error) {
+				console.error("Error fetching user details:", error);
+				this.userName = "";
+			}
+		},
+
 		handleSubmit() {
 			if (!this.confirmSelection) {
 				alert("Please confirm selection");
+			} else if (this.selectedItems == null) {
+				alert("Please select an item to offer");
 			} else if (this.selectedItems.length == 0) {
 				alert("Please select an item to offer");
 			} else {
-				this.successfulOffer();
+				// this.successfulOffer();
+				this.submitListing();
 			}
 		},
-		successfulOffer() {
-			alert(
-				"Offer successfully made. You will be redirected to the Dashboard."
+
+		async submitListing() {
+			console.log(this.selectedItems);
+			const firestore = getFirestore();
+			const user = getAuth().currentUser;
+			await addDoc(collection(firestore, "users", user.uid, "offerRequest"), {
+				offering: this.selectedItems[0],
+				trade: (this.userId, this.listingId),
+			});
+			await addDoc(
+				collection(firestore, "users", this.userId, "offersReceived"),
+				{
+					offerer: user.uid,
+					theirOffer: this.selectedItems[0],
+					yourListing: this.listingId,
+				}
 			);
+			alert("Offer successfully made! You will be redirected to the Dashboard"); // User feedback
 			this.$router.push({ name: "Dashboard" });
 		},
 	},
@@ -107,7 +181,7 @@ export default {
 					<h1 class="item-series">{{ series }}</h1>
 					<p class="item-figurine">Figurine: {{ figurine }}</p>
 					<p class="item-condition">Condition: {{ condition }}</p>
-					<p class="item-wishlist">{{ listerID }}'s wishlist:</p>
+					<p class="item-wishlist">{{ userName }}'s wishlist:</p>
 					<div class="wishlist-images">
 						<img
 							v-for="(item, index) in wishlistItems"
@@ -133,24 +207,22 @@ export default {
 					<label>
 						<input
 							type="checkbox"
-							:value="index"
-							:checked="selectedItems.includes(index)"
-							@click="
-								if (selectedItems.includes(index)) {
-									selectedItems.splice(selectedItems.indexOf(index), 1);
-								} else {
-									selectedItems.push(index);
-								}
-								console.log('Selected Items:', selectedItems);
+							:value="item.id"
+							v-model="selectedItems"
+							@change="
+								$event.target.checked
+									? (selectedItems = [$event.target.value])
+									: (selectedItems = null)
 							"
 						/>
+
 						<div class="inventory-item-details">
 							<p class="inventory-character-series">
-								{{ item[1] }} - {{ item[2] }}
+								{{ item.popmart }} - {{ item.collection }}
 							</p>
-							<p class="inventory-figurine">{{ item[3] }}</p>
+							<p class="inventory-figurine">{{ item.name }}</p>
 						</div>
-						<img :src="item[0]" alt="Inventory Item" />
+						<img :src="item.imageURL" alt="Inventory Item" />
 					</label>
 				</li>
 			</ul>
