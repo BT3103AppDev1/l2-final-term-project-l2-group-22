@@ -151,6 +151,12 @@ export default {
   /* Hover effects for both manage and other buttons */
   background-color: #45a049;
 }
+.wishlist {
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping to a new line */
+  overflow-x: auto; /* Allows horizontal scrolling if items overflow */
+  gap: 20px; /* Creates consistent space between the wishlist items */
+}
 
 /* Additional styles can go here */
 </style>
