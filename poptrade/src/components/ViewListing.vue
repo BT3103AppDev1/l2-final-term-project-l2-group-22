@@ -17,7 +17,7 @@
             <div class="seller-details">
               <p class="item-seller">
                 Listed by:
-                <span class="verified-seller">{{ listingId }}</span>
+                <span class="verified-seller">{{ userName }}</span>
                 <br />
                 Location: {{ location }}
                 <br />
@@ -75,6 +75,7 @@ export default {
       location: "Loading...", // Default value indicating data is being fetched
       numberOfReviews: 0, // Default value, assuming it will be updated
       numberOfTrade: 0, // Default value, assuming it will be updated
+      userName: "",
     };
   },
   created() {
@@ -106,6 +107,7 @@ export default {
           this.numberOfReviews = 10;
           this.numberOfTrade = 10;
           await this.fetchWishlistDetails(); // Fetch wishlist details after listing details
+          await this.fetchUserDetails();
         } else {
           console.log("No such document!");
         }
@@ -128,6 +130,27 @@ export default {
         this.wishlistItems = []; // Reset to empty array in case of error
       }
     },
+
+    async fetchUserDetails() {
+      const db = getFirestore();
+      const userDocRef = doc(db, "users", this.userId);
+
+      try {
+        const docSnap = await getDoc(userDocRef);
+        if (docSnap.exists()) {
+          const { firstName, lastName } = docSnap.data();
+          this.userName = `${firstName} ${lastName}`;
+          console.log(this.userName); // Assuming the field for the user's name is 'name'
+        } else {
+          console.log("No such document!");
+          this.userName = "";
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+        this.userName = "";
+      }
+    },
+
     makeOffer() {
       this.$router.push({
         name: "OfferTrade",
