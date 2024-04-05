@@ -1,6 +1,7 @@
 <template>
   <div class="marketplace">
     <h1>Marketplace</h1>
+    <h2>Newest Listings</h2>
     <div class="listings-row">
       <div
         v-for="listing in listings"
@@ -101,8 +102,13 @@ export default {
   text-align: center;
   font-size: 2em;
   margin: 0.5em 0;
+  margin-top: 0; /* Removes top margin */
+  padding-top: 20px;
 }
-
+.marketplace h2 {
+  margin-top: 80px; /* Reduces space above the h2 if necessary */
+  /* Add other styles as needed */
+}
 /* Adjusted button styles to class listings */
 .listing {
   cursor: pointer;
