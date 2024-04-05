@@ -31,9 +31,8 @@ export default {
 			// listerID: this.listerID,
 			// wishlistItems: this.wishlistItems,
 			confirmSelection: false,
-			selectedItems: null,
+			selectedItems: [],
 			confirmSelection: false,
-			selectedItems: null,
 			inventory: [
 				[
 					"https://popmart.sg/cdn/shop/files/DIMOOHolidayRabbitActionFigureDIMOO__Feed1_750x.jpg?v=1711092788",
@@ -79,7 +78,7 @@ export default {
 		handleSubmit() {
 			if (!this.confirmSelection) {
 				alert("Please confirm selection");
-			} else if (this.selectedItems == null) {
+			} else if (this.selectedItems.length == 0) {
 				alert("Please select an item to offer");
 			} else {
 				this.successfulOffer();
@@ -135,11 +134,14 @@ export default {
 						<input
 							type="checkbox"
 							:value="index"
-							v-model="selectedItems"
-							@change="
-								$event.target.checked
-									? (selectedItems = [$event.target.value])
-									: (selectedItems = null)
+							:checked="selectedItems.includes(index)"
+							@click="
+								if (selectedItems.includes(index)) {
+									selectedItems.splice(selectedItems.indexOf(index), 1);
+								} else {
+									selectedItems.push(index);
+								}
+								console.log('Selected Items:', selectedItems);
 							"
 						/>
 						<div class="inventory-item-details">
