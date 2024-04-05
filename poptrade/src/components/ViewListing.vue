@@ -17,7 +17,7 @@
             <div class="seller-details">
               <p class="item-seller">
                 Listed by:
-                <span class="verified-seller">{{ listerID }}</span>
+                <span class="verified-seller">{{ listingId }}</span>
                 <br />
                 Location: {{ location }}
                 <br />
@@ -49,44 +49,84 @@
 </template>
 
 <script>
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+} from "firebase/firestore";
+
 export default {
   name: "ViewListing",
+  props: {
+    userId: String,
+    listingId: String,
+  },
   data() {
     return {
-      imageSrc:
-        "https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755",
-      character: "Dimoo",
-      series: "Letters from Snowman",
-      figurine: "Merry Christmas",
-      condition: "Brand New",
-      listerID: "abcdefg",
-      location: "Singapore, Singapore",
-      numberOfReviews: "22",
-      numberOfTrade: "32",
-      profilePicSrc:
-        "https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=",
-      wishlistItems: [
-        "https://popmart.sg/cdn/shop/files/1_20_45f620a8-a1d5-43df-aeff-84afdecad54b_1800x1800.jpg?v=1703232251",
-        "https://popmart.sg/cdn/shop/files/TheMonsters-NaughtyPlantsVinylFaceBlindBox_1_1800x1800.jpg?v=1685354421",
-        "https://popmart.sg/cdn/shop/files/PuckyForestPartySeries-VinylPlushPendantBlindBox_5_1800x1800.png.jpg?v=1696562315",
-      ],
+      character: "",
+      series: "",
+      imageSrc: "",
+      figurine: "",
+      condition: "",
+      description: "",
+      wishlistItems: [],
+      location: "Loading...", // Default value indicating data is being fetched
+      numberOfReviews: 0, // Default value, assuming it will be updated
+      numberOfTrade: 0, // Default value, assuming it will be updated
     };
   },
+  created() {
+    this.fetchListingDetails();
+  },
   methods: {
-    makeOffer() {
-      this.$router.push({
-        name: "OfferTrade",
+    async fetchListingDetails() {
+      const db = getFirestore();
+      const listingRef = doc(
+        db,
+        "users",
+        this.userId,
+        "listings",
+        this.listingId
+      );
 
-        props: {
-          imageSrc: this.imageSrc,
-          character: this.character,
-          series: this.series,
-          figurine: this.figurine,
-          condition: this.condition,
-          listerID: this.listerID,
-          wishlistItems: this.wishlistItems,
-        },
-      });
+      try {
+        const docSnap = await getDoc(listingRef);
+        if (docSnap.exists()) {
+          const listingData = docSnap.data();
+          this.character = listingData.popmart;
+          this.series = listingData.collection;
+          this.imageSrc = listingData.imageURL;
+          console.log(this.imageSrc);
+          this.figurine = listingData.name;
+          this.condition = listingData.condition;
+          this.description = listingData.description;
+          this.location = "Singapore";
+          this.numberOfReviews = 10;
+          this.numberOfTrade = 10;
+          await this.fetchWishlistDetails(); // Fetch wishlist details after listing details
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching listing details:", error);
+      }
+    },
+
+    async fetchWishlistDetails() {
+      const db = getFirestore();
+      const wishlistRef = collection(db, "users", this.userId, "wishlist");
+
+      try {
+        const querySnapshot = await getDocs(wishlistRef);
+        this.wishlistItems = querySnapshot.docs.map(
+          (doc) => doc.data().imageURL
+        );
+      } catch (error) {
+        console.error("Error fetching wishlist details:", error);
+        this.wishlistItems = []; // Reset to empty array in case of error
+      }
     },
   },
 };
@@ -129,16 +169,31 @@ export default {
   margin: 0; /* Reset margin */
 }
 
-.item-card .item-image {
-  width: 550px;
-  height: 550px;
+.item-card {
+  display: flex;
+  align-items: flex-start; /* Adjusted to align items to the start */
+  justify-content: space-between; /* Adds space between the image and details */
+  background-color: white;
   border-radius: 5px;
-  overflow: hidden;
-  margin-right: 1rem;
+  padding: 20px; /* Add some padding around the content */
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.item-card .item-image {
+  width: auto; /* Adjust width to auto */
+  max-width: 50%; /* Limit the image width to 50% of its container */
+  height: auto; /* Set height to auto to maintain aspect ratio */
+  border-radius: 15px; /* Adjust border-radius for rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
+  margin-right: 20px; /* Add some margin to the right of the image */
 }
 
 .item-card .item-image img {
   width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 15px; /* Ensure the img tag also has rounded corners */
+  object-fit: cover; /* Cover the area, this will clip the image if not square */
 }
 
 .item-card .verified-seller {

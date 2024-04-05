@@ -42,9 +42,10 @@ const routes = [
     meta: { requiresAuth: true }, // Requires authentication to access
   },
   {
-    path: "/viewlisting/:id",
-    name: "ViewListing", // This should match the name used in the $router.push method
+    path: "/listing/:userId/:listingId",
+    name: "ViewListing",
     component: ViewListing,
+    props: true,
   },
   {
     path: "/register",

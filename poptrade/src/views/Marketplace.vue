@@ -6,7 +6,7 @@
         v-for="listing in listings"
         :key="listing.id"
         class="listing"
-        @click="goToViewListing(listing.id)"
+        @click="goToViewListing(listing)"
       >
         <img
           :src="listing.imageURL"
@@ -20,104 +20,72 @@
 </template>
 <script>
 import { ref, onMounted } from "vue";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import { useRouter } from "vue-router"; // Import useRouter from 'vue-router
-import { getAuth, onAuthStateChanged } from "firebase/auth"; // Import onAuthStateChanged
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { useRouter } from "vue-router";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default {
   name: "Marketplace",
   setup() {
     const listings = ref([]);
     const firestore = getFirestore();
-    const router = useRouter(); // Use useRouter to access the router instance
-    const auth = getAuth(); // Use getAuth to access the auth instance
+    const router = useRouter();
+    const auth = getAuth();
 
     const fetchListings = async () => {
-      const allListings = ref([]); // Moved inside function for reactivity on each call
-      let currentUserUid = auth.currentUser ? auth.currentUser.uid : null;
-      console.log("Current user UID:", currentUserUid); // Log current user UID
+      const fetchedListings = ref([]);
+      let currentUserUid = auth.currentUser?.uid;
 
-      // If the currentUserUid is not available yet, wait for onAuthStateChanged
       if (!currentUserUid) {
         console.log("Waiting for auth state change...");
-        await new Promise((resolve) => {
+        currentUserUid = await new Promise((resolve) => {
           onAuthStateChanged(auth, (user) => {
-            if (user) {
-              currentUserUid = user.uid;
-              console.log("User signed in:", currentUserUid); // Log the signed in user UID
-              resolve();
-            } else {
-              console.log("No user signed in.");
-              resolve();
-            }
+            resolve(user?.uid);
           });
         });
+        console.log("Auth state changed:", currentUserUid);
       }
 
-      try {
-        const usersRef = collection(firestore, "users");
-        console.log("Fetching users...");
-        const usersSnapshot = await getDocs(usersRef);
-        console.log(`Found ${usersSnapshot.docs.length} users`);
-
-        for (const userDoc of usersSnapshot.docs) {
-          console.log("Checking user:", userDoc.id);
-          if (allListings.value.length >= 5) {
-            console.log("Collected 5 listings, breaking...");
-            break;
-          }
-
-          if (userDoc.id === currentUserUid) {
-            console.log("Skipping current user listings");
-            continue;
-          }
-
-          const listingsRef = collection(
-            firestore,
-            "users",
-            userDoc.id,
-            "listings"
-          );
-          console.log(`Fetching listings for user ${userDoc.id}`);
-          const listingsSnapshot = await getDocs(listingsRef);
-
-          for (const listingDoc of listingsSnapshot.docs) {
-            if (allListings.value.length < 5) {
-              console.log("Adding listing:", listingDoc.id);
-              allListings.value.push({
-                id: listingDoc.id,
-                ...listingDoc.data(),
-              });
-            } else {
-              console.log("Reached 5 listings, breaking...");
-              break;
-            }
-          }
-        }
-
-        console.log("Final listings:", allListings.value);
-      } catch (error) {
-        console.error("Failed to fetch listings:", error);
+      if (!currentUserUid) {
+        console.log("No user signed in.");
+        return fetchedListings;
       }
 
-      return allListings; // Return the reactive listings reference
+      const usersSnapshot = await getDocs(collection(firestore, "users"));
+      console.log(`Found ${usersSnapshot.docs.length} users`);
+
+      for (const userDoc of usersSnapshot.docs) {
+        if (fetchedListings.value.length >= 5) break;
+        if (userDoc.id === currentUserUid) continue;
+
+        const listingsSnapshot = await getDocs(
+          collection(firestore, "users", userDoc.id, "listings")
+        );
+        listingsSnapshot.docs
+          .slice(0, 5 - fetchedListings.value.length)
+          .forEach((doc) => {
+            fetchedListings.value.push({
+              id: doc.id,
+              userId: userDoc.id,
+              ...doc.data(),
+            });
+          });
+      }
+
+      console.log("Final listings:", fetchedListings.value);
+      return fetchedListings;
     };
 
     onMounted(async () => {
-      const fetchedListings = await fetchListings(); // Use the returned reactive listings reference
-      listings.value = fetchedListings.value.slice(0, 5); // Set the main reactive listings reference
+      listings.value = (await fetchListings()).value;
     });
 
-    const goToViewListing = (listingId) => {
-      router.push({ name: "ViewListing", params: { id: listingId } });
+    const goToViewListing = (listing) => {
+      router.push({
+        name: "ViewListing",
+        params: { userId: listing.userId, listingId: listing.id },
+      });
     };
-
     return {
       listings,
       goToViewListing,
