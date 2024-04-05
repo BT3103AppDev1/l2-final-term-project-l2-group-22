@@ -151,7 +151,8 @@ export default {
 			const user = getAuth().currentUser;
 			await addDoc(collection(firestore, "users", user.uid, "offerRequest"), {
 				offering: this.selectedItems[0],
-				trade: (this.userId, this.listingId),
+				offeredBy: this.userId,
+				listingOfOfferer: this.listingId,
 			});
 			await addDoc(
 				collection(firestore, "users", this.userId, "offersReceived"),
