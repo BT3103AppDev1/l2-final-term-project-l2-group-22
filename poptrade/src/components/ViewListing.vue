@@ -128,6 +128,20 @@ export default {
         this.wishlistItems = []; // Reset to empty array in case of error
       }
     },
+    makeOffer() {
+      this.$router.push({
+        name: "OfferTrade",
+
+        props: {
+          imageSrc: this.imageSrc,
+          character: this.character,
+          series: this.series,
+          figurine: this.figurine,
+          condition: this.condition,
+          wishlistItems: this.wishlistItems,
+        },
+      });
+    },
   },
 };
 </script>
