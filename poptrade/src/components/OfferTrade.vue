@@ -149,19 +149,20 @@ export default {
 			console.log(this.selectedItems);
 			const firestore = getFirestore();
 			const user = getAuth().currentUser;
-			await addDoc(collection(firestore, "users", user.uid, "offerRequest"), {
-				offering: this.selectedItems[0],
+			// add to user making offer - offer collection
+			await addDoc(collection(firestore, "users", user.uid, "offer"), {
+				type: "Make",
+				yourListing: this.selectedItems[0],
 				offeredBy: this.userId,
-				listingOfOfferer: this.listingId,
+				offererListing: this.listingId,
 			});
-			await addDoc(
-				collection(firestore, "users", this.userId, "offersReceived"),
-				{
-					offerer: user.uid,
-					theirOffer: this.selectedItems[0],
-					yourListing: this.listingId,
-				}
-			);
+			// add to user with listing - offersReceived collection
+			await addDoc(collection(firestore, "users", this.userId, "offers"), {
+				type: "Receive",
+				offeredBy: user.uid,
+				offererListing: this.selectedItems[0],
+				yourListing: this.listingId,
+			});
 			alert("Offer successfully made! You will be redirected to the Dashboard"); // User feedback
 			this.$router.push({ name: "Dashboard" });
 		},
