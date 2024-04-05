@@ -155,6 +155,7 @@ export default {
 				yourListing: this.selectedItems[0],
 				offeredBy: this.userId,
 				offererListing: this.listingId,
+				tradeStatus: "Pending",
 			});
 			// add to user with listing - offersReceived collection
 			await addDoc(collection(firestore, "users", this.userId, "offers"), {
@@ -162,6 +163,7 @@ export default {
 				offeredBy: user.uid,
 				offererListing: this.selectedItems[0],
 				yourListing: this.listingId,
+				tradeStatus: "Pending",
 			});
 			alert("Offer successfully made! You will be redirected to the Dashboard"); // User feedback
 			this.$router.push({ name: "Dashboard" });
