@@ -35,6 +35,42 @@
         </tr>
       </tbody>
     </table>
+
+	<!-- New table for offers you have sent -->
+    <h2>Offers you have sent:</h2>
+    <table class="offers-table">
+      <thead>
+        <tr>
+          <th>Your Offer</th>
+          <th>Their Offer</th>
+          <th>Time of Offer</th>
+          <th>Contact Information</th>
+          <th>Status</th>
+		  <th>Retract Offer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="offer in sentOffers" :key="offer.time">
+          <td class="offer-image-cell">
+            <img :src="offer.yourImageURL" alt="Your Offer" @click="goToListing(offer.yourId, offer.yourListing)"/>
+          </td>
+          <td class="offer-image-cell">
+            <img :src="offer.theirImageURL" alt="Their Offer" @click="goToListing(offer.offeredBy, offer.offererListing)"/>
+          </td>
+          <td>{{ offer.time }}</td>
+          <td> {{ offer.telegramHandle }}
+            <br>
+            {{ offer.contactInfo }}
+          </td>
+          <td>{{ offer.tradeStatus }}</td>
+		  <td class="offer-actions-cell">
+            <button class="reject-button" @click="rejectOffer(offer)">
+              Retract Offer
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -58,12 +94,14 @@ export default {
   },
   data() {
     return {
-      receivedOffers: []
+      receivedOffers: [],
+	  sentOffers : []
     };
   },
   
   setup() {
     const receivedOffers = ref([]); // Create a reactive variable to store received offers
+	const sentOffers = ref([]); // Create a reactive variable to store sent offers
 	const router = useRouter();
 	const goToListing = (uid,listingId) => {
       router.push({
@@ -163,10 +201,49 @@ export default {
       }
     };
 
+	const fetchSentOffers = async () => {
+      const firestore = getFirestore();
+      const auth = getAuth();
+      const currentUserUid = auth.currentUser?.uid;
+      const offersRef = collection(firestore, "users", currentUserUid, "offers");
+
+      try {
+        const querySnapshot = await getDocs(offersRef);
+        let offers = querySnapshot.docs
+          .filter(doc => doc.data().offerType === "Offer Sent")
+          .map(doc => {
+            let offer = doc.data();
+            offer.id = doc.id;
+            offer.yourImageURL = null;
+            offer.yourId = currentUserUid;
+            offer.telegramHandle = null;
+            offer.contactInfo = null;
+			return offer;
+		  });
+		
+		  for (let offer of offers) {
+			const yourListing = await getListing(offer.yourListing)
+			const theirListing = await getListing(offer.offererListing)
+			const theirProfile = await getUser(offer.offeredBy)
+			offer.yourImageURL = yourListing.imageURL
+			offer.theirImageURL = theirListing.imageURL
+			offer.telegramHandle = theirProfile.telegramHandle
+			offer.contactInfo = theirProfile.phoneNumber
+        }
+
+			sentOffers.value = offers;
+			console.log("sent",sentOffers);
+      } catch (error) {
+        console.error("Error fetching sent offers:", error);
+        sentOffers.value = [];
+      }
+    };
+
     // Call fetchReceivedOffers function when component is mounted
     fetchReceivedOffers();
+	fetchSentOffers();
 
-    return { receivedOffers, goToListing }; // Expose receivedOffers reactive variable to template
+    return { receivedOffers, goToListing, sentOffers }; // Expose receivedOffers reactive variable to template
   },
 
   methods: {
