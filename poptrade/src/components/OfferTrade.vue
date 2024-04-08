@@ -36,6 +36,7 @@ export default {
       inventory: [],
       confirmSelection: false,
       selectedItems: [],
+      receivedOffers: []
     };
   },
   created() {
