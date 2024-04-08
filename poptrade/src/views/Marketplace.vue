@@ -1,6 +1,14 @@
 <template>
   <div class="marketplace">
     <h1>Marketplace</h1>
+    <button @click="showModal = true" class="search-button">
+      Search Listings
+    </button>
+    <Modal
+      :show="showModal"
+      @close="showModal = false"
+      @searchSubmitted="handleSearchSubmitted"
+    />
     <h2>Newest Listings</h2>
     <div class="listings-row">
       <div
@@ -24,10 +32,15 @@ import { ref, onMounted } from "vue";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { useRouter } from "vue-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Modal from "../components/Modal.vue";
 
 export default {
   name: "Marketplace",
+  components: {
+    Modal,
+  },
   setup() {
+    const showModal = ref(false);
     const listings = ref([]);
     const firestore = getFirestore();
     const router = useRouter();
@@ -87,9 +100,15 @@ export default {
         params: { userId: listing.userId, listingId: listing.id },
       });
     };
+
+    function handleSearchSubmitted(searchParams) {
+      router.push({ name: "SearchResults", query: searchParams });
+    }
     return {
       listings,
+      showModal,
       goToViewListing,
+      handleSearchSubmitted,
     };
   },
 };
@@ -151,5 +170,22 @@ export default {
   padding: 20px;
 }
 
-/* Remove button styles as they are not being used for listings */
+.search-button {
+  padding: 10px 20px; /* Adjust padding to suit your design */
+  background-color: #ff4d4d; /* A vibrant red; change as needed */
+  color: white; /* Text color */
+  border: none; /* Remove default border */
+  border-radius: 15px; /* More pronounced rounded corners for a pill shape */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Change mouse cursor on hover */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.search-button:hover {
+  background-color: #e60000; /* A slightly darker shade of red for hover effect */
+}
+
+.search-button:focus {
+  outline: none; /* Remove outline on focus for a clean look */
+}
 </style>

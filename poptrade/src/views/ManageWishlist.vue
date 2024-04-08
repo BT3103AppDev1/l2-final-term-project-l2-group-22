@@ -75,8 +75,6 @@ export default {
     const selectedPopmart = ref("");
     const selectedCollection = ref("");
     const itemName = ref("");
-    const itemCondition = ref("");
-    const itemDescription = ref("");
 
     const popmarts = ref([]);
     const collections = ref([]);
