@@ -62,7 +62,7 @@
             <br>
             {{ offer.contactInfo }}
           </td>
-          <td>{{ offer.tradeStatus }}</td>
+          <td>{{ offer.status }}</td>
 		  <td class="offer-actions-cell">
             <button class="reject-button" @click="rejectOffer(offer)">
               Retract Offer
@@ -71,12 +71,41 @@
         </tr>
       </tbody>
     </table>
+	<h2>Offers Completed:</h2>
+<table class="offers-table">
+  <thead>
+    <tr>
+      <th>Your Offer</th>
+      <th>Their Offer</th>
+      <th>Time of Offer</th>
+      <th>Contact Information</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="offer in completedOffers" :key="offer.id">
+      <td class="offer-image-cell">
+        <img :src="offer.yourImageURL" alt="Your Offer" @click="goToListing(offer.yourId, offer.yourListing)"/>
+      </td>
+      <td class="offer-image-cell">
+        <img :src="offer.theirImageURL" alt="Their Offer" @click="goToListing(offer.offeredBy, offer.offererListing)"/>
+      </td>
+      <td>{{ offer.time }}</td>
+      <td>
+        {{ offer.telegramHandle }}
+        <br>
+        {{ offer.contactInfo }}
+      </td>
+      <td>{{ offer.status }}</td>
+    </tr>
+  </tbody>
+</table>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue';
-import { getFirestore, collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth"
 import { useRouter } from "vue-router";
 
@@ -95,13 +124,16 @@ export default {
   data() {
     return {
       receivedOffers: [],
-	  sentOffers : []
+	  sentOffers : [],
+	  completedOffers : []
     };
   },
   
   setup() {
     const receivedOffers = ref([]); // Create a reactive variable to store received offers
 	const sentOffers = ref([]); // Create a reactive variable to store sent offers
+	const completedOffers = ref([]);
+
 	const router = useRouter();
 	const goToListing = (uid,listingId) => {
       router.push({
@@ -171,7 +203,8 @@ export default {
       try {
         const querySnapshot = await getDocs(offersRef);
         let offers = querySnapshot.docs
-			.filter(doc => doc.data().offerType === "Offer Received") // Filter out offers of type "Offer Received"
+			.filter(doc => doc.data().offerType === "Offer Received")
+			.filter(doc => doc.data().status === "Pending") // Filter out offers of type "Offer Received"
 			.map(doc => {
 				let offer = doc.data();
 				offer.id = doc.id;
@@ -211,6 +244,7 @@ export default {
         const querySnapshot = await getDocs(offersRef);
         let offers = querySnapshot.docs
           .filter(doc => doc.data().offerType === "Offer Sent")
+		  .filter(doc => doc.data().status === "Pending")
           .map(doc => {
             let offer = doc.data();
             offer.id = doc.id;
@@ -239,23 +273,105 @@ export default {
       }
     };
 
+	const fetchCompletedOffers = async () => {
+      const firestore = getFirestore();
+	  const auth = getAuth();
+      const currentUserUid = auth.currentUser?.uid;
+      const offersRef = collection(firestore, "users", currentUserUid, "offers");
+
+      try {
+        const querySnapshot = await getDocs(offersRef);
+        let offers = querySnapshot.docs
+			.filter(doc => doc.data().status !== "Pending") // Filter out offers of type "Offer Received"
+			.map(doc => {
+				let offer = doc.data();
+				offer.id = doc.id;
+				// Initialize image URLs as null
+				offer.yourImageURL = null;
+				offer.yourId = currentUserUid;
+				offer.tele = null;
+				offer.theirImageURL = null;
+				offer.contactInfo = null;
+				return offer;
+			});
+        // Simultaneously fetch all listings for the 'yourImageUrl' field
+        for (let offer of offers) {
+			const yourListing = await getListing(offer.yourListing)
+			const theirListing = await getListing(offer.offererListing)
+			const theirProfile = await getUser(offer.offeredBy)
+			offer.yourImageURL = yourListing.imageURL
+			offer.theirImageURL = theirListing.imageURL
+			offer.telegramHandle = theirProfile.telegramHandle
+			offer.contactInfo = theirProfile.phoneNumber
+        }
+		
+        receivedOffers.value = offers;
+		console.log("completed",completedOffers);
+      } catch (error) {
+        console.error("Error fetching completed offers:", error);
+        receivedOffers.value = []; // Reset to empty array in case of error
+      }
+    };
+
     // Call fetchReceivedOffers function when component is mounted
     fetchReceivedOffers();
 	fetchSentOffers();
+	fetchCompletedOffers();
 
-    return { receivedOffers, goToListing, sentOffers }; // Expose receivedOffers reactive variable to template
+    return { receivedOffers, goToListing, sentOffers, completedOffers }; // Expose receivedOffers reactive variable to template
   },
 
   methods: {
-	
-    acceptOffer(offer) {
-      // Implement accept offer logic here
-      console.log("Accept offer:", offer);
-    },
-    rejectOffer(offer) {
-      // Implement reject offer logic here
-      console.log("Reject offer:", offer);
-    },
+    async acceptOffer(offer) {
+		const firestore = getFirestore();
+		const auth = getAuth()
+		// Assume offer includes IDs of both listings and a unique ID for the offer itself
+		try {
+		// Remove the listing offered by the accepting user
+		await deleteDoc(doc(firestore, "users", auth.currentUser.uid, "listings", offer.yourListing));
+		
+		// Remove the listing offered by the user who made the offer
+		await deleteDoc(doc(firestore, "users", offer.offeredBy, "listings", offer.offererListing));
+		
+		// Update the offer's status to 'Completed'
+		await updateDoc(doc(firestore, "users", auth.currentUser.uid, "offers", offer.id), {
+			status: "Completed"
+		});
+		
+		// Optionally, if you also track offers in the offerer's document,
+		// update the offer there as well
+		await updateDoc(doc(firestore, "users", offer.offeredBy, "offers", offer.id), {
+			status: "Completed"
+		});
+
+		console.log("Trade accepted and listings removed. Offer marked as completed.");
+		window.location.reload();
+		} catch (error) {
+		console.error("Error accepting trade:", error);
+		}
+  },
+
+  async rejectOffer(offer) {
+    const firestore = getFirestore();
+	const auth = getAuth();
+    // Assuming offer includes a unique ID for the offer itself and the ID of the user who made the offer (offer.offeredBy)
+    try {
+      // Update the offer's status to 'Rejected' in the current user's collection
+      await updateDoc(doc(firestore, "users", auth.currentUser.uid, "offers", offer.id), {
+        status: "Rejected"
+      });
+      
+      // Update the offer's status to 'Rejected' in the offerer's collection
+      await updateDoc(doc(firestore, "users", offer.offeredBy, "offers", offer.id), {
+        status: "Rejected"
+      });
+
+      console.log("Offer rejected. Status updated to 'Rejected' for both users.");
+	  window.location.reload();
+    } catch (error) {
+      console.error("Error rejecting offer:", error);
+    }
+  }
   },
 };
 </script>

@@ -7,6 +7,7 @@ import {
   collection,
   getDocs,
   addDoc,
+  setDoc
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -142,30 +143,38 @@ export default {
         alert("Please select an item to offer");
       } else {
         // this.successfulOffer();
-        this.submitListing();
+        this.submitOffer();
       }
     },
 
-    async submitListing() {
+    async submitOffer() {
       console.log(this.selectedItems);
       const firestore = getFirestore();
       const user = getAuth().currentUser;
-      // add to user making offer - offer collection
-      await addDoc(collection(firestore, "users", user.uid, "offers"), {
+
+      // Generate a new document ID
+      const newOfferId = doc(collection(firestore, "placeholder")).id;
+
+      // Add to user making offer - offer collection
+      const senderOffersRef = collection(firestore, "users", user.uid, "offers");
+      await setDoc(doc(senderOffersRef, newOfferId), {
         offerType: "Offer Sent",
         yourListing: this.selectedItems[0],
         offeredBy: this.userId,
         offererListing: this.listingId,
         tradeStatus: "Pending",
       });
-      // add to user with listing - offersReceived collection
-      await addDoc(collection(firestore, "users", this.userId, "offers"), {
+
+      // Add to user with listing - offersReceived collection
+      const receiverOffersRef = collection(firestore, "users", this.userId, "offers");
+      await setDoc(doc(receiverOffersRef, newOfferId), {
         offerType: "Offer Received",
         offeredBy: user.uid,
         offererListing: this.selectedItems[0],
         yourListing: this.listingId,
         tradeStatus: "Pending",
       });
+
       alert("Offer successfully made! You will be redirected to the Dashboard"); // User feedback
       this.$router.push({ name: "Dashboard" });
     },
