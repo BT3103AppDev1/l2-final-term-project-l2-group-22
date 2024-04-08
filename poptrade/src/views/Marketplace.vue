@@ -56,14 +56,14 @@ export default {
       console.log(`Found ${usersSnapshot.docs.length} users`);
 
       for (const userDoc of usersSnapshot.docs) {
-        if (fetchedListings.value.length >= 5) break;
+        if (fetchedListings.value.length >= 10) break;
         if (userDoc.id === currentUserUid) continue;
 
         const listingsSnapshot = await getDocs(
           collection(firestore, "users", userDoc.id, "listings")
         );
         listingsSnapshot.docs
-          .slice(0, 5 - fetchedListings.value.length)
+          .slice(0, 10 - fetchedListings.value.length)
           .forEach((doc) => {
             fetchedListings.value.push({
               id: doc.id,
