@@ -379,33 +379,37 @@ export default {
 			const auth = getAuth();
 			// Assume offer includes IDs of both listings and a unique ID for the offer itself
 			try {
-				// Remove the listing offered by the accepting user
-				await deleteDoc(
+				// Update the listing status to unavailable
+				await updateDoc(
 					doc(
 						firestore,
 						"users",
 						auth.currentUser.uid,
 						"listings",
 						offer.yourListing
-					)
+					),
+					{
+						status: "Unavailable",
+					}
 				);
-
-				// Remove the listing offered by the user who made the offer
-				await deleteDoc(
+				await updateDoc(
 					doc(
 						firestore,
 						"users",
 						offer.offeredBy,
 						"listings",
 						offer.offererListing
-					)
+					),
+					{
+						status: "Unavailable",
+					}
 				);
 
 				// Update the offer's status to 'Completed'
 				await updateDoc(
 					doc(firestore, "users", auth.currentUser.uid, "offers", offer.id),
 					{
-						status: "Completed",
+						tradeStatus: "Completed",
 					}
 				);
 
@@ -414,7 +418,7 @@ export default {
 				await updateDoc(
 					doc(firestore, "users", offer.offeredBy, "offers", offer.id),
 					{
-						status: "Completed",
+						tradeStatus: "Completed",
 					}
 				);
 
@@ -436,7 +440,7 @@ export default {
 				await updateDoc(
 					doc(firestore, "users", auth.currentUser.uid, "offers", offer.id),
 					{
-						status: "Rejected",
+						tradeStatus: "Rejected",
 					}
 				);
 
@@ -444,7 +448,7 @@ export default {
 				await updateDoc(
 					doc(firestore, "users", offer.offeredBy, "offers", offer.id),
 					{
-						status: "Rejected",
+						tradeStatus: "Rejected",
 					}
 				);
 
