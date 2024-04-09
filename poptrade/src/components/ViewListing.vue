@@ -11,19 +11,13 @@
 				<div class="item-details">
 					<h1 class="item-title">{{ character }}</h1>
 					<h1 class="item-brand">{{ series }}</h1>
+					<p class="item-figurine">Figurine: {{ figurine }}</p>
 					<p class="item-condition">Condition: {{ condition }}</p>
 					<div class="item-seller-box">
-						<!-- <div class="seller-profile-pic">
-							<img
-								:src="profilePicSrc"
-								alt="Profile Picture"
-								class="profile-pic-inner"
-							/>
-						</div> -->
 						<div class="seller-details">
 							<p class="item-seller">
 								Listed by:
-								<span class="verified-seller">{{ listerID }}</span>
+								<span class="verified-seller">{{ userName }}</span>
 								<br />
 								Location: {{ location }}
 								<br />
@@ -44,9 +38,16 @@
 					</div>
 
 					<br />
-
-					<button id="make-offer-button" v-on:click="makeOffer">
-						Make Offer
+					<button
+						id="make-offer-button"
+						v-on:click="makeOffer"
+						:disabled="disabled"
+						:class="{
+							'disabled-button': disabled,
+							'enabled-button': !disabled,
+						}"
+					>
+						{{ disabled ? "Unavailable" : "Make Offer" }}
 					</button>
 				</div>
 			</div>
@@ -55,46 +56,135 @@
 </template>
 
 <script>
-import OfferTrade from "../components/OfferTrade.vue";
+import {
+	getFirestore,
+	doc,
+	getDoc,
+	collection,
+	getDocs,
+} from "firebase/firestore";
+
 export default {
 	name: "ViewListing",
-	components: {
-		OfferTrade,
+	props: {
+		userId: String,
+		listingId: String,
 	},
 	data() {
 		return {
-			imageSrc:
-				"https://popmart.sg/cdn/shop/files/DIMOOLettersfromSnowmanSeries-40cmCottonDoll_2_1800x1800.jpg?v=1701427755",
-			character: "Dimoo",
-			series: "Dimoo Letters from Snowman Series",
-			condition: "Brand New",
-			listerID: "abcdefg",
-			location: "Singapore, Singapore",
-			numberOfReviews: "22",
-			numberOfTrade: "32",
-			profilePicSrc:
-				"https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=",
-			wishlistItems: [
-				"https://popmart.sg/cdn/shop/files/1_20_45f620a8-a1d5-43df-aeff-84afdecad54b_1800x1800.jpg?v=1703232251",
-				"https://popmart.sg/cdn/shop/files/TheMonsters-NaughtyPlantsVinylFaceBlindBox_1_1800x1800.jpg?v=1685354421",
-				"https://popmart.sg/cdn/shop/files/PuckyForestPartySeries-VinylPlushPendantBlindBox_5_1800x1800.png.jpg?v=1696562315",
-			],
+			character: "",
+			series: "",
+			imageSrc: "",
+			figurine: "",
+			condition: "",
+			description: "",
+			wishlistItems: [],
+			disabled: false,
+			location: "Loading...", // Default value indicating data is being fetched
+			numberOfReviews: 0, // Default value, assuming it will be updated
+			numberOfTrade: 0, // Default value, assuming it will be updated
+			userName: "",
 		};
 	},
+	created() {
+		this.fetchListingDetails();
+	},
+	computed: {},
+
 	methods: {
+		async fetchListingDetails() {
+			const db = getFirestore();
+			const listingRef = doc(
+				db,
+				"users",
+				this.userId,
+				"listings",
+				this.listingId
+			);
+
+			try {
+				const docSnap = await getDoc(listingRef);
+				if (docSnap.exists()) {
+					const listingData = docSnap.data();
+					this.character = listingData.popmart;
+					this.series = listingData.collection;
+					this.imageSrc = listingData.imageURL;
+					this.figurine = listingData.name;
+					this.condition = listingData.condition;
+					this.description = listingData.description;
+					this.location = "Singapore";
+					this.numberOfReviews = 10;
+					this.numberOfTrade = 10;
+					await this.fetchWishlistDetails(); // Fetch wishlist details after listing details
+					await this.fetchUserDetails();
+					await this.disableMakeOfferButton();
+				} else {
+					console.log("No such document!");
+				}
+			} catch (error) {
+				console.error("Error fetching listing details:", error);
+			}
+		},
+		async disableMakeOfferButton() {
+			const db = getFirestore();
+			const listingRef = doc(
+				db,
+				"users",
+				this.userId,
+				"listings",
+				this.listingId
+			);
+			try {
+				const docSnap = await getDoc(listingRef);
+				const listingData = docSnap.data();
+				if (listingData.status === "Unavailable") {
+					this.disabled = true;
+				} else {
+					this.disabled = false;
+				}
+			} catch (error) {
+				console.error("Error fetching listing details:", error);
+				this.disabled = false; // Default to disabled in case of error
+			}
+		},
+		async fetchWishlistDetails() {
+			const db = getFirestore();
+			const wishlistRef = collection(db, "users", this.userId, "wishlist");
+
+			try {
+				const querySnapshot = await getDocs(wishlistRef);
+				this.wishlistItems = querySnapshot.docs.map(
+					(doc) => doc.data().imageURL
+				);
+			} catch (error) {
+				console.error("Error fetching wishlist details:", error);
+				this.wishlistItems = []; // Reset to empty array in case of error
+			}
+		},
+
+		async fetchUserDetails() {
+			const db = getFirestore();
+			const userDocRef = doc(db, "users", this.userId);
+
+			try {
+				const docSnap = await getDoc(userDocRef);
+				if (docSnap.exists()) {
+					const { firstName, lastName } = docSnap.data();
+					this.userName = `${firstName} ${lastName}`;
+				} else {
+					console.log("No such document!");
+					this.userName = "";
+				}
+			} catch (error) {
+				console.error("Error fetching user details:", error);
+				this.userName = "";
+			}
+		},
+
 		makeOffer() {
 			this.$router.push({
 				name: "OfferTrade",
-				params: {
-					character: this.character,
-					series: this.series,
-					condition: this.condition,
-					listerID: this.listerID,
-					location: this.location,
-					numberOfReviews: this.numberOfReviews,
-					numberOfTrade: this.numberOfTrade,
-					wishlistItems: this.wishlistItems,
-				},
+				params: { userId: this.userId, listingId: this.listingId },
 			});
 		},
 	},
@@ -138,16 +228,31 @@ export default {
 	margin: 0; /* Reset margin */
 }
 
-.item-card .item-image {
-	width: 550px;
-	height: 550px;
+.item-card {
+	display: flex;
+	align-items: flex-start; /* Adjusted to align items to the start */
+	justify-content: space-between; /* Adds space between the image and details */
+	background-color: white;
 	border-radius: 5px;
-	overflow: hidden;
-	margin-right: 1rem;
+	padding: 20px; /* Add some padding around the content */
+	margin-bottom: 1rem;
+	text-align: left;
+}
+
+.item-card .item-image {
+	width: auto; /* Adjust width to auto */
+	max-width: 50%; /* Limit the image width to 50% of its container */
+	height: auto; /* Set height to auto to maintain aspect ratio */
+	border-radius: 15px; /* Adjust border-radius for rounded corners */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
+	margin-right: 20px; /* Add some margin to the right of the image */
 }
 
 .item-card .item-image img {
 	width: 100%;
+	height: auto; /* Maintain aspect ratio */
+	border-radius: 15px; /* Ensure the img tag also has rounded corners */
+	object-fit: cover; /* Cover the area, this will clip the image if not square */
 }
 
 .item-card .verified-seller {
@@ -156,13 +261,23 @@ export default {
 }
 
 #make-offer-button {
+	width: 50%;
+	height: 35px;
+	font-size: medium;
+}
+
+.disabled-button {
+	color: grey;
+	background-color: lightgrey;
+	border-radius: 10px;
+	cursor: not-allowed;
+}
+
+.enabled-button {
 	color: white;
 	background-color: red;
 	border-radius: 10px;
-	width: 50%;
 	border-color: red;
-	height: 35px;
-	font-size: medium;
 }
 
 .item-seller-box {
@@ -175,26 +290,26 @@ export default {
 	flex: 6;
 }
 
-/* .seller-profile-pic img {
-	width: 80%;
-	height: 80%;
-	object-fit: cover;
-} */
-
-/* .seller-profile-pic {
-	flex: 1;
-	margin-top: 0.3rem;
-} */
-
 .wishlist-images {
 	display: flex;
 	justify-content: flex-start;
 }
 
 .wishlist-images img {
-	width: 100px; /* Adjust width of each wishlist image */
-	height: 120px; /* Adjust height of each wishlist image */
-	margin-right: 10px; /* Add some margin between wishlist images */
-	border-radius: 5px; /* Add border radius to wishlist images */
+	width: 100px;
+	height: 120px;
+	margin-right: 10px;
+	border-radius: 5px;
 }
+
+.item-figurine {
+	margin-top: 2px;
+	font-weight: bold;
+}
+
+/* .disabled-button {
+	color: grey;
+	background-color: lightgrey;
+	cursor: not-allowed;
+} */
 </style>

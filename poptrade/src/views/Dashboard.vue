@@ -1,7 +1,6 @@
 <template>
   <div class="dashboard" v-if="user">
     <user-profile :user="user"></user-profile>
-    <button @click="emitSignOut">Sign Out</button>
     <div class="header-container">
       <h2 class="header-title">My Listings</h2>
       <button @click="goToManageInventory" class="manage-button">
@@ -19,20 +18,27 @@
         <!-- Add more listing details as needed -->
       </div>
     </div>
+    <div class="header-container">
+      <h2 class="header-title">My Wishlist</h2>
+      <button @click="goToManageWishlist" class="manage-button">
+        Manage Wishlist
+      </button>
+    </div>
+    <div class="wishlist">
+      <div v-for="item in wishlist" :key="item.id" class="listing-card">
+        <img :src="item.imageURL" alt="Item Image" class="listing-image" />
+        <h3>{{ item.name }}</h3>
+        <!-- Add more wishlist details as needed -->
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, onMounted } from "vue";
-<<<<<<< Updated upstream
-import { firebase, auth } from '@/firebase.js';
-
-=======
-import { firebase, auth } from "@/firebase.js";
+import { auth } from "@/firebase.js";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
->>>>>>> Stashed changes
 import UserProfile from "../components/UserProfile.vue";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 export default {
   name: "Dashboard",
@@ -40,26 +46,14 @@ export default {
     UserProfile,
   },
 
-  data() {
-      return {
-        user: {},
-      };
-    },
-    created() {
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          this.user = user;
-        }
-      });
-    },
-
   setup() {
     const user = ref(null);
     const listings = ref([]);
-
+    const wishlist = ref([]);
     const firestore = getFirestore();
 
-    const fetchListings = async () => {
+    // Unified fetchData function for fetching either listings or wishlist
+    const fetchData = async (dataType, setData) => {
       const firebaseUser = auth.currentUser;
       if (firebaseUser) {
         user.value = {
@@ -67,40 +61,32 @@ export default {
           photoURL: firebaseUser.photoURL,
           email: firebaseUser.email,
         };
-        const listingsRef = collection(
+
+        const dataRef = collection(
           firestore,
           "users",
           firebaseUser.uid,
-          "listings"
+          dataType
         );
-        const snapshot = await getDocs(listingsRef);
-        listings.value = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      } else {
-        user.value = null;
+        const snapshot = await getDocs(dataRef);
+        setData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       }
     };
 
-    onMounted(fetchListings);
+    onMounted(() => {
+      fetchData("listings", (data) => (listings.value = data));
+      fetchData("wishlist", (data) => (wishlist.value = data));
+    });
 
-    return { user, listings };
+    return { user, listings, wishlist };
   },
-  
   methods: {
     goToManageInventory() {
       this.$router.push({ name: "ManageInventory" });
     },
-<<<<<<< Updated upstream
-=======
     goToManageWishlist() {
       this.$router.push({ name: "ManageWishlist" });
     },
-    emitSignOut() {
-        this.$emit('sign-out');
-    },
->>>>>>> Stashed changes
   },
 };
 </script>
@@ -164,6 +150,12 @@ export default {
 .button:hover {
   /* Hover effects for both manage and other buttons */
   background-color: #45a049;
+}
+.wishlist {
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping to a new line */
+  overflow-x: auto; /* Allows horizontal scrolling if items overflow */
+  gap: 20px; /* Creates consistent space between the wishlist items */
 }
 
 /* Additional styles can go here */
