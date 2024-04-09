@@ -47,11 +47,52 @@ const routes = [
 		component: ViewListing,
 	},
   {
+<<<<<<< Updated upstream
 		path: "/register",
 		name: "Register", 
 		component: Register,
 	},
 	// ...other routes as needed
+=======
+    path: "/",
+    name: "Home",
+    component: HomeView,
+  },
+  {
+    path: "/marketplace",
+    name: "Marketplace",
+    component: Marketplace,
+  },
+  {
+    path: "/offers",
+    name: "Offers",
+    component: Offers,
+    meta: { requiresAuth: true }, // Requires authentication to access
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Dashboard,
+    meta: { requiresAuth: true }, // Requires authentication to access
+  },
+  {
+    path: "/listing/:userId/:listingId",
+    name: "ViewListing",
+    component: ViewListing,
+    props: true,
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: Register,
+  },
+  // ...other routes as needed
+>>>>>>> Stashed changes
 
 	{
 		path: "/offertrade",
@@ -59,12 +100,21 @@ const routes = [
 		component: OfferTrade,
 	},
 
+<<<<<<< Updated upstream
 	{
 		path: "/dashboard",
 		name: "Dashboard", // This should match the name used in the $router.push method
 		component: Dashboard,
 		meta: { requiresAuth: true }, // Requires authentication to access
 	},
+=======
+  {
+    path: "/dashboard",
+    name: "Dashboard", // This should match the name used in the $router.push method
+    component: HomeView,
+    meta: { requiresAuth: true }, // Requires authentication to access
+  },
+>>>>>>> Stashed changes
 
 	{
 		path: "/manage-inventory",

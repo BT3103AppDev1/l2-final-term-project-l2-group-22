@@ -1,6 +1,7 @@
 <template>
   <div class="dashboard" v-if="user">
     <user-profile :user="user"></user-profile>
+    <button @click="emitSignOut">Sign Out</button>
     <div class="header-container">
       <h2 class="header-title">My Listings</h2>
       <button @click="goToManageInventory" class="manage-button">
@@ -23,8 +24,13 @@
 
 <script>
 import { ref, onMounted } from "vue";
+<<<<<<< Updated upstream
 import { firebase, auth } from '@/firebase.js';
 
+=======
+import { firebase, auth } from "@/firebase.js";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+>>>>>>> Stashed changes
 import UserProfile from "../components/UserProfile.vue";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
@@ -33,6 +39,19 @@ export default {
   components: {
     UserProfile,
   },
+
+  data() {
+      return {
+        user: {},
+      };
+    },
+    created() {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          this.user = user;
+        }
+      });
+    },
 
   setup() {
     const user = ref(null);
@@ -68,10 +87,20 @@ export default {
 
     return { user, listings };
   },
+  
   methods: {
     goToManageInventory() {
       this.$router.push({ name: "ManageInventory" });
     },
+<<<<<<< Updated upstream
+=======
+    goToManageWishlist() {
+      this.$router.push({ name: "ManageWishlist" });
+    },
+    emitSignOut() {
+        this.$emit('sign-out');
+    },
+>>>>>>> Stashed changes
   },
 };
 </script>
