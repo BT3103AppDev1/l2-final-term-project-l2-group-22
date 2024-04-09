@@ -38,7 +38,7 @@ const routes = [
   {
     path: "/profile",
     name: "Profile",
-    component: Profile,
+    component: Dashboard,
     meta: { requiresAuth: true }, // Requires authentication to access
   },
   {
@@ -64,7 +64,7 @@ const routes = [
   {
     path: "/dashboard",
     name: "Dashboard", // This should match the name used in the $router.push method
-    component: Dashboard,
+    component: HomeView,
     meta: { requiresAuth: true }, // Requires authentication to access
   },
 
