@@ -122,7 +122,7 @@
 						<br />
 						{{ offer.contactInfo }}
 					</td>
-					<td>{{ offer.status }}</td>
+					<td>{{ offer.tradeStatus }}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -169,6 +169,8 @@ export default {
 		const completedOffers = ref([]);
 
 		const router = useRouter();
+
+		
 		const goToListing = (uid, listingId) => {
 			router.push({
 				name: "ViewListing",
@@ -232,43 +234,35 @@ export default {
 			const firestore = getFirestore();
 			const auth = getAuth();
 			const currentUserUid = auth.currentUser?.uid;
-			const offersRef = collection(
-				firestore,
-				"users",
-				currentUserUid,
-				"offers"
-			);
+			const offersRef = collection(firestore, "users", currentUserUid, "offers");
 
 			try {
 				const querySnapshot = await getDocs(offersRef);
 				let offers = querySnapshot.docs
-					.filter((doc) => doc.data().offerType === "Offer Received")
-					.filter((doc) => doc.data().tradeStatus === "Pending") // Filter out offers of type "Offer Received"
-					.map((doc) => {
-						let offer = doc.data();
-						offer.id = doc.id;
-						// Initialize image URLs as null
-						offer.yourImageURL = null;
-						offer.yourId = currentUserUid;
-						offer.tele = null;
-						offer.theirImageURL = null;
-						offer.contactInfo = null;
-						return offer;
-					});
-				// Simultaneously fetch all listings for the 'yourImageUrl' field
+				.map(doc => ({ id: doc.id, ...doc.data() }))
+				.filter(offer => offer.offerType === "Offer Received" && offer.tradeStatus === "Pending")
+				let validReceivedOffers = []; // Temporary array to store valid offers
+
 				for (let offer of offers) {
 					const yourListing = await getListing(offer.yourListing);
 					const theirListing = await getListing(offer.offererListing);
 					const theirProfile = await getUser(offer.offeredBy);
-					offer.yourImageURL = yourListing.imageURL;
-					offer.theirImageURL = theirListing.imageURL;
-					offer.telegramHandle = theirProfile.telegramHandle;
-					offer.contactInfo = theirProfile.phoneNumber;
-					console.log("recived from", offer.offeredBy);
+
+					if (yourListing.status !== "Available" || theirListing.status !== "Available") {
+						// If either listing is unavailable, mark the offer as "Unavailable"
+						await updateDoc(doc(firestore, "users", currentUserUid, "offers", offer.id), { tradeStatus: "Unavailable" });
+						await updateDoc(doc(firestore, "users", offer.offeredBy, "offers", offer.id), { tradeStatus: "Unavailable" });
+					} else {
+						// If both listings are available, add the offer to the validOffers array
+						offer.yourImageURL = yourListing.imageURL;
+						offer.theirImageURL = theirListing.imageURL;
+						offer.telegramHandle = theirProfile.telegramHandle;
+						offer.contactInfo = theirProfile.phoneNumber;
+						validReceivedOffers.push(offer); // Only add offers that pass the availability check
+					}
 				}
 
-				receivedOffers.value = offers;
-				console.log("received", receivedOffers);
+				receivedOffers.value = validReceivedOffers; // Set receivedOffers to the filtered list of valid offers
 			} catch (error) {
 				console.error("Error fetching received offers:", error);
 				receivedOffers.value = []; // Reset to empty array in case of error
@@ -279,46 +273,51 @@ export default {
 			const firestore = getFirestore();
 			const auth = getAuth();
 			const currentUserUid = auth.currentUser?.uid;
-			const offersRef = collection(
-				firestore,
-				"users",
-				currentUserUid,
-				"offers"
-			);
+			const offersRef = collection(firestore, "users", currentUserUid, "offers");
 
 			try {
 				const querySnapshot = await getDocs(offersRef);
-				let offers = querySnapshot.docs
-					.filter((doc) => doc.data().offerType === "Offer Sent")
-					.filter((doc) => doc.data().tradeStatus === "Pending")
-					.map((doc) => {
-						let offer = doc.data();
-						offer.id = doc.id;
-						offer.yourImageURL = null;
-						offer.yourId = currentUserUid;
-						offer.telegramHandle = null;
-						offer.contactInfo = null;
-						return offer;
-					});
+				let tempOffers = querySnapshot.docs
+				.filter(doc => doc.data().offerType === "Offer Sent")
+				.filter(doc => doc.data().tradeStatus === "Pending")
+				.map(doc => ({
+					id: doc.id,
+					...doc.data(),
+					yourImageURL: null, // These will be populated later
+					yourId: currentUserUid,
+					telegramHandle: null,
+					contactInfo: null,
+				}));
 
-				for (let offer of offers) {
-					const yourListing = await getListing(offer.yourListing);
-					const theirListing = await getListing(offer.offererListing);
-					const theirProfile = await getUser(offer.offeredBy);
+				let validSentOffers = []; // Temporary array to store offers that pass availability check
+
+				for (let offer of tempOffers) {
+				const yourListing = await getListing(offer.yourListing);
+				const theirListing = await getListing(offer.offererListing);
+				const theirProfile = await getUser(offer.offeredBy);
+
+				// Proceed only if both listings are available, otherwise update the offer to "Unavailable"
+				if (yourListing.status !== "Available" || theirListing.status !== "Available") {
+					await updateDoc(doc(firestore, "users", currentUserUid, "offers", offer.id), { tradeStatus: "Unavailable" });
+					await updateDoc(doc(firestore, "users", offer.offeredBy, "offers", offer.id), { tradeStatus: "Unavailable" });
+				} else {
+					// Update offer details only for available listings
 					offer.yourImageURL = yourListing.imageURL;
 					offer.theirImageURL = theirListing.imageURL;
 					offer.telegramHandle = theirProfile.telegramHandle;
 					offer.contactInfo = theirProfile.phoneNumber;
-					console.log("sent to ", offer.offeredBy);
+					validSentOffers.push(offer); // Add offer to the list of valid offers
+				}
 				}
 
-				sentOffers.value = offers;
-				console.log("sent", sentOffers);
+				sentOffers.value = validSentOffers; // Update the reactive property with the filtered list
+				console.log("Filtered sent offers:", sentOffers);
 			} catch (error) {
 				console.error("Error fetching sent offers:", error);
-				sentOffers.value = [];
+				sentOffers.value = []; // Reset to empty array in case of error
 			}
 		};
+
 
 		const fetchCompletedOffers = async () => {
 			const firestore = getFirestore();
