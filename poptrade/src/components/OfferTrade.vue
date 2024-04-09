@@ -88,7 +88,10 @@ export default {
 			try {
 				const querySnapshot = await getDocs(inventoryRef);
 				console.log("Trying to fetch inventory");
-				this.inventory = querySnapshot.docs.map((doc) => ({
+				const filteredDocs = querySnapshot.docs.filter(
+					(doc) => doc.data().status === "Available"
+				);
+				this.inventory = filteredDocs.map((doc) => ({
 					id: doc.id,
 					...doc.data(),
 				}));
