@@ -125,7 +125,6 @@ export default {
 .listings {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
   gap: 20px; /* Creates consistent space between the listings */
 }
 
@@ -164,8 +163,7 @@ export default {
 }
 .wishlist {
   display: flex;
-  flex-wrap: nowrap; /* Prevent wrapping to a new line */
-  overflow-x: auto; /* Allows horizontal scrolling if items overflow */
+  flex-wrap: wrap; /* Prevent wrapping to a new line */
   gap: 20px; /* Creates consistent space between the wishlist items */
 }
 
