@@ -1,7 +1,6 @@
 <template>
   <div class="dashboard" v-if="user">
-    <user-profile :user="user"></user-profile>
-    <button @click="emitSignOut">Sign Out</button>
+    <user-profile @sign-out="emitSignOut2" :user="user"></user-profile>
     <div class="header-container">
       <h2 class="header-title">My Listings</h2>
       <button @click="goToManageInventory" class="manage-button">
@@ -47,20 +46,6 @@ export default {
     UserProfile,
   },
 
-  data() {
-      return {
-        user: {},
-      };
-    },
-
-    created() {
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          this.user = user;
-        }
-      });
-    },
-
   setup() {
     const user = ref(null);
     const listings = ref([]);
@@ -102,9 +87,10 @@ export default {
     goToManageWishlist() {
       this.$router.push({ name: "ManageWishlist" });
     },
-    emitSignOut() {
+    emitSignOut2() {
         this.$emit('sign-out');
     },
+    
   },
 };
 </script>
@@ -120,6 +106,13 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center; /* Aligns items vertically in the center */
+}
+
+.signout-container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Aligns items vertically in the center */
+  padding:15px
 }
 
 .header-title {
@@ -155,7 +148,7 @@ export default {
 .manage-button,
 .button {
   /* This selector targets both your manage button and any other button */
-  background-color: #4caf50;
+  background-color: #ff4d4d;
   color: white;
   border: none;
   border-radius: 4px;
@@ -167,7 +160,7 @@ export default {
 .manage-button:hover,
 .button:hover {
   /* Hover effects for both manage and other buttons */
-  background-color: #45a049;
+  background-color: #e60000;
 }
 .wishlist {
   display: flex;

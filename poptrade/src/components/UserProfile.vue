@@ -9,6 +9,7 @@
       />
       <h2>{{ user.displayName }}</h2>
       <p>Email: {{ user.email }}</p>
+      <button @click="emitSignOut" class = "signout-button">Sign Out</button>
       <!-- Additional user details can be added here -->
     </div>
   </div>
@@ -27,8 +28,25 @@ import { firebase, auth } from '@/firebase.js';
 
 export default {
   name: "UserProfile",
+
+  data() {
+      return {
+        user: {},
+      };
+    },
+
+    created() {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          this.user = user;
+        }
+      });
+    },
+
   setup() {
     const user = ref(null);
+
+    
 
     onMounted(() => {
       auth.onAuthStateChanged(async (firebaseUser) => {
@@ -46,6 +64,12 @@ export default {
     });
 
     return { user };
+  },
+  
+  methods: {
+    emitSignOut() {
+        this.$emit('sign-out');
+    },
   },
 };
 </script>
@@ -106,4 +130,23 @@ p {
   font-size: 0.9rem; /* Smaller paragraph text */
   color: #666;
 }
+
+.signout-button,
+.button {
+  /* This selector targets both your manage button and any other button */
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-family: "Oswald", sans-serif; /* Oswald font for buttons */
+}
+
+.signout-button:hover,
+.button:hover {
+  /* Hover effects for both manage and other buttons */
+  background-color: #e60000;
+}
+
 </style>
