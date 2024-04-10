@@ -54,6 +54,7 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");
 body {
 	margin: 0;
+	padding: 0;
 	font-family: Arial, sans-serif;
 }
 
@@ -100,7 +101,7 @@ main {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 2rem;
+	padding: 0;
 	text-align: center;
 }
 
