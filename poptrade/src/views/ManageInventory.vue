@@ -313,6 +313,7 @@ export default {
 	border-radius: 10px;
 	overflow: hidden;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	position: relative;
 }
 
 .listing-image {
@@ -327,24 +328,30 @@ export default {
 
 .listing-details h3 {
 	font-size: 1rem;
-	margin: 5px 0;
+	margin-top: 5px;
+	margin-bottom: 1px;
 }
 
 .listing-details p {
 	font-size: 0.8rem;
+	margin-top: 2px;
+	margin-bottom: 33px
 }
 
 button {
 	background-color: #f44336;
 	color: white;
 	border: none;
-	padding: 10px 20px;
+	padding: 5px 10px;
 	cursor: pointer;
 	text-transform: uppercase;
 	font-weight: bold;
 	border-radius: 20px;
 	width: calc(100% - 20px);
-	margin-top: 10px;
+	margin-top: 5px;
+  	margin-bottom: 5px;
+	position: absolute;
+	bottom: 0
 }
 
 button:hover {
@@ -383,7 +390,7 @@ textarea {
 
 .submit-btn {
 	width: 100%;
-	background-color: #4caf50;
+	background-color: #f44336;
 	color: white;
 	padding: 10px;
 	border: none;
@@ -394,6 +401,6 @@ textarea {
 }
 
 .submit-btn:hover {
-	background-color: #45a049;
+	background-color: #d32f2f;
 }
 </style>
