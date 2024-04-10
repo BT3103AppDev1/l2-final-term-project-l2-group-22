@@ -1,7 +1,6 @@
 <template>
   <div class="dashboard" v-if="user">
-    <user-profile :user="user"></user-profile>
-    <button @click="emitSignOut">Sign Out</button>
+    <user-profile @sign-out="emitSignOut2" :user="user"></user-profile>
     <div class="header-container">
       <h2 class="header-title">My Listings</h2>
       <button @click="goToManageInventory" class="manage-button">
@@ -15,8 +14,10 @@
           alt="Listing Image"
           class="listing-image"
         />
-        <h3>{{ listing.name }}</h3>
-        <!-- Add more listing details as needed -->
+        <div class="listing-details">
+          <h3>{{ listing.name }}</h3>
+          <p>{{ listing.collection }}</p>
+        </div>
       </div>
     </div>
     <div class="header-container">
@@ -28,7 +29,10 @@
     <div class="wishlist">
       <div v-for="item in wishlist" :key="item.id" class="listing-card">
         <img :src="item.imageURL" alt="Item Image" class="listing-image" />
-        <h3>{{ item.name }}</h3>
+        <div class="listing-details">
+          <h3>{{ item.name }}</h3>
+          <p>{{ item.collection }}</p>
+        </div>
         <!-- Add more wishlist details as needed -->
       </div>
     </div>
@@ -46,20 +50,6 @@ export default {
   components: {
     UserProfile,
   },
-
-  data() {
-      return {
-        user: {},
-      };
-    },
-
-    created() {
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          this.user = user;
-        }
-      });
-    },
 
   setup() {
     const user = ref(null);
@@ -102,9 +92,10 @@ export default {
     goToManageWishlist() {
       this.$router.push({ name: "ManageWishlist" });
     },
-    emitSignOut() {
+    emitSignOut2() {
         this.$emit('sign-out');
     },
+    
   },
 };
 </script>
@@ -122,6 +113,13 @@ export default {
   align-items: center; /* Aligns items vertically in the center */
 }
 
+.signout-container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Aligns items vertically in the center */
+  padding:15px
+}
+
 .header-title {
   margin: 0; /* Removes default margin from h2 */
   font-family: "Oswald", sans-serif;
@@ -130,19 +128,42 @@ export default {
 }
 
 .listings {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 20px; /* Creates consistent space between the listings */
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 20px;
 }
 
 .listing-card {
-  width: 180px; /* Adjust the width as needed */
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
-  margin-bottom: 20px; /* Adjust or remove if gap property is sufficient */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border: 1px solid #eee;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	position: relative;
+}
+
+.listing-image {
+	width: 100%;
+	display: block;
+}
+
+.listing-details {
+	padding: 10px;
+	text-align: center;
+}
+
+.listing-details h3 {
+	font-size: 1rem;
+	margin-top: 5px;
+	margin-bottom: 1px;
+}
+
+.listing-details p {
+	font-size: 0.8rem;
+	margin-top: 2px;
+	margin-bottom: 10px
 }
 
 .listing-image {
@@ -155,7 +176,7 @@ export default {
 .manage-button,
 .button {
   /* This selector targets both your manage button and any other button */
-  background-color: #4caf50;
+  background-color: #ff4d4d;
   color: white;
   border: none;
   border-radius: 4px;
@@ -167,13 +188,13 @@ export default {
 .manage-button:hover,
 .button:hover {
   /* Hover effects for both manage and other buttons */
-  background-color: #45a049;
+  background-color: #e60000;
 }
+
 .wishlist {
-  display: flex;
-  flex-wrap: nowrap; /* Prevent wrapping to a new line */
-  overflow-x: auto; /* Allows horizontal scrolling if items overflow */
-  gap: 20px; /* Creates consistent space between the wishlist items */
+  display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 20px;
 }
 
 /* Additional styles can go here */
