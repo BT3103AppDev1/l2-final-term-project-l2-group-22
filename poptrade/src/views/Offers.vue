@@ -82,7 +82,7 @@
 					</td>
 					<td>{{ offer.status }}</td>
 					<td class="offer-actions-cell">
-						<button class="reject-button" @click="rejectOffer(offer)">
+						<button class="reject-button" @click="retractOffer(offer)">
 							Retract Offer
 						</button>
 					</td>
@@ -170,7 +170,6 @@ export default {
 
 		const router = useRouter();
 
-		
 		const goToListing = (uid, listingId) => {
 			router.push({
 				name: "ViewListing",
@@ -234,13 +233,22 @@ export default {
 			const firestore = getFirestore();
 			const auth = getAuth();
 			const currentUserUid = auth.currentUser?.uid;
-			const offersRef = collection(firestore, "users", currentUserUid, "offers");
+			const offersRef = collection(
+				firestore,
+				"users",
+				currentUserUid,
+				"offers"
+			);
 
 			try {
 				const querySnapshot = await getDocs(offersRef);
 				let offers = querySnapshot.docs
-				.map(doc => ({ id: doc.id, ...doc.data() }))
-				.filter(offer => offer.offerType === "Offer Received" && offer.tradeStatus === "Pending")
+					.map((doc) => ({ id: doc.id, ...doc.data() }))
+					.filter(
+						(offer) =>
+							offer.offerType === "Offer Received" &&
+							offer.tradeStatus === "Pending"
+					);
 				let validReceivedOffers = []; // Temporary array to store valid offers
 
 				for (let offer of offers) {
@@ -248,10 +256,19 @@ export default {
 					const theirListing = await getListing(offer.offererListing);
 					const theirProfile = await getUser(offer.offeredBy);
 
-					if (yourListing.status !== "Available" || theirListing.status !== "Available") {
+					if (
+						yourListing.status !== "Available" ||
+						theirListing.status !== "Available"
+					) {
 						// If either listing is unavailable, mark the offer as "Unavailable"
-						await updateDoc(doc(firestore, "users", currentUserUid, "offers", offer.id), { tradeStatus: "Unavailable" });
-						await updateDoc(doc(firestore, "users", offer.offeredBy, "offers", offer.id), { tradeStatus: "Unavailable" });
+						await updateDoc(
+							doc(firestore, "users", currentUserUid, "offers", offer.id),
+							{ tradeStatus: "Unavailable" }
+						);
+						await updateDoc(
+							doc(firestore, "users", offer.offeredBy, "offers", offer.id),
+							{ tradeStatus: "Unavailable" }
+						);
 					} else {
 						// If both listings are available, add the offer to the validOffers array
 						offer.yourImageURL = yourListing.imageURL;
@@ -273,41 +290,55 @@ export default {
 			const firestore = getFirestore();
 			const auth = getAuth();
 			const currentUserUid = auth.currentUser?.uid;
-			const offersRef = collection(firestore, "users", currentUserUid, "offers");
+			const offersRef = collection(
+				firestore,
+				"users",
+				currentUserUid,
+				"offers"
+			);
 
 			try {
 				const querySnapshot = await getDocs(offersRef);
 				let tempOffers = querySnapshot.docs
-				.filter(doc => doc.data().offerType === "Offer Sent")
-				.filter(doc => doc.data().tradeStatus === "Pending")
-				.map(doc => ({
-					id: doc.id,
-					...doc.data(),
-					yourImageURL: null, // These will be populated later
-					yourId: currentUserUid,
-					telegramHandle: null,
-					contactInfo: null,
-				}));
+					.filter((doc) => doc.data().offerType === "Offer Sent")
+					.filter((doc) => doc.data().tradeStatus === "Pending")
+					.map((doc) => ({
+						id: doc.id,
+						...doc.data(),
+						yourImageURL: null, // These will be populated later
+						yourId: currentUserUid,
+						telegramHandle: null,
+						contactInfo: null,
+					}));
 
 				let validSentOffers = []; // Temporary array to store offers that pass availability check
 
 				for (let offer of tempOffers) {
-				const yourListing = await getListing(offer.yourListing);
-				const theirListing = await getListing(offer.offererListing);
-				const theirProfile = await getUser(offer.offeredBy);
+					const yourListing = await getListing(offer.yourListing);
+					const theirListing = await getListing(offer.offererListing);
+					const theirProfile = await getUser(offer.offeredBy);
 
-				// Proceed only if both listings are available, otherwise update the offer to "Unavailable"
-				if (yourListing.status !== "Available" || theirListing.status !== "Available") {
-					await updateDoc(doc(firestore, "users", currentUserUid, "offers", offer.id), { tradeStatus: "Unavailable" });
-					await updateDoc(doc(firestore, "users", offer.offeredBy, "offers", offer.id), { tradeStatus: "Unavailable" });
-				} else {
-					// Update offer details only for available listings
-					offer.yourImageURL = yourListing.imageURL;
-					offer.theirImageURL = theirListing.imageURL;
-					offer.telegramHandle = theirProfile.telegramHandle;
-					offer.contactInfo = theirProfile.phoneNumber;
-					validSentOffers.push(offer); // Add offer to the list of valid offers
-				}
+					// Proceed only if both listings are available, otherwise update the offer to "Unavailable"
+					if (
+						yourListing.status !== "Available" ||
+						theirListing.status !== "Available"
+					) {
+						await updateDoc(
+							doc(firestore, "users", currentUserUid, "offers", offer.id),
+							{ tradeStatus: "Unavailable" }
+						);
+						await updateDoc(
+							doc(firestore, "users", offer.offeredBy, "offers", offer.id),
+							{ tradeStatus: "Unavailable" }
+						);
+					} else {
+						// Update offer details only for available listings
+						offer.yourImageURL = yourListing.imageURL;
+						offer.theirImageURL = theirListing.imageURL;
+						offer.telegramHandle = theirProfile.telegramHandle;
+						offer.contactInfo = theirProfile.phoneNumber;
+						validSentOffers.push(offer); // Add offer to the list of valid offers
+					}
 				}
 
 				sentOffers.value = validSentOffers; // Update the reactive property with the filtered list
@@ -317,7 +348,6 @@ export default {
 				sentOffers.value = []; // Reset to empty array in case of error
 			}
 		};
-
 
 		const fetchCompletedOffers = async () => {
 			const firestore = getFirestore();
@@ -457,6 +487,30 @@ export default {
 				window.location.reload();
 			} catch (error) {
 				console.error("Error rejecting offer:", error);
+			}
+		},
+
+		async retractOffer(offer) {
+			const firestore = getFirestore();
+			const auth = getAuth();
+			// Assuming offer includes a unique ID for the offer itself and the ID of the user who made the offer (offer.offeredBy)
+			try {
+				// Update the offer's status to 'Rejected' in the current user's collection
+				await deleteDoc(
+					doc(firestore, "users", auth.currentUser.uid, "offers", offer.id)
+				);
+
+				// Update the offer's status to 'Rejected' in the offerer's collection
+				await deleteDoc(
+					doc(firestore, "users", offer.offeredBy, "offers", offer.id)
+				);
+
+				console.log(
+					"Offer retracted. Offer is removed from both users' offers collection"
+				);
+				window.location.reload();
+			} catch (error) {
+				console.error("Error retracting offer:", error);
 			}
 		},
 	},
