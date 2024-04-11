@@ -371,6 +371,7 @@ export default {
 						offer.yourImageURL = null;
 						offer.yourId = currentUserUid;
 						offer.tele = null;
+						offer.reviewed = null;
 						offer.theirImageURL = null;
 						offer.contactInfo = null;
 						return offer;
@@ -384,6 +385,7 @@ export default {
 					offer.theirImageURL = theirListing.imageURL;
 					offer.telegramHandle = theirProfile.telegramHandle;
 					offer.contactInfo = theirProfile.phoneNumber;
+					offer.reviewed = yourListing.reviewed;
 				}
 
 				completedOffers.value = offers;
@@ -454,7 +456,15 @@ export default {
 				console.log(
 					"Trade accepted and listings removed. Offer marked as completed."
 				);
-				window.location.reload();
+				// window.location.reload();
+				this.$router.push({
+					name: "ReviewForm",
+					params: {
+						userId: offer.offeredBy,
+						listingId: offer.offererListing,
+						offerId: offer.id,
+					},
+				});
 			} catch (error) {
 				console.error("Error accepting trade:", error);
 			}

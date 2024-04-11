@@ -217,6 +217,7 @@ export default {
 				offeredBy: this.userId,
 				offererListing: this.listingId,
 				tradeStatus: "Pending",
+				reviewed: false,
 			});
 
 			// Add to user with listing - offersReceived collection
@@ -232,6 +233,7 @@ export default {
 				offererListing: this.selectedItems[0],
 				yourListing: this.listingId,
 				tradeStatus: "Pending",
+				reviewed: false,
 			});
 
 			alert("Offer successfully made! You will be redirected to the Dashboard"); // User feedback
