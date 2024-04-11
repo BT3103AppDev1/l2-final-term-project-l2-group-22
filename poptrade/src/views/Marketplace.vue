@@ -29,7 +29,13 @@
 </template>
 <script>
 import { ref, onMounted } from "vue";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { useRouter } from "vue-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Modal from "../components/Modal.vue";
@@ -72,9 +78,13 @@ export default {
         if (fetchedListings.value.length >= 10) break;
         if (userDoc.id === currentUserUid) continue;
 
-        const listingsSnapshot = await getDocs(
-          collection(firestore, "users", userDoc.id, "listings")
+        const listingsQuery = query(
+          collection(firestore, "users", userDoc.id, "listings"),
+          where("status", "==", "Available")
         );
+
+        const listingsSnapshot = await getDocs(listingsQuery);
+
         listingsSnapshot.docs
           .slice(0, 10 - fetchedListings.value.length)
           .forEach((doc) => {
