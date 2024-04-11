@@ -53,7 +53,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 export default {
   props: ["show"],
-  emits: ["close"],
+  emits: ["close", "searchSubmitted"], // Include "searchSubmitted" here
   setup(props, { emit }) {
     const selectedPopmart = ref("");
     const selectedCollection = ref("");
@@ -143,8 +143,6 @@ export default {
 
     function submitSearch() {
       emit("searchSubmitted", {
-        selectedPopmart: selectedPopmart.value,
-        selectedCollection: selectedCollection.value,
         itemName: itemName.value,
       });
       closeModal();

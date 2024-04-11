@@ -7,7 +7,7 @@
     <Modal
       :show="showModal"
       @close="showModal = false"
-      @searchSubmitted="handleSearchSubmitted"
+      @searchSubmitted="goToSearchResults"
     />
     <h2>Newest Listings</h2>
     <div class="listings-row">
@@ -111,14 +111,15 @@ export default {
       });
     };
 
-    function handleSearchSubmitted(searchParams) {
+    function goToSearchResults(searchParams) {
       router.push({ name: "SearchResults", query: searchParams });
     }
+
     return {
       listings,
       showModal,
       goToViewListing,
-      handleSearchSubmitted,
+      goToSearchResults,
     };
   },
 };

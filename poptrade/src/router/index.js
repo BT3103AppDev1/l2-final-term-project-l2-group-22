@@ -12,6 +12,7 @@ import Register from "@/views/Register.vue";
 import ManageInventory from "@/views/ManageInventory.vue";
 import ManageWishlist from "@/views/ManageWishlist.vue";
 import OfferTrade from "../components/OfferTrade.vue";
+import SearchResults from "@/views/SearchResults.vue";
 
 const routes = [
   {
@@ -78,6 +79,12 @@ const routes = [
     path: "/manage-wishlist",
     name: "ManageWishlist",
     component: ManageWishlist,
+  },
+
+  {
+    path: "/search-results",
+    name: "SearchResults",
+    component: SearchResults,
   },
 ];
 
