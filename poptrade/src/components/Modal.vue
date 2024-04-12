@@ -8,17 +8,20 @@
         <div class="form-group">
           <label for="popmart">Popmart:</label>
           <select id="popmart" v-model="selectedPopmart" required>
-            <option value="">Select a Popmart</option>
+            <option value="" disabled>Select a Popmart</option>
             <option v-for="popmart in popmarts" :value="popmart" :key="popmart">
               {{ popmart }}
             </option>
           </select>
+          <small v-if="!selectedPopmart" class="required-field"
+            >* Required</small
+          >
         </div>
 
         <!-- Collection Selector -->
-        <div class="form-group">
+        <div v-if="selectedPopmart" class="form-group">
           <label for="collection">Collection:</label>
-          <select id="collection" v-model="selectedCollection" required>
+          <select id="collection" v-model="selectedCollection">
             <option value="">Select a collection</option>
             <option
               v-for="collection in collections"
@@ -31,9 +34,9 @@
         </div>
 
         <!-- Item Name Selector -->
-        <div class="form-group">
+        <div v-if="selectedCollection" class="form-group">
           <label for="itemName">Item Name:</label>
-          <select id="itemName" v-model="itemName" required>
+          <select id="itemName" v-model="itemName">
             <option value="">Select an item</option>
             <option v-for="item in items" :value="item.name" :key="item.name">
               {{ item.name }}
@@ -41,7 +44,12 @@
           </select>
         </div>
 
-        <input type="submit" value="Search" class="submit-btn" />
+        <input
+          type="submit"
+          value="Search"
+          class="submit-btn"
+          :disabled="!selectedPopmart"
+        />
       </form>
     </div>
   </div>
@@ -143,6 +151,8 @@ export default {
 
     function submitSearch() {
       emit("searchSubmitted", {
+        selectedPopmart: selectedPopmart.value,
+        selectedCollection: selectedCollection.value,
         itemName: itemName.value,
       });
       closeModal();
@@ -204,5 +214,17 @@ export default {
 
 .submit-btn:hover {
   background-color: #0056b3;
+}
+
+/* Add styling for required field */
+.required-field {
+  color: red;
+  font-size: 0.8rem;
+}
+
+/* Add styling to disable the submit button when Popmart is not selected */
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

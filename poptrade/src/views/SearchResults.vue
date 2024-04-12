@@ -3,36 +3,24 @@
     <!-- Sidebar for filtering -->
     <aside class="sidebar">
       <h3>Sort by:</h3>
-      <!-- Add your filtering options here -->
+      <!-- Filtering options could be implemented here -->
     </aside>
 
     <!-- Main content area -->
     <main class="main-content">
-      <!-- Conditionally display the listing image and search results header -->
-      <div v-if="results.length > 0">
-        <div class="listing-image-container">
-          <img
-            :src="results[0].imageURL"
-            alt="Listing Image"
-            class="listing-image"
-          />
-        </div>
-
-        <!-- Search Results Header -->
-        <h1>
-          <span>{{ results.length }} listings found</span>
-          for <i> {{ itemName }}</i>
-        </h1>
-
-        <!-- Details for each user listing -->
+      <div v-if="loading">
+        <p>Loading...</p>
+      </div>
+      <div v-else-if="currentGroup">
+        <h2>{{ currentGroup.name }}</h2>
+        <img :src="currentGroup.imageURL" alt="Item Image" class="item-image" />
         <div
-          v-for="result in results"
+          v-for="result in currentGroup.listings"
           :key="result.id"
-          class="user-listing-details"
+          class="listing-group"
         >
           <div class="listing-row">
             <div class="condition">{{ result.condition }}</div>
-            <!-- Wishlist container -->
             <div class="wishlist">
               <img
                 v-for="item in result.wishlistItems"
@@ -47,9 +35,15 @@
             </button>
           </div>
         </div>
+        <div class="pagination">
+          <button class="prev-btn" @click="prevGroup" :disabled="!hasPrevGroup">
+            Previous
+          </button>
+          <button class="next-btn" @click="nextGroup" :disabled="!hasNextGroup">
+            Next
+          </button>
+        </div>
       </div>
-
-      <!-- Display message if no results are found -->
       <div v-else>
         <p>No results found.</p>
       </div>
@@ -58,7 +52,7 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   getFirestore,
@@ -69,7 +63,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default {
   setup() {
@@ -77,70 +71,65 @@ export default {
     const router = useRouter();
     const firestore = getFirestore();
     const auth = getAuth();
-    const results = ref([]);
-    let currentUserUid = auth.currentUser?.uid;
-    const itemName = route.query.itemName;
+    const currentUserUid = ref(auth.currentUser?.uid);
+    const itemName = ref(route.query.itemName);
+    const groupedResults = ref([]);
+    const currentPageIndex = ref(0);
+    const loading = ref(false);
+
     const fetchUserDetails = async (userId) => {
       const userDetails = {
         wishlistItems: [],
         telegramHandle: "",
       };
-
-      // Fetch Wishlist
-      try {
-        const wishlistRef = collection(firestore, "users", userId, "wishlist");
-        const wishlistSnapshot = await getDocs(wishlistRef);
-        userDetails.wishlistItems = wishlistSnapshot.docs.map(
-          (doc) => doc.data().imageURL
-        );
-      } catch (error) {
-        console.error("Error fetching wishlist details:", error);
-      }
-
-      // Fetch Telegram Handle
-      try {
-        const userRef = doc(firestore, "users", userId);
-        const userDoc = await getDoc(userRef);
-        userDetails.telegramHandle = userDoc.exists()
-          ? userDoc.data().telegramHandle
-          : "";
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-
+      const wishlistRef = collection(firestore, "users", userId, "wishlist");
+      const wishlistSnapshot = await getDocs(wishlistRef);
+      userDetails.wishlistItems = wishlistSnapshot.docs.map(
+        (doc) => doc.data().imageURL
+      );
+      const userRef = doc(firestore, "users", userId);
+      const userDoc = await getDoc(userRef);
+      userDetails.telegramHandle = userDoc.exists()
+        ? userDoc.data().telegramHandle
+        : "";
       return userDetails;
     };
 
     const fetchFilteredResults = async () => {
-      // Check if itemName is present in the query
-      if (!route.query.itemName) {
-        console.log("Item name is missing in the search query");
-        return;
-      }
-
-      // Fetch all users
-      const usersSnapshot = await getDocs(collection(firestore, "users"));
+      loading.value = true;
       let tempResults = [];
+      const usersSnapshot = await getDocs(collection(firestore, "users"));
       for (const userDoc of usersSnapshot.docs) {
-        if (userDoc.id === currentUserUid) continue;
-        // Query to fetch listings that match the item name for each user
-        const listingsQuery = query(
-          collection(firestore, "users", userDoc.id, "listings"),
-          where("name", "==", route.query.itemName)
-        );
+        if (userDoc.id === currentUserUid.value) continue;
+        let baseQuery = collection(firestore, "users", userDoc.id, "listings");
+        if (route.query.selectedPopmart) {
+          baseQuery = query(
+            baseQuery,
+            where("popmart", "==", route.query.selectedPopmart)
+          );
+        }
+        if (route.query.selectedCollection) {
+          baseQuery = query(
+            baseQuery,
+            where("collection", "==", route.query.selectedCollection)
+          );
+        }
+        let listingsQuery = itemName.value
+          ? query(
+              baseQuery,
+              where("name", "==", itemName.value),
+              where("status", "==", "Available")
+            )
+          : query(baseQuery, where("status", "==", "Available"));
         const listingsSnapshot = await getDocs(listingsQuery);
-
-        // Add each matching listing to the temp results array
-        listingsSnapshot.forEach((doc) => {
-          tempResults.push({
+        tempResults.push(
+          ...listingsSnapshot.docs.map((doc) => ({
             id: doc.id,
             userId: userDoc.id,
             ...doc.data(),
-          });
-        });
+          }))
+        );
       }
-
-      // Fetch additional details for each result
       tempResults = await Promise.all(
         tempResults.map(async (result) => {
           const userDetails = await fetchUserDetails(result.userId);
@@ -151,12 +140,36 @@ export default {
           };
         })
       );
-
-      results.value = tempResults;
+      groupedResults.value = Object.entries(
+        tempResults.reduce((acc, cur) => {
+          if (!acc[cur.name]) acc[cur.name] = [];
+          acc[cur.name].push(cur);
+          return acc;
+        }, {})
+      ).map(([name, listings]) => ({
+        name,
+        imageURL: listings[0].imageURL,
+        listings,
+      }));
+      currentPageIndex.value = 0;
+      loading.value = false;
     };
 
-    watch(() => route.query.itemName, fetchFilteredResults, {
-      immediate: true,
+    watch(
+      [
+        () => route.query.itemName,
+        () => route.query.selectedPopmart,
+        () => route.query.selectedCollection,
+      ],
+      fetchFilteredResults,
+      { immediate: true }
+    );
+
+    onMounted(() => {
+      onAuthStateChanged(auth, (user) => {
+        currentUserUid.value = user?.uid;
+        fetchFilteredResults();
+      });
     });
 
     const goToViewListing = (result) => {
@@ -166,10 +179,30 @@ export default {
       });
     };
 
+    const prevGroup = () => {
+      if (currentPageIndex.value > 0) currentPageIndex.value--;
+    };
+
+    const nextGroup = () => {
+      if (currentPageIndex.value < groupedResults.value.length - 1)
+        currentPageIndex.value++;
+    };
+
     return {
-      results,
-      goToViewListing,
       itemName,
+      groupedResults,
+      goToViewListing,
+      currentPageIndex,
+      prevGroup,
+      nextGroup,
+      hasPrevGroup: computed(() => currentPageIndex.value > 0),
+      hasNextGroup: computed(
+        () => currentPageIndex.value < groupedResults.value.length - 1
+      ),
+      loading,
+      currentGroup: computed(
+        () => groupedResults.value[currentPageIndex.value]
+      ),
     };
   },
 };
@@ -178,57 +211,47 @@ export default {
 <style scoped>
 .search-results-container {
   display: flex;
-  background-color: #f9f9f9; /* Light background for the entire container */
+  background-color: #f9f9f9;
 }
 
 .sidebar {
-  width: 250px; /* Fixed width for sidebar */
+  width: 250px;
   padding: 20px;
   border-right: 1px solid #ccc;
 }
 
 .main-content {
-  flex-grow: 1; /* Take up the remaining space */
-  background-color: #fff; /* White background for content */
+  flex-grow: 1;
+  background-color: #fff;
   padding: 20px;
-  border-radius: 5px; /* Optional: adds rounded corners to the content area */
+  border-radius: 5px;
 }
 
-.listing-image-container {
-  margin-bottom: 20px;
-}
-
-.listing-image {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  margin-bottom: 10px;
-  border-radius: 5px; /* Rounded corners for the main image */
-}
-
-.user-listing-details {
-  background-color: #fff; /* White background for each card */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+.listing-group {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin: 10px 0;
   border-radius: 5px;
 }
+
 .listing-row {
-  display: flex; /* Align items in a row */
-  align-items: center; /* Center items vertically */
-  gap: 20px; /* Add some space between items */
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
+
 .condition,
 .telegram-handle,
 .view-listing-btn {
-  flex-shrink: 0; /* Prevent these items from shrinking */
+  flex-shrink: 0;
 }
 
 .wishlist {
   display: flex;
   gap: 5px;
   overflow-x: auto;
-  flex-grow: 1; /* Allow wishlist to take up remaining space */
+  flex-grow: 1;
 }
 
 .wishlist img {
@@ -239,7 +262,7 @@ export default {
 }
 
 .wishlist img:hover {
-  transform: scale(1.1); /* Scale up wishlist images on hover */
+  transform: scale(1.1);
 }
 
 .view-listing-btn {
@@ -249,7 +272,7 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px; /* Space from the last element */
+  margin-top: 10px;
 }
 
 .view-listing-btn:hover {
@@ -261,34 +284,46 @@ export default {
   cursor: pointer;
   text-decoration: underline;
 }
-.listing-image-container {
-  text-align: center; /* Center-align the image container */
+
+.item-image {
+  max-width: 150px;
+  max-height: 150px;
+  width: auto;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 
-.listing-image {
-  max-width: 100%; /* Make sure the image is responsive */
-  max-height: 300px; /* Set a maximum height */
-  width: auto; /* Keep width auto to maintain aspect ratio */
-  height: auto; /* Keep height auto to maintain aspect ratio */
-  border-radius: 5px; /* Rounded corners for the main image */
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+.pagination {
+  margin-top: 20px;
 }
 
-/* Optional: Add media queries for responsiveness */
-@media (max-width: 768px) {
-  .search-results-container {
-    flex-direction: column;
-  }
+.prev-btn,
+.next-btn {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
-  .sidebar {
-    width: 100%; /* Full width on small screens */
-    border-right: none;
-    border-bottom: 1px solid #ccc;
-  }
+.prev-btn:hover,
+.next-btn:hover {
+  background-color: #0056b3;
+}
 
-  .main-content {
-    width: 100%;
-  }
+.prev-btn {
+  margin-right: 10px;
+}
+
+.next-btn {
+  margin-left: 10px;
+}
+
+.prev-btn:disabled,
+.next-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>
