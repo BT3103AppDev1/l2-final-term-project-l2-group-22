@@ -32,7 +32,7 @@
     <h2>Listings from Top Traders</h2>
     <div class="listings-row">
       <div
-        v-for="listing in listings"
+        v-for="listing in listingsTT"
         :key="listing.id"
         class="listing-card"
         @click="goToViewListing(listing)"
@@ -76,6 +76,7 @@ export default {
     const firestore = getFirestore();
     const router = useRouter();
     const auth = getAuth();
+    const listingsTT = ref([]);
 
     const fetchListings = async () => {
       const fetchedListings = ref([]);
@@ -125,8 +126,74 @@ export default {
       return fetchedListings;
     };
 
+    const fetchListingsTT = async () => {
+      const fetchedListingsTT = ref([]);
+      let currentUserUid = auth.currentUser?.uid;
+
+      if (!currentUserUid) {
+        console.log("Waiting for auth state change...");
+        currentUserUid = await new Promise((resolve) => {
+          onAuthStateChanged(auth, (user) => {
+            resolve(user?.uid);
+          });
+        });
+        console.log("Auth state changed:", currentUserUid);
+      }
+
+      if (!currentUserUid) {
+        console.log("No user signed in.");
+        return fetchedListingsTT;
+      }
+
+      const usersSnapshot = await getDocs(collection(firestore, "users"));
+      console.log(`Found ${usersSnapshot.docs.length} users`);
+
+      function calculateAverage(array) {
+        // Check if the array is empty
+        if (array.length === 0) {
+          return 0; // Return 0 for an empty array
+        }
+
+        // Calculate the sum of all elements in the array
+        const sum = array.reduce((acc, currentValue) => acc + currentValue, 0);
+
+        // Calculate the average by dividing the sum by the total number of elements
+        const average = sum / array.length;
+
+        return average;
+      }
+
+      for (const userDoc of usersSnapshot.docs) {
+        if (fetchedListingsTT.value.length >= 6) break;
+        if (userDoc.id === currentUserUid) continue;
+        console.log(calculateAverage(userDoc.data().reviews));
+        if (calculateAverage(userDoc.data().reviews) < 3) continue;
+
+        const listingsQuery = query(
+          collection(firestore, "users", userDoc.id, "listings"),
+          where("status", "==", "Available")
+        );
+
+        const listingsSnapshot = await getDocs(listingsQuery);
+
+        listingsSnapshot.docs
+          .slice(0, 6 - fetchedListingsTT.value.length)
+          .forEach((doc) => {
+            fetchedListingsTT.value.push({
+              id: doc.id,
+              userId: userDoc.id, 
+              ...doc.data(),
+            });
+          });
+      }
+
+      console.log("Final listings:", fetchedListingsTT.value);
+      return fetchedListingsTT;
+    };
+
     onMounted(async () => {
       listings.value = (await fetchListings()).value;
+      listingsTT.value = (await fetchListingsTT()).value;
     });
 
     const goToViewListing = (listing) => {
@@ -142,6 +209,7 @@ export default {
 
     return {
       listings,
+      listingsTT,
       showModal,
       goToViewListing,
       goToSearchResults,
@@ -184,6 +252,8 @@ export default {
 	overflow: hidden;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 	position: relative;
+  height: 365px;
+  width: 220px;
 }
 
 .listing-details {
