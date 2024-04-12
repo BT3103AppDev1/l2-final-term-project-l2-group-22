@@ -14,6 +14,7 @@ import ManageWishlist from "@/views/ManageWishlist.vue";
 import OfferTrade from "../components/OfferTrade.vue";
 import ReviewForm from "../components/ReviewForm.vue";
 import SearchResults from "@/views/SearchResults.vue";
+import EditProfile from "../components/EditProfile.vue";
 
 const routes = [
 	{
@@ -38,11 +39,17 @@ const routes = [
 		component: Login,
 	},
 	{
-		path: '/profile/:userId?',
-		name: 'UserProfile',
+		path: "/profile/:userId?",
+		name: "UserProfile",
 		component: Dashboard,
 		props: true,
 		meta: { requiresAuth: true }, // Requires authentication to access
+	},
+
+	{
+		path: "/editprofile",
+		name: "EditProfile",
+		component: EditProfile,
 	},
 	{
 		path: "/listing/:userId/:listingId",

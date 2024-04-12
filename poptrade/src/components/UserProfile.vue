@@ -18,9 +18,22 @@
 					{{ userProfile.reviews.length }} reviews
 				</p>
 			</div>
-			<button @click="emitSignOut" v-if="isCurrentUser" class="signout-button">
-				Sign Out
-			</button>
+			<div>
+				<button
+					@click="editProfile"
+					v-if="isCurrentUser"
+					class="edit-profile-button"
+				>
+					Edit Profile
+				</button>
+				<button
+					@click="emitSignOut"
+					v-if="isCurrentUser"
+					class="signout-button"
+				>
+					Sign Out
+				</button>
+			</div>
 		</div>
 	</div>
 	<div class="login" v-else>
@@ -32,6 +45,8 @@
 import { ref, onMounted, computed, inject } from "vue";
 import { auth, db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { useRouter } from "vue-router";
+import { getAuth } from "firebase/auth";
 
 export default {
 	name: "UserProfile",
@@ -55,6 +70,8 @@ export default {
 		},
 	},
 	setup(props) {
+		const router = useRouter();
+
 		const currentUser = inject("currentUser", ref(null)); // Inject currentUser
 		const userProfile = ref(null);
 		const isCurrentUser = computed(
@@ -89,11 +106,18 @@ export default {
 			}
 		});
 
+		function editProfile() {
+			console.log("Edit Profile Clicked");
+			router.push({
+				name: "EditProfile",
+			});
+		}
+
 		function emitSignOut() {
 			auth.signOut();
 		}
 
-		return { userProfile, isCurrentUser, emitSignOut };
+		return { userProfile, isCurrentUser, emitSignOut, editProfile };
 	},
 };
 </script>
@@ -162,7 +186,7 @@ p {
 	color: white;
 	border: none;
 	border-radius: 4px;
-	padding: 10px 15px;
+	padding: 5px 20px;
 	cursor: pointer;
 	font-family: "Oswald", sans-serif; /* Oswald font for buttons */
 }
@@ -171,5 +195,16 @@ p {
 .button:hover {
 	/* Hover effects for both manage and other buttons */
 	background-color: #e60000;
+}
+
+.edit-profile-button {
+	font-family: "Oswald", sans-serif;
+	margin-bottom: 8px;
+	padding: 2px 12px;
+	color: #007bff; /* Change text color to match the paragraph text */
+	cursor: pointer;
+	text-decoration: underline;
+	background-color: transparent; /* Set background color to transparent */
+	border: none; /* Remove border */
 }
 </style>
