@@ -5,13 +5,13 @@
 			<router-link to="/marketplace">Marketplace</router-link>
 			<router-link to="/offers">Offers</router-link>
 			<router-link to="/profile" v-if="currentUser">{{
-				currentUser.email
+				"Hi, " + currentUser.username
 			}}</router-link>
 			<router-link to="/login" v-else>Register/Login</router-link>
 		</header>
 
 		<main>
-			<router-view @sign-out="signOut" />
+			<router-view @sign-out="signOut" :key="$route.fullPath"/>
 		</main>
 
 		<footer class="footer">
@@ -22,20 +22,49 @@
 	</div>
 </template>
 
+// App.vue
 <script>
-import { firebase, auth } from '@/firebase.js';
-export default {
+import { ref, onMounted, provide } from 'vue';
+import { auth, db } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
+export default {
   name: 'App',
-  data() {
-    return {
-      currentUser: null,
-    };
-  },
-  mounted() {
-    auth.onAuthStateChanged((user) => {
-      this.currentUser = user;
+  setup() {
+    const currentUser = ref(null);
+
+    async function fetchUserData(uid) {
+      const userDocRef = doc(db, "users", uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        return {
+          uid: uid,
+          username: userData.username,
+          fullname: userData.firstName + " " + userData.lastName,
+          reviews: userData.reviews,
+          phoneNo: userData.phoneNumber,
+          telegram: userData.telegramHandle,
+          email: userData.email
+        };
+      }
+      return null;
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const userDetails = await fetchUserData(user.uid);
+        currentUser.value = userDetails;
+      } else {
+        currentUser.value = null;
+      }
     });
+
+    provide('currentUser', currentUser);
+
+    return {
+      currentUser
+    };
   },
   methods: {
     signOut() {
@@ -43,11 +72,11 @@ export default {
         this.currentUser = null;
         this.$router.push('/login');
       });
-    },
-  },
-
+	}
+}
 };
 </script>
+
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
