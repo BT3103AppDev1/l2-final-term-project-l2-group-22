@@ -143,6 +143,12 @@ export default {
             where("collection", "==", route.query.selectedCollection)
           );
         }
+        if (route.query.itemName) {
+          baseQuery = query(
+            baseQuery,
+            where("name", "==", route.query.itemName)
+          );
+        }
         let conditionQueries = [baseQuery];
         if (
           filters.value.condition.new ||
