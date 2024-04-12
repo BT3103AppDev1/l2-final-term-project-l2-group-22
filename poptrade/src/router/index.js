@@ -38,9 +38,10 @@ const routes = [
 		component: Login,
 	},
 	{
-		path: "/profile",
-		name: "Profile",
+		path: '/profile/:userId?',
+		name: 'UserProfile',
 		component: Dashboard,
+		props: true,
 		meta: { requiresAuth: true }, // Requires authentication to access
 	},
 	{

@@ -1,75 +1,69 @@
 <template>
-  <div class="user-profile" v-if="user">
+  <div class="user-profile" v-if="userProfile">
     <div class="profile-container">
       <h1>User Profile</h1>
       <img
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReYctZuBY4c58lgxVJqjssfyMmghW2aRr62Q&usqp=CAU"
+        :src="userProfile.photoUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReYctZuBY4c58lgxVJqjssfyMmghW2aRr62Q&usqp=CAU'"
         alt="Profile Image"
         class="profile-image"
       />
-      <h2>{{ user.displayName }}</h2>
-      <p>Email: {{ user.email }}</p>
-      <button @click="emitSignOut" class = "signout-button">Sign Out</button>
-      <!-- Additional user details can be added here -->
+      <h2>{{ userProfile.fullname }}</h2>
+      <p>Telegram: {{ userProfile.telegram }}</p>
+      <button @click="emitSignOut" v-if="isCurrentUser" class="signout-button">Sign Out</button>
     </div>
   </div>
   <div class="login" v-else>
-    <div class="login-container">
-      <p>You must be logged in to view this page.</p>
-      <!-- You might want to add a login button here -->
-    </div>
+    <p>You must be logged in to view this page.</p>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
-import { firebase, auth } from '@/firebase.js';
-
+import { ref, onMounted, computed, inject } from 'vue';
+import { auth, db } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default {
   name: "UserProfile",
+  props: {
+    userId: String, // Accept a user ID as a prop
+  },
+  setup(props) {
+    const currentUser = inject('currentUser', ref(null)); // Inject currentUser
+    const userProfile = ref(null);
+    const isCurrentUser = computed(() => userProfile.value && userProfile.value.uid === currentUser.value?.uid);
 
-  data() {
-      return {
-        user: {},
-      };
-    },
+    async function fetchUserData(uid) {
+      const userDocRef = doc(db, "users", uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        return {
+          uid: uid,
+          username: userData.username,
+          fullname: userData.firstName + " " + userData.lastName,
+          reviews: userData.reviews,
+          phoneNo: userData.phoneNumber,
+          telegram: userData.telegramHandle,
+          email: userData.email,
+        };
+      }
+      return null;
+    }
 
-    created() {
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          this.user = user;
-        }
-      });
-    },
-
-  setup() {
-    const user = ref(null);
-
-    
-
-    onMounted(() => {
-      auth.onAuthStateChanged(async (firebaseUser) => {
-        if (firebaseUser) {
-          // User is signed in
-          user.value = {
-            displayName: firebaseUser.displayName,
-            email: firebaseUser.email,
-          };
-        } else {
-          // User is signed out
-          user.value = null;
-        }
-      });
+    onMounted(async () => {
+      const uid = props.userId || currentUser.value?.uid;
+      if (uid && (!currentUser.value || uid !== currentUser.value.uid)) {
+        userProfile.value = await fetchUserData(uid);
+      } else {
+        userProfile.value = currentUser.value; // Use injected currentUser if no userId prop or they match
+      }
     });
 
-    return { user };
-  },
-  
-  methods: {
-    emitSignOut() {
-        this.$emit('sign-out');
-    },
+    function emitSignOut() {
+      auth.signOut();
+    }
+
+    return { userProfile, isCurrentUser, emitSignOut };
   },
 };
 </script>

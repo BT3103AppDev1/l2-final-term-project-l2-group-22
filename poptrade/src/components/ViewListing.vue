@@ -16,7 +16,7 @@
 						<div class="seller-details">
 							<p class="item-seller">
 								Listed by:
-								<span class="verified-seller">{{ userName }}</span>
+								<span class="verified-seller" @click= "goToUserProfile(userId)" >{{ userName }}</span>
 								<br />
 								Location: {{ location }}
 								<br />
@@ -105,6 +105,9 @@ export default {
 	},
 
 	methods: {
+		goToUserProfile(userId) {
+			this.$router.push({ name: 'UserProfile', params: { userId } });
+		},
 		async fetchListingDetails() {
 			const db = getFirestore();
 			const listingRef = doc(

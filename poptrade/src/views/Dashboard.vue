@@ -1,9 +1,9 @@
 <template>
   <div class="dashboard" v-if="user">
-    <user-profile @sign-out="emitSignOut2" :user="user"></user-profile>
+    <user-profile @sign-out="emitSignOut2" :userId="userIdToDisplay"></user-profile>
     <div class="header-container">
       <h2 class="header-title">My Listings</h2>
-      <button @click="goToManageInventory" class="manage-button">
+      <button v-if="isCurrentUser" @click="goToManageInventory" class="manage-button">
         Manage Inventory
       </button>
     </div>
@@ -22,7 +22,7 @@
     </div>
     <div class="header-container">
       <h2 class="header-title">My Wishlist</h2>
-      <button @click="goToManageWishlist" class="manage-button">
+      <button v-if="isCurrentUser" @click="goToManageWishlist" class="manage-button">
         Manage Wishlist
       </button>
     </div>
@@ -40,50 +40,68 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
-import { firebase, auth } from "@/firebase.js";
+import { ref, computed, onMounted, watch } from "vue";
+import { auth } from "@/firebase.js";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import UserProfile from "../components/UserProfile.vue";
 
 export default {
   name: "Dashboard",
-  components: {
-    UserProfile,
+  components: { UserProfile },
+  props: {
+    userId: String,  // This can be passed or not
   },
-
-  setup() {
+  setup(props) {
     const user = ref(null);
     const listings = ref([]);
     const wishlist = ref([]);
-    const firestore = getFirestore();
 
-    // Unified fetchData function for fetching either listings or wishlist
-    const fetchData = async (dataType, setData) => {
-      const firebaseUser = auth.currentUser;
-      if (firebaseUser) {
-        user.value = {
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-          email: firebaseUser.email,
-        };
-
-        const dataRef = collection(
-          firestore,
-          "users",
-          firebaseUser.uid,
-          dataType
-        );
-        const snapshot = await getDocs(dataRef);
-        setData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-      }
-    };
-
-    onMounted(() => {
-      fetchData("listings", (data) => (listings.value = data));
-      fetchData("wishlist", (data) => (wishlist.value = data));
+    const userIdToDisplay = computed(() => {
+      return props.userId || user.value?.uid;
     });
 
-    return { user, listings, wishlist };
+    const isCurrentUser = computed(() => {
+      return !props.userId || props.userId === user.value?.uid;
+    });
+
+
+    // Listen for authentication state changes
+    auth.onAuthStateChanged(userAuth => {
+      if (userAuth) {
+        user.value = {
+          uid: userAuth.uid,
+          displayName: userAuth.displayName,
+          photoURL: userAuth.photoURL,
+          email: userAuth.email
+        };
+        // Fetch data only if userId prop is not provided
+        if (!props.userId) {
+          fetchData("listings", (data) => (listings.value = data), userAuth.uid);
+          fetchData("wishlist", (data) => (wishlist.value = data), userAuth.uid);
+        }
+      } else {
+        user.value = null;
+      }
+    });
+
+    const firestore = getFirestore();
+
+    // Function to fetch data based on UID
+    const fetchData = async (dataType, setData, uid) => {
+      const dataRef = collection(firestore, "users", uid, dataType);
+      const snapshot = await getDocs(dataRef);
+      setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    };
+
+    // Reactively fetch data when props.userId changes
+    watch(() => props.userId, (newUserId) => {
+      if (newUserId) {
+        fetchData("listings", (data) => (listings.value = data), newUserId);
+        fetchData("wishlist", (data) => (wishlist.value = data), newUserId);
+      }
+    }, { immediate: true });
+
+    return { user, listings, wishlist, userIdToDisplay, isCurrentUser };
   },
   methods: {
     goToManageInventory() {
@@ -95,10 +113,12 @@ export default {
     emitSignOut2() {
         this.$emit('sign-out');
     },
-    
   },
 };
+
 </script>
+
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
@@ -197,5 +217,4 @@ export default {
 	gap: 20px;
 }
 
-/* Additional styles can go here */
 </style>
