@@ -1,6 +1,7 @@
 <template>
 	<div class="register">
-		<h1>Complete Your Registration</h1>
+		<h1>Create Account</h1>
+		<p>Join the community of POPMART traders!</p>
 		<form @submit.prevent="registerUser">
 			<input type="text" v-model="username" placeholder="Username" required />
 			<input
@@ -76,5 +77,39 @@ export default {
 </script>
 
 <style scoped>
-/* Your styles here */
+.register {
+	text-align: center;
+}
+
+.register h1 {
+	margin-bottom: 20px;
+}
+
+.register form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.register input {
+	margin-bottom: 10px;
+	padding: 8px;
+	width: 300px;
+	border: 1px solid #ccc;
+	border-radius: 20px;
+}
+
+.register button {
+	margin-top: 10px;
+	background-color: #f44336;
+	color: white;
+	border: none;
+	border-radius: 20px;
+	padding: 10px 135px;
+	cursor: pointer;
+}
+
+.register button:hover {
+	background-color: #d32f2f;
+}
 </style>
