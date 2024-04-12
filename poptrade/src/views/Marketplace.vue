@@ -14,7 +14,7 @@
       <div
         v-for="listing in listings"
         :key="listing.id"
-        class="listing"
+        class="listing-card"
         @click="goToViewListing(listing)"
       >
         <img
@@ -22,9 +22,34 @@
           :alt="listing.name"
           class="listing-image"
         />
-        <p>{{ listing.name }}</p>
+        <div class="listing-details">
+          <h3>{{ listing.name }}</h3>
+          <p>{{ listing.collection }}</p>
+        </div>
       </div>
     </div>
+
+    <h2>Listings from Top Traders</h2>
+    <div class="listings-row">
+      <div
+        v-for="listing in listings"
+        :key="listing.id"
+        class="listing-card"
+        @click="goToViewListing(listing)"
+      >
+        <img
+          :src="listing.imageURL"
+          :alt="listing.name"
+          class="listing-image"
+        />
+        <div class="listing-details">
+          <h3>{{ listing.name }}</h3>
+          <p>{{ listing.collection }}</p>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 </template>
 <script>
@@ -75,7 +100,7 @@ export default {
       console.log(`Found ${usersSnapshot.docs.length} users`);
 
       for (const userDoc of usersSnapshot.docs) {
-        if (fetchedListings.value.length >= 10) break;
+        if (fetchedListings.value.length >= 6) break;
         if (userDoc.id === currentUserUid) continue;
 
         const listingsQuery = query(
@@ -86,7 +111,7 @@ export default {
         const listingsSnapshot = await getDocs(listingsQuery);
 
         listingsSnapshot.docs
-          .slice(0, 10 - fetchedListings.value.length)
+          .slice(0, 6 - fetchedListings.value.length)
           .forEach((doc) => {
             fetchedListings.value.push({
               id: doc.id,
@@ -135,18 +160,10 @@ export default {
   margin-top: 0; /* Removes top margin */
   padding-top: 20px;
 }
+
 .marketplace h2 {
   margin-top: 80px; /* Reduces space above the h2 if necessary */
   /* Add other styles as needed */
-}
-/* Adjusted button styles to class listings */
-.listing {
-  cursor: pointer;
-}
-
-.listing img {
-  max-width: 100%;
-  border-radius: 5px;
 }
 
 /* Layout styles for listings */
@@ -154,15 +171,43 @@ export default {
   display: flex;
   flex-wrap: nowrap; /* Prevent wrapping by default */
   overflow-x: auto; /* Enable horizontal scrolling */
-  gap: 10px; /* Spacing between listings */
-  padding: 10px 0;
+  gap: 20px; /* Spacing between listings */
+  padding: 10px 70px;
 }
 
-.listing {
-  flex: 0 0 auto; /* Do not grow, do not shrink, and do not allow flex-basis to be auto-sized */
-  margin: 0 5px; /* Horizontal margin for spacing */
-  width: 180px; /* Fixed width */
-  text-align: center; /* Center the text within each listing */
+.listing-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border: 1px solid #eee;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	position: relative;
+}
+
+.listing-details {
+	padding: 10px;
+	text-align: center;
+}
+
+.listing-details h3 {
+	font-size: 1rem;
+	margin-top: 5px;
+	margin-bottom: 1px;
+}
+
+.listing-details p {
+	font-size: 0.8rem;
+	margin-top: 2px;
+	margin-bottom: 10px
+}
+
+.listing-image {
+  width: 100%;
+  height: auto;
+  border-radius: 4px; /* Optional: Adds slight rounding to the image corners */
+  margin-bottom: 10px;
 }
 
 /* Responsive design adjustments */
