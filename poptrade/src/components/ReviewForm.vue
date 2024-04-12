@@ -1,6 +1,7 @@
 <template>
 	<div class="review-form">
 		<h2>Submit a Review for {{ this.userName }}</h2>
+  </br></br>
 		<form @submit.prevent="submitReview">
 			<div class="star-rating">
 				<label v-for="star in 5" :key="star" class="star">
@@ -20,6 +21,7 @@
 			<br />
 			<button type="submit" class="submit-button">Submit Review</button>
 		</form>
+		<button @click="exitForm" class="exit-button">I'll submit a review later</button>
 	</div>
 </template>
 
@@ -115,6 +117,10 @@ export default {
 				console.error("Error submitting review:", error);
 			}
 		},
+
+    async exitForm() {
+      this.$router.push({ name: "Offers" });
+    },
 	},
 };
 </script>
@@ -123,7 +129,7 @@ export default {
 .review-form {
 	border: 1px solid #ccc;
 	border-radius: 5px; /* Add rounded corners */
-	padding: 16px;
+	padding: 40px;
 	margin-top: 16px;
 	background-color: #f5f5f5; /* Add subtle background color */
 }
@@ -135,7 +141,7 @@ export default {
 .star-rating {
 	display: flex;
 	justify-content: center;
-	margin-bottom: 10px;
+	margin-bottom: 0px;
 }
 
 .star {
@@ -157,12 +163,20 @@ export default {
 }
 
 .review-form button {
-	margin-top: 16px;
+	margin-top: 10px;
 	background-color: #f44336; /* Add button background color */
 	color: white;
-	padding: 10px 20px;
+	padding: 10px 30px;
 	border: none;
 	border-radius: 5px; /* Add rounded corners to button */
+	cursor: pointer;
+}
+
+.review-form .exit-button {
+	background-color: #f5f5f5;
+	margin-top: 16px;
+	color: #007bff; /* Change text color to blue */
+	text-decoration: underline; /* Add underline to text */
 	cursor: pointer;
 }
 </style>
