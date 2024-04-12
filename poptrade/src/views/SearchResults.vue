@@ -127,7 +127,10 @@ export default {
       let tempResults = [];
       const usersSnapshot = await getDocs(collection(firestore, "users"));
       for (const userDoc of usersSnapshot.docs) {
-        let baseQuery = collection(firestore, "users", userDoc.id, "listings");
+        let baseQuery = query(
+          collection(firestore, "users", userDoc.id, "listings"),
+          where("status", "==", "Available")
+        );
         if (route.query.selectedPopmart) {
           baseQuery = query(
             baseQuery,
