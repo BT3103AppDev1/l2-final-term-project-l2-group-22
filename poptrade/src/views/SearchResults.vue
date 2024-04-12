@@ -337,7 +337,7 @@ export default {
 .prev-btn,
 .next-btn {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #ff4d4d;
   color: #fff;
   border: none;
   border-radius: 20px; /* More pronounced rounded corners for buttons */
@@ -352,7 +352,7 @@ export default {
 .view-listing-btn:hover,
 .prev-btn:hover,
 .next-btn:hover {
-  background-color: #0056b3;
+  background-color: #e60000;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Larger shadow on hover for a lifting effect */
   transform: translateY(
     -2px

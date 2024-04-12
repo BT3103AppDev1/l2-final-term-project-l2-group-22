@@ -204,7 +204,7 @@ export default {
 }
 
 .submit-btn {
-  background-color: #007bff;
+  background-color: #ff4d4d;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -213,7 +213,7 @@ export default {
 }
 
 .submit-btn:hover {
-  background-color: #0056b3;
+  background-color: #f82424;
 }
 
 /* Add styling for required field */
