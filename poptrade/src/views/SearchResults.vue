@@ -1,9 +1,25 @@
 <template>
   <div class="search-results-container">
-    <!-- Sidebar for filtering -->
     <aside class="sidebar">
-      <h3>Sort by:</h3>
-      <!-- Filtering options could be implemented here -->
+      <h3>Filter by:</h3>
+      <div class="filter-option">
+        <label>
+          <input type="checkbox" v-model="filters.condition.new" />
+          Brand New
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="checkbox" v-model="filters.condition.mint" />
+          Mint
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="checkbox" v-model="filters.condition.used" />
+          Used
+        </label>
+      </div>
     </aside>
 
     <!-- Main content area -->
@@ -80,6 +96,13 @@ export default {
     const groupedResults = ref([]);
     const currentPageIndex = ref(0);
     const loading = ref(false);
+    const filters = ref({
+      condition: {
+        new: false,
+        mint: false,
+        used: false,
+      },
+    });
 
     const fetchUserDetails = async (userId) => {
       const userDetails = {
@@ -104,7 +127,6 @@ export default {
       let tempResults = [];
       const usersSnapshot = await getDocs(collection(firestore, "users"));
       for (const userDoc of usersSnapshot.docs) {
-        if (userDoc.id === currentUserUid.value) continue;
         let baseQuery = collection(firestore, "users", userDoc.id, "listings");
         if (route.query.selectedPopmart) {
           baseQuery = query(
@@ -118,21 +140,36 @@ export default {
             where("collection", "==", route.query.selectedCollection)
           );
         }
-        let listingsQuery = itemName.value
-          ? query(
-              baseQuery,
-              where("name", "==", itemName.value),
-              where("status", "==", "Available")
-            )
-          : query(baseQuery, where("status", "==", "Available"));
-        const listingsSnapshot = await getDocs(listingsQuery);
-        tempResults.push(
-          ...listingsSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            userId: userDoc.id,
-            ...doc.data(),
-          }))
-        );
+        let conditionQueries = [baseQuery];
+        if (
+          filters.value.condition.new ||
+          filters.value.condition.mint ||
+          filters.value.condition.used
+        ) {
+          conditionQueries = [];
+          if (filters.value.condition.new)
+            conditionQueries.push(
+              query(baseQuery, where("condition", "==", "Brand New"))
+            );
+          if (filters.value.condition.mint)
+            conditionQueries.push(
+              query(baseQuery, where("condition", "==", "Mint"))
+            );
+          if (filters.value.condition.used)
+            conditionQueries.push(
+              query(baseQuery, where("condition", "==", "Used"))
+            );
+        }
+        for (const conditionQuery of conditionQueries) {
+          const listingsSnapshot = await getDocs(conditionQuery);
+          tempResults.push(
+            ...listingsSnapshot.docs.map((doc) => ({
+              id: doc.id,
+              userId: userDoc.id,
+              ...doc.data(),
+            }))
+          );
+        }
       }
       tempResults = await Promise.all(
         tempResults.map(async (result) => {
@@ -164,9 +201,10 @@ export default {
         () => route.query.itemName,
         () => route.query.selectedPopmart,
         () => route.query.selectedCollection,
+        filters,
       ],
       fetchFilteredResults,
-      { immediate: true }
+      { immediate: true, deep: true }
     );
 
     onMounted(() => {
@@ -204,6 +242,7 @@ export default {
         () => currentPageIndex.value < groupedResults.value.length - 1
       ),
       loading,
+      filters,
       currentGroup: computed(
         () => groupedResults.value[currentPageIndex.value]
       ),
@@ -221,7 +260,33 @@ export default {
 .sidebar {
   width: 250px;
   padding: 20px;
-  border-right: 1px solid #ccc;
+  background: #fff; /* Light theme */
+  border-right: 2px solid #eaeaea; /* Soft border */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+}
+
+.filter-option {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f7f7f7; /* Slightly off-white background for the filter options */
+  border-radius: 10px; /* Rounded corners for the filter options */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow for an inset look */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.filter-option:hover {
+  background-color: #e9e9e9; /* Slightly darker background on hover for interaction feedback */
+}
+
+.filter-option label {
+  display: flex;
+  align-items: center; /* Align the checkbox and label text */
+  cursor: pointer;
+}
+
+.filter-option input[type="checkbox"] {
+  margin-right: 10px; /* Space out the checkbox from the label */
+  cursor: pointer;
 }
 
 .main-content {
@@ -265,18 +330,30 @@ export default {
   object-fit: cover;
 }
 
-.view-listing-btn {
-  padding: 10px 15px;
+.view-listing-btn,
+.prev-btn,
+.next-btn {
+  padding: 10px 20px;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px; /* More pronounced rounded corners for buttons */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for buttons */
+  text-transform: uppercase; /* Uppercase text for a more button-like appearance */
+  font-weight: bold; /* Bold font weight for the button text */
+  letter-spacing: 0.5px; /* Slightly increase spacing between letters */
+  transition: all 0.3s ease; /* Transition for hover effects */
   cursor: pointer;
-  margin-top: 10px;
 }
 
-.view-listing-btn:hover {
+.view-listing-btn:hover,
+.prev-btn:hover,
+.next-btn:hover {
   background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Larger shadow on hover for a lifting effect */
+  transform: translateY(
+    -2px
+  ); /* Slight upward movement on hover for a "button press" feel */
 }
 
 .telegram-handle {
@@ -296,21 +373,6 @@ export default {
 
 .pagination {
   margin-top: 20px;
-}
-
-.prev-btn,
-.next-btn {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.prev-btn:hover,
-.next-btn:hover {
-  background-color: #0056b3;
 }
 
 .prev-btn {

@@ -60,6 +60,7 @@
           <label for="condition">Condition:</label>
           <select id="condition" v-model="itemCondition" required>
             <option value="">Select condition</option>
+            <option value="Brand New">Brand New</option>
             <option value="Mint">Mint</option>
             <option value="Used">Used</option>
           </select>
