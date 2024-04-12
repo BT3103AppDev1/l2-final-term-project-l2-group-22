@@ -12,7 +12,11 @@
         <p>Loading...</p>
       </div>
       <div v-else-if="currentGroup">
-        <h2>{{ currentGroup.name }}</h2>
+        <!-- Updated header to show the number of listings and item name in italics -->
+        <h2>
+          {{ currentGroup.listings.length }} listing found for
+          <i>{{ currentGroup.name }}</i>
+        </h2>
         <img :src="currentGroup.imageURL" alt="Item Image" class="item-image" />
         <div
           v-for="result in currentGroup.listings"
@@ -259,10 +263,6 @@ export default {
   height: 40px;
   border-radius: 5px;
   object-fit: cover;
-}
-
-.wishlist img:hover {
-  transform: scale(1.1);
 }
 
 .view-listing-btn {

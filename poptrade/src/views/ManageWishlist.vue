@@ -1,5 +1,8 @@
 <template>
   <div class="page-container">
+    <div class="back-button-container">
+      <button @click="goBack" class="back-button">Go Back</button>
+    </div>
     <!-- Listings Section -->
     <div class="listings-container">
       <h2>Edit your Wishlist:</h2>
@@ -59,6 +62,7 @@
 
 <script>
 import { ref, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import {
   getFirestore,
   collection,
@@ -83,6 +87,11 @@ export default {
 
     const firestore = getFirestore();
     const auth = getAuth();
+
+    const router = useRouter();
+    const goBack = () => {
+      router.go(-1); // This will navigate to the previous page
+    };
 
     // Fetches Popmart names from Firestore
     const fetchPopmarts = async () => {
@@ -245,6 +254,7 @@ export default {
       listings,
       removeListing,
       submitListing,
+      goBack,
     };
   },
 };
@@ -258,6 +268,33 @@ export default {
   margin: 20px;
 }
 
+.back-button-container {
+  position: relative;
+  top: 100px;
+  left: -700px;
+  z-index: 100;
+  width: 100%;
+}
+
+.back-button {
+  padding: 10px 40px;
+  width: auto;
+}
+
+@media (max-width: 1024px) {
+  .back-button-container {
+    top: 150px;
+    left: 100px;
+  }
+}
+
+@media (max-width: 600px) {
+  .back-button-container {
+    top: 100px;
+    left: 50px;
+  }
+}
+
 .listings-container {
   width: 100%;
   max-width: 800px; /* Adjust as needed */
@@ -269,62 +306,62 @@ export default {
 }
 
 .listings {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-	gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
 }
 
 .listing-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	border: 1px solid #eee;
-	border-radius: 10px;
-	overflow: hidden;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
 .listing-image {
-	width: 100%;
-	display: block;
+  width: 100%;
+  display: block;
 }
 
 .listing-details {
-	padding: 10px;
-	text-align: center;
+  padding: 10px;
+  text-align: center;
 }
 
 .listing-details h3 {
-	font-size: 1rem;
-	margin-top: 5px;
-	margin-bottom: 1px;
+  font-size: 1rem;
+  margin-top: 5px;
+  margin-bottom: 1px;
 }
 
 .listing-details p {
-	font-size: 0.8rem;
-	margin-top: 2px;
-	margin-bottom: 33px
+  font-size: 0.8rem;
+  margin-top: 2px;
+  margin-bottom: 33px;
 }
 
 button {
-	background-color: #f44336;
-	color: white;
-	border: none;
-	padding: 5px 10px;
-	cursor: pointer;
-	text-transform: uppercase;
-	font-weight: bold;
-	border-radius: 20px;
-	width: calc(100% - 20px);
-	margin-top: 5px;
-  	margin-bottom: 5px;
-	position: absolute;
-	bottom: 0
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  border-radius: 20px;
+  width: calc(100% - 20px);
+  margin-top: 5px;
+  margin-bottom: 5px;
+  position: absolute;
+  bottom: 0;
 }
 
 button:hover {
-	background-color: #d32f2f;
+  background-color: #d32f2f;
 }
 
 .form-container {
@@ -372,5 +409,4 @@ textarea {
 .submit-btn:hover {
   background-color: #d32f2f;
 }
-
 </style>
