@@ -122,7 +122,20 @@
 						<br />
 						{{ offer.contactInfo }}
 					</td>
-					<td>{{ offer.tradeStatus }}</td>
+					<!-- <td>{{ offer.tradeStatus }}</td> -->
+					<td>
+						<!-- Action column -->
+						<!-- If offer is not reviewed, show button to review -->
+						<button
+							v-if="!offer.reviewed"
+							@click="review(offer)"
+							class="reject-button"
+						>
+							Review
+						</button>
+						<!-- If offer is reviewed, show 'Completed' -->
+						<span v-else>Completed</span>
+					</td>
 				</tr>
 			</tbody>
 		</table>
@@ -371,7 +384,6 @@ export default {
 						offer.yourImageURL = null;
 						offer.yourId = currentUserUid;
 						offer.tele = null;
-						offer.reviewed = null;
 						offer.theirImageURL = null;
 						offer.contactInfo = null;
 						return offer;
@@ -385,7 +397,6 @@ export default {
 					offer.theirImageURL = theirListing.imageURL;
 					offer.telegramHandle = theirProfile.telegramHandle;
 					offer.contactInfo = theirProfile.phoneNumber;
-					offer.reviewed = yourListing.reviewed;
 				}
 
 				completedOffers.value = offers;
@@ -523,6 +534,18 @@ export default {
 				console.error("Error retracting offer:", error);
 			}
 		},
+
+		async review(offer) {
+			// Navigate to reviewform.vue
+			this.$router.push({
+				name: "ReviewForm",
+				params: {
+					userId: offer.offeredBy,
+					listingId: offer.offererListing,
+					offerId: offer.id,
+				},
+			});
+		},
 	},
 };
 </script>
@@ -582,10 +605,10 @@ export default {
 }
 .reject-button {
 	margin: 2px;
-	background-color: red;
+	background-color: #f44336;
 	color: white;
-	padding: 10px 10px;
+	padding: 10px 25px;
 	border-radius: 15px;
-	border-color: red;
+	border-color: #f44336;
 }
 </style>
