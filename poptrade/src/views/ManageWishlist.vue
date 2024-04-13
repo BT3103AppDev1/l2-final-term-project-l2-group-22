@@ -271,7 +271,7 @@ export default {
 .back-button-container {
   position: relative;
   top: 100px;
-  left: -700px;
+  left: -600px;
   z-index: 100;
   width: 100%;
 }

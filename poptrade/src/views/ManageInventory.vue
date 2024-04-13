@@ -300,7 +300,7 @@ export default {
 .back-button-container {
   position: relative;
   top: 100px;
-  left: -700px;
+  left: -600px;
   z-index: 100;
   width: 100%;
 }
@@ -320,7 +320,7 @@ export default {
 @media (max-width: 600px) {
   .back-button-container {
     top: 100px;
-    left: 50px;
+    left: 90px;
   }
 }
 
