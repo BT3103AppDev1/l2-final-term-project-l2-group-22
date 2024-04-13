@@ -16,7 +16,11 @@
 						<div class="seller-details">
 							<p class="item-seller">
 								Listed by:
-								<span class="verified-seller" @click= "goToUserProfile(userId)" >{{ userName }}</span>
+								<span
+									class="verified-seller"
+									@click="goToUserProfile(userId)"
+									>{{ userName }}</span
+								>
 								<br />
 								Location: {{ location }}
 								<br />
@@ -106,7 +110,7 @@ export default {
 
 	methods: {
 		goToUserProfile(userId) {
-			this.$router.push({ name: 'UserProfile', params: { userId } });
+			this.$router.push({ name: "UserProfile", params: { userId } });
 		},
 		async fetchListingDetails() {
 			const db = getFirestore();
@@ -247,6 +251,8 @@ export default {
 }
 
 .back-button {
+	margin-top: 20px;
+	margin-left: 22px;
 	padding: 10px 20px; /* Adjust padding to increase or decrease the button size */
 	background-color: #f44336; /* Red background */
 	color: white; /* White text */
@@ -274,7 +280,6 @@ export default {
 	align-items: center;
 	justify-content: center;
 	background-color: white;
-
 	border-radius: 5px;
 	margin-bottom: 1rem;
 	text-align: left;
@@ -286,29 +291,28 @@ export default {
 
 .item-card {
 	display: flex;
-	align-items: flex-start; /* Adjusted to align items to the start */
-	justify-content: space-between; /* Adds space between the image and details */
+	align-items: flex-start;
+	justify-content: center; /* Changed to space-between */
 	background-color: white;
 	border-radius: 5px;
-	padding: 20px; /* Add some padding around the content */
+	padding: 20px; /* Adjust padding as needed */
 	margin-bottom: 1rem;
 	text-align: left;
 }
 
 .item-card .item-image {
-	width: auto; /* Adjust width to auto */
-	max-width: 50%; /* Limit the image width to 50% of its container */
-	height: auto; /* Set height to auto to maintain aspect ratio */
-	border-radius: 15px; /* Adjust border-radius for rounded corners */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
-	margin-right: 20px; /* Add some margin to the right of the image */
+	width: auto;
+	max-width: 35%; /* Adjust the value to make the image smaller */
+	height: auto;
+	border-radius: 15px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .item-card .item-image img {
 	width: 100%;
-	height: auto; /* Maintain aspect ratio */
-	border-radius: 15px; /* Ensure the img tag also has rounded corners */
-	object-fit: cover; /* Cover the area, this will clip the image if not square */
+	height: auto;
+	border-radius: 15px;
+	object-fit: cover;
 }
 
 .item-card .verified-seller {
@@ -363,6 +367,9 @@ export default {
 	font-weight: bold;
 }
 
+.item-details {
+	margin-left: 2rem;
+}
 /* .disabled-button {
 	color: grey;
 	background-color: lightgrey;
