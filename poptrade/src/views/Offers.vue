@@ -28,7 +28,7 @@
 						/>
 					</td>
 					<td>{{ offer.time }}</td>
-					<td>
+					<td class = "contactInfo" @click = "goToUserProfile(offer.offeredBy)">
 						{{ offer.telegramHandle }}
 						<br />
 						{{ offer.contactInfo }}
@@ -75,7 +75,7 @@
 						/>
 					</td>
 					<td>{{ offer.time }}</td>
-					<td>
+					<td class = "contactInfo" @click = "goToUserProfile(offer.offeredBy)">
 						{{ offer.telegramHandle }}
 						<br />
 						{{ offer.contactInfo }}
@@ -416,6 +416,9 @@ export default {
 	},
 
 	methods: {
+		goToUserProfile(userId) {
+			this.$router.push({ name: "UserProfile", params: { userId } });
+		},
 		async acceptOffer(offer) {
 			const firestore = getFirestore();
 			const auth = getAuth();
@@ -551,6 +554,13 @@ export default {
 </script>
 
 <style scoped>
+
+.contactInfo {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .offers-container {
 	display: flex;
 	flex-direction: column;
