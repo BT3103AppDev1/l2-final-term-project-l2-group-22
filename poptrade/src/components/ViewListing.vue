@@ -12,6 +12,7 @@
 					<h1 class="item-brand">{{ series }}</h1>
 					<p class="item-figurine">Figurine: {{ figurine }}</p>
 					<p class="item-condition">Condition: {{ condition }}</p>
+					<p class = "item-description">Description: {{ description }}</p>
 					<div class="item-seller-box">
 						<div class="seller-details">
 							<p class="item-seller">
@@ -315,9 +316,11 @@ export default {
 	object-fit: cover;
 }
 
-.item-card .verified-seller {
-	color: #55a630;
-	font-weight: bold;
+
+.verified-seller {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 #make-offer-button {
