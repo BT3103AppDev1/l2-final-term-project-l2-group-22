@@ -76,8 +76,8 @@ export default {
         };
         // Fetch data only if userId prop is not provided
         if (!props.userId) {
-          fetchData("listings", (data) => (listings.value = data), userAuth.uid);
-          fetchData("wishlist", (data) => (wishlist.value = data), userAuth.uid);
+          fetchData("listings", (data) => (listings.value = data.filter(doc => doc.status !== "Unavailable")), userAuth.uid);
+          fetchData("wishlist", (data) => (wishlist.value = data.filter(doc => doc.status !== "Unavailable")), userAuth.uid);
         }
       } else {
         user.value = null;
@@ -96,8 +96,8 @@ export default {
     // Reactively fetch data when props.userId changes
     watch(() => props.userId, (newUserId) => {
       if (newUserId) {
-        fetchData("listings", (data) => (listings.value = data), newUserId);
-        fetchData("wishlist", (data) => (wishlist.value = data), newUserId);
+        fetchData("listings", (data) => (listings.value = data.filter(doc => doc.status !== "Unavailable")), newUserId);
+        fetchData("wishlist", (data) => (wishlist.value = data.filter(doc => doc.status !== "Unavailable")), newUserId);
       }
     }, { immediate: true });
 

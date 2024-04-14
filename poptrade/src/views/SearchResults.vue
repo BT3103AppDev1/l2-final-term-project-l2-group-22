@@ -49,7 +49,7 @@
                 class="wishlist-image"
               />
             </div>
-            <div class="telegram-handle">{{ result.telegramHandle }}</div>
+            <div class="telegram-handle" @click="goToUserProfile(result.userId)">{{ result.telegramHandle }}</div>
             <button class="view-listing-btn" @click="goToViewListing(result)">
               View Listing
             </button>
@@ -230,6 +230,8 @@ export default {
       });
     };
 
+    
+
     const prevGroup = () => {
       if (currentPageIndex.value > 0) currentPageIndex.value--;
     };
@@ -257,6 +259,11 @@ export default {
       ),
     };
   },
+  methods: {
+    goToUserProfile(userId) {
+			this.$router.push({ name: "UserProfile", params: { userId } });
+		}
+  }
 };
 </script>
 

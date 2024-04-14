@@ -142,7 +142,7 @@ export default {
           listings.value = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-          }));
+          })).filter(listing => listing.status !== "Unavailable");
         } catch (error) {
           console.error("Failed to fetch listings:", error);
         }
