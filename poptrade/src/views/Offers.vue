@@ -28,7 +28,7 @@
 						/>
 					</td>
 					<td>{{ offer.time }}</td>
-					<td class = "contactInfo" @click = "goToUserProfile(offer.offeredBy)">
+					<td class="contactInfo" @click="goToUserProfile(offer.offeredBy)">
 						{{ offer.telegramHandle }}
 						<br />
 						{{ offer.contactInfo }}
@@ -74,7 +74,7 @@
 						/>
 					</td>
 					<td>{{ offer.time }}</td>
-					<td class = "contactInfo" @click = "goToUserProfile(offer.offeredBy)">
+					<td class="contactInfo" @click="goToUserProfile(offer.offeredBy)">
 						{{ offer.telegramHandle }}
 						<br />
 						{{ offer.contactInfo }}
@@ -124,8 +124,9 @@
 					<td>
 						<!-- Action column -->
 						<!-- If offer is not reviewed, show button to review -->
+						<span v-if="offer.tradeStatus === 'Unavailable'">Unavailable</span>
 						<button
-							v-if="!offer.reviewed"
+							v-else-if="!offer.reviewed && offer.tradeStatus === 'Completed'"
 							@click="review(offer)"
 							class="reject-button"
 						>
@@ -552,11 +553,10 @@ export default {
 </script>
 
 <style scoped>
-
 .contactInfo {
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: underline;
+	color: #007bff;
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 .offers-container {
