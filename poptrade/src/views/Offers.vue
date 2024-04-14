@@ -54,7 +54,6 @@
 					<th>Their Offer</th>
 					<th>Time of Offer</th>
 					<th>Contact Information</th>
-					<th>Status</th>
 					<th>Retract Offer</th>
 				</tr>
 			</thead>
@@ -80,7 +79,6 @@
 						<br />
 						{{ offer.contactInfo }}
 					</td>
-					<td>{{ offer.status }}</td>
 					<td class="offer-actions-cell">
 						<button class="reject-button" @click="retractOffer(offer)">
 							Retract Offer
