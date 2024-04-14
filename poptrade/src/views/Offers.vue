@@ -115,7 +115,7 @@
 						/>
 					</td>
 					<td>{{ offer.time }}</td>
-					<td>
+					<td class = "contactInfo" @click = "goToUserProfile(offer.offeredBy)">
 						{{ offer.telegramHandle }}
 						<br />
 						{{ offer.contactInfo }}
