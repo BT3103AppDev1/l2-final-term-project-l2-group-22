@@ -162,41 +162,43 @@ export default {
 	overflow: hidden;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 	position: relative;
-}
-
-.listing-image {
-	width: 100%;
-	display: block;
-}
-
-.listing-image:hover {
-  transform: scale(1.05);
-  transition: transform 0.3s ease;
-  cursor: pointer;
+  height: 24vw;
+  width: 14vw;
 }
 
 .listing-details {
 	padding: 10px;
 	text-align: center;
+  height: 40%;
 }
 
 .listing-details h3 {
-	font-size: 1rem;
-	margin-top: 5px;
-	margin-bottom: 1px;
+	/* font-size: 1rem; */
+  font-size: calc(1vw + 0.4vh);
+	margin-top: 0.2vw;
+	margin-bottom: 0.2vw;
 }
 
 .listing-details p {
-	font-size: 0.8rem;
-	margin-top: 2px;
-	margin-bottom: 10px
+	/* font-size: 0.8rem; */
+  font-size: calc(0.8vw + 0.32vh);
+	margin-top: 0.2vw;
+	margin-bottom: 0.2vw;
 }
 
 .listing-image {
   width: 100%;
-  height: auto;
+  height: 80%; /* Adjust the percentage based on your design */
+  object-fit: cover;
   border-radius: 4px; /* Optional: Adds slight rounding to the image corners */
-  margin-bottom: 10px;
+  margin-bottom: 0.1vw;
+  max-width: 100%;
+}
+
+.listing-card:hover {
+  transform: scale(1.03);
+  transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
 .manage-button,
