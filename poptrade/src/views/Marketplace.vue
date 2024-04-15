@@ -219,6 +219,11 @@ export default {
 </script>
 
 <style scoped>
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* Header styles */
 .marketplace h1 {
   color: red;
@@ -231,7 +236,14 @@ export default {
 
 .marketplace h2 {
   margin-top: 80px; /* Reduces space above the h2 if necessary */
-  /* Add other styles as needed */
+}
+
+.listings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr)); /* 20vw is just an example, adjust as needed */
+  gap: 20px;
+  padding-left: 2vw; /* Use viewport units for padding */
+  padding-right: 2vw;
 }
 
 /* Layout styles for listings */
@@ -239,7 +251,7 @@ export default {
   display: flex;
   flex-wrap: nowrap; /* Prevent wrapping by default */
   overflow-x: auto; /* Enable horizontal scrolling */
-  gap: 20px; /* Spacing between listings */
+  gap: 1vw; /* Spacing between listings */
   padding: 10px 70px;
 }
 
@@ -252,36 +264,41 @@ export default {
 	overflow: hidden;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 	position: relative;
-  height: 365px;
-  width: 220px;
+  height: 24vw;
+  width: 14vw;
 }
 
 .listing-details {
 	padding: 10px;
 	text-align: center;
+  height: 40%;
 }
 
 .listing-details h3 {
-	font-size: 1rem;
-	margin-top: 5px;
-	margin-bottom: 1px;
+	/* font-size: 1rem; */
+  font-size: calc(1vw + 0.4vh);
+	margin-top: 0.2vw;
+	margin-bottom: 0.2vw;
 }
 
 .listing-details p {
-	font-size: 0.8rem;
-	margin-top: 2px;
-	margin-bottom: 10px
+	/* font-size: 0.8rem; */
+  font-size: calc(0.8vw + 0.32vh);
+	margin-top: 0.2vw;
+	margin-bottom: 0.2vw;
 }
 
 .listing-image {
   width: 100%;
-  height: auto;
+  height: 80%; /* Adjust the percentage based on your design */
+  object-fit: cover;
   border-radius: 4px; /* Optional: Adds slight rounding to the image corners */
-  margin-bottom: 10px;
+  margin-bottom: 0.1vw;
+  max-width: 100%;
 }
 
-.listing-image:hover {
-  transform: scale(1.05);
+.listing-card:hover {
+  transform: scale(1.03);
   transition: transform 0.3s ease;
   cursor: pointer;
 }
