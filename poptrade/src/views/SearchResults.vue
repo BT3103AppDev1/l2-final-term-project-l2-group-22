@@ -49,7 +49,7 @@
                 class="wishlist-image"
               />
             </div>
-            <div class="telegram-handle" @click="goToUserProfile(result.userId)">{{ result.telegramHandle }}</div>
+            <div class="telegram-handle" @click="goToDashboard(result.userId)">{{ result.telegramHandle }}</div>
             <button class="view-listing-btn" @click="goToViewListing(result)">
               View Listing
             </button>
@@ -260,8 +260,8 @@ export default {
     };
   },
   methods: {
-    goToUserProfile(userId) {
-			this.$router.push({ name: "UserProfile", params: { userId } });
+    goToDashboard(userId) {
+			this.$router.push({ name: "Dashboard", params: { userId } });
 		}
   }
 };

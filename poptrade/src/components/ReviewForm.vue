@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import Offers from "../views/Offers.vue";
+import Offers from "../views/OffersView.vue";
 import {
 	getFirestore,
 	doc,

@@ -1,144 +1,15 @@
 <template>
-	<div class="offers-container">
-		<h2>Offers from other users:</h2>
-		<table class="offers-table">
-			<thead>
-				<tr>
-					<th>Your Offer</th>
-					<th>Their Offer</th>
-					<th>Time of Offer</th>
-					<th>Contact Information</th>
-					<th>Accept/Reject</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="offer in receivedOffers" :key="offer.time">
-					<td class="offer-image-cell">
-						<img
-							:src="offer.yourImageURL"
-							alt="Your Offer"
-							@click="goToListing(offer.yourId, offer.yourListing)"
-						/>
-					</td>
-					<td class="offer-image-cell">
-						<img
-							:src="offer.theirImageURL"
-							alt="Their Offer"
-							@click="goToListing(offer.offeredBy, offer.offererListing)"
-						/>
-					</td>
-					<td>{{ offer.time }}</td>
-					<td class="contactInfo" @click="goToUserProfile(offer.offeredBy)">
-						{{ offer.telegramHandle }}
-						<br />
-						{{ offer.contactInfo }}
-					</td>
-					<td class="offer-actions-cell">
-						<button class="accept-button" @click="acceptOffer(offer)">
-							Accept Offer
-						</button>
-						<button class="reject-button" @click="rejectOffer(offer)">
-							Reject Offer
-						</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- New table for offers you have sent -->
-		<h2>Offers you have sent:</h2>
-		<table class="offers-table">
-			<thead>
-				<tr>
-					<th>Your Offer</th>
-					<th>Their Offer</th>
-					<th>Time of Offer</th>
-					<th>Contact Information</th>
-					<th>Retract Offer</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="offer in sentOffers" :key="offer.time">
-					<td class="offer-image-cell">
-						<img
-							:src="offer.yourImageURL"
-							alt="Your Offer"
-							@click="goToListing(offer.yourId, offer.yourListing)"
-						/>
-					</td>
-					<td class="offer-image-cell">
-						<img
-							:src="offer.theirImageURL"
-							alt="Their Offer"
-							@click="goToListing(offer.offeredBy, offer.offererListing)"
-						/>
-					</td>
-					<td>{{ offer.time }}</td>
-					<td class="contactInfo" @click="goToUserProfile(offer.offeredBy)">
-						{{ offer.telegramHandle }}
-						<br />
-						{{ offer.contactInfo }}
-					</td>
-					<td class="offer-actions-cell">
-						<button class="reject-button" @click="retractOffer(offer)">
-							Retract Offer
-						</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<h2>Offers Completed:</h2>
-		<table class="offers-table">
-			<thead>
-				<tr>
-					<th>Your Offer</th>
-					<th>Their Offer</th>
-					<th>Time of Offer</th>
-					<th>Contact Information</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="offer in completedOffers" :key="offer.id">
-					<td class="offer-image-cell">
-						<img
-							:src="offer.yourImageURL"
-							alt="Your Offer"
-							@click="goToListing(offer.yourId, offer.yourListing)"
-						/>
-					</td>
-					<td class="offer-image-cell">
-						<img
-							:src="offer.theirImageURL"
-							alt="Their Offer"
-							@click="goToListing(offer.offeredBy, offer.offererListing)"
-						/>
-					</td>
-					<td>{{ offer.time }}</td>
-					<td class = "contactInfo" @click = "goToUserProfile(offer.offeredBy)">
-						{{ offer.telegramHandle }}
-						<br />
-						{{ offer.contactInfo }}
-					</td>
-					<!-- <td>{{ offer.tradeStatus }}</td> -->
-					<td>
-						<!-- Action column -->
-						<!-- If offer is not reviewed, show button to review -->
-						<span v-if="offer.tradeStatus === 'Unavailable'">Unavailable</span>
-						<button
-							v-else-if="!offer.reviewed && offer.tradeStatus === 'Completed'"
-							@click="review(offer)"
-							class="reject-button"
-						>
-							Review
-						</button>
-						<!-- If offer is reviewed, show 'Completed' -->
-						<span v-else>Completed</span>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+    <Offers
+        :receivedOffers="receivedOffers"
+        :sentOffers="sentOffers"
+        :completedOffers="completedOffers"
+        @acceptOffer="acceptOffer"
+        @rejectOffer="rejectOffer"
+        @retractOffer="retractOffer"
+        @reviewOffer="review"
+        @goToListing="goToListing"
+        @goToDashboard="goToDashboard"
+    />
 </template>
 
 <script>
@@ -154,27 +25,13 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useRouter } from "vue-router";
+import Offers from "../components/Offers.vue";
 
 export default {
-	name: "Offers",
-	// props: {
-	// 	offers: {
-	// 		type: Array,
-	// 		required: true,
-	// 	},
-	// 	yourOfferImage: {
-	// 		type: String,
-	// 		required: true,
-	// 	},
-	// },
-	data() {
-		return {
-			receivedOffers: [],
-			sentOffers: [],
-			completedOffers: [],
-		};
-	},
-
+	name: "OffersView",
+    components: {
+        Offers
+    },
 	setup() {
 		const receivedOffers = ref([]); // Create a reactive variable to store received offers
 		const sentOffers = ref([]); // Create a reactive variable to store sent offers
@@ -415,8 +272,8 @@ export default {
 	},
 
 	methods: {
-		goToUserProfile(userId) {
-			this.$router.push({ name: "UserProfile", params: { userId } });
+		goToDashboard(userId) {
+			this.$router.push({ name: "Dashboard", params: { userId } });
 		},
 		async acceptOffer(offer) {
 			const firestore = getFirestore();
