@@ -280,6 +280,12 @@ export default {
   margin-bottom: 10px;
 }
 
+.listing-image:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
 /* Responsive design adjustments */
 @media (max-width: 768px) {
   .listing {
