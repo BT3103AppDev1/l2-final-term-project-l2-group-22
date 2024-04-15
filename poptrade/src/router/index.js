@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { ref } from "vue";
+import { getAuth } from "firebase/auth";
+import { ref, onUnmounted } from "vue";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+
+// Import your views and components
 import HomeView from "@/views/HomeView.vue";
-import Marketplace from "@/views/Marketplace.vue"; // Placeholder for your marketplace component
-import Offers from "@/views/Offers.vue"; // Placeholder for your offers component
-import Login from "@/views/Login.vue"; // Placeholder for your login component
-import Profile from "@/views/Profile.vue";
+import Marketplace from "@/views/Marketplace.vue";
+import Offers from "@/views/Offers.vue";
+import Login from "@/views/Login.vue";
 import Dashboard from "@/views/Dashboard.vue";
 import ViewListing from "../components/ViewListing.vue";
 import Register from "@/views/Register.vue";
@@ -17,92 +19,58 @@ import SearchResults from "@/views/SearchResults.vue";
 import EditProfile from "../components/EditProfile.vue";
 
 const routes = [
-  {
-    path: "/",
-    name: "Home",
-    component: HomeView,
-  },
+  { path: "/", name: "Home", component: HomeView },
   {
     path: "/marketplace",
     name: "Marketplace",
     component: Marketplace,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresCompleteProfile: true },
   },
   {
     path: "/offers",
     name: "Offers",
     component: Offers,
-    meta: { requiresAuth: true }, // Requires authentication to access
+    meta: { requiresAuth: true, requiresCompleteProfile: true },
   },
+  { path: "/login", name: "Login", component: Login },
   {
-    path: "/login",
-    name: "Login",
-    component: Login,
-  },
-  {
-    path: "/profile/:userId?",
-    name: "UserProfile",
+    path: "/dashboard",
+    name: "Dashboard",
     component: Dashboard,
     props: true,
-    meta: { requiresAuth: true }, // Requires authentication to access
+    meta: { requiresAuth: true, requiresCompleteProfile: true },
   },
-
-  {
-    path: "/editprofile",
-    name: "EditProfile",
-    component: EditProfile,
-  },
+  { path: "/editprofile", name: "EditProfile", component: EditProfile },
   {
     path: "/listing/:userId/:listingId",
     name: "ViewListing",
     component: ViewListing,
     props: true,
   },
-  {
-    path: "/register",
-    name: "Register",
-    component: Register,
-  },
-  // ...other routes as needed
-
+  { path: "/register", name: "Register", component: Register },
   {
     path: "/offertrade/:userId/:listingId",
     name: "OfferTrade",
     component: OfferTrade,
     props: true,
   },
-
   {
     path: "/reviewform/:userId/:listingId/:offerId",
     name: "ReviewForm",
     component: ReviewForm,
     props: true,
   },
-
-  {
-    path: "/dashboard",
-    name: "Dashboard", // This should match the name used in the $router.push method
-    component: HomeView,
-    meta: { requiresAuth: false }, // Requires authentication to access
-  },
-
   {
     path: "/manage-inventory",
     name: "ManageInventory",
     component: ManageInventory,
   },
-
   {
     path: "/manage-wishlist",
     name: "ManageWishlist",
     component: ManageWishlist,
   },
-
-  {
-    path: "/search-results",
-    name: "SearchResults",
-    component: SearchResults,
-  },
+  { path: "/search-results", name: "SearchResults", component: SearchResults },
 ];
 
 const router = createRouter({
@@ -111,62 +79,46 @@ const router = createRouter({
 });
 
 const auth = getAuth();
-const user = ref(null);
+const db = getFirestore();
 
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+// Centralized authentication check
+async function isAuthenticated() {
+  return !!auth.currentUser;
+}
 
-// This function checks if the user's profile is complete
-async function checkUserProfileComplete(userId) {
-  const db = getFirestore();
+// Centralized profile completeness check
+async function isUserProfileComplete(userId) {
   const docRef = doc(db, "users", userId);
   const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    const userData = docSnap.data();
-    // Check if all required fields are present and not empty
-    return (
-      userData.username &&
-      userData.firstName &&
-      userData.lastName &&
-      userData.phoneNumber &&
-      userData.telegramHandle
-    );
-  } else {
-    // No user document found
-    return false;
-  }
+  if (!docSnap.exists()) return false;
+  const userData = docSnap.data();
+  return (
+    userData.username &&
+    userData.firstName &&
+    userData.lastName &&
+    userData.phoneNumber &&
+    userData.telegramHandle
+  );
 }
 
 router.beforeEach(async (to, from, next) => {
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const isAuthenticated = auth.currentUser;
+  const { requiresAuth, requiresCompleteProfile } = to.meta;
+  const user = auth.currentUser;
 
-  let isProfileComplete = false;
-  if (isAuthenticated) {
-    isProfileComplete = await checkUserProfileComplete(auth.currentUser.uid);
-  }
-
-  if (to.path === "/") {
-    if (!isAuthenticated) {
-      // User is not authenticated, redirect to login or stay on home page
-      next("/dashboard"); // or `next();` if you want them to stay on the home page
-    } else {
-      // User is authenticated, check if profile is complete
-      next(isProfileComplete ? "/dashboard" : "/register");
-    }
-  } else if (requiresAuth && !isAuthenticated) {
-    // If the route requires auth and the user is not authenticated, redirect to login
+  if (requiresAuth && !user) {
     next("/login");
-  } else if (to.path === "/login" && isAuthenticated) {
-    // User is authenticated and tries to access login, redirect based on profile completion
-    next(isProfileComplete ? "/dashboard" : "/register");
-  } else if (to.path === "/register" && isAuthenticated && isProfileComplete) {
-    // User is authenticated, has a complete profile, and tries to access register, redirect to dashboard
-    next("/dashboard");
-  } else {
-    // In all other cases, allow the route transition
-    next();
+    return;
   }
+
+  if (requiresAuth && requiresCompleteProfile && user) {
+    const profileComplete = await isUserProfileComplete(user.uid);
+    if (!profileComplete) {
+      next("/register");
+      return;
+    }
+  }
+
+  next();
 });
 
 export default router;
