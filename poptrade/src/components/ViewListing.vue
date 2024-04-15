@@ -19,7 +19,7 @@
 								Listed by:
 								<span
 									class="verified-seller"
-									@click="goToUserProfile(userId)"
+									@click="goToDashboard(userId)"
 									>{{ userName }}</span
 								>
 								<br />
@@ -110,8 +110,8 @@ export default {
 	},
 
 	methods: {
-		goToUserProfile(userId) {
-			this.$router.push({ name: "UserProfile", params: { userId } });
+		goToDashboard(userId) {
+			this.$router.push({ name: "Dashboard", params: { userId } });
 		},
 		async fetchListingDetails() {
 			const db = getFirestore();

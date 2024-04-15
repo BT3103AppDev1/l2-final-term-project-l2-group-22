@@ -6,7 +6,7 @@ import { getFirestore, doc, getDoc } from "firebase/firestore";
 // Import your views and components
 import HomeView from "@/views/HomeView.vue";
 import Marketplace from "@/views/Marketplace.vue";
-import Offers from "@/views/Offers.vue";
+import OffersView from "@/views/OffersView.vue";
 import Login from "@/views/Login.vue";
 import Dashboard from "@/views/Dashboard.vue";
 import ViewListing from "../components/ViewListing.vue";
@@ -28,13 +28,13 @@ const routes = [
   },
   {
     path: "/offers",
-    name: "Offers",
-    component: Offers,
+    name: "OffersView",
+    component: OffersView,
     meta: { requiresAuth: true, requiresCompleteProfile: true },
   },
   { path: "/login", name: "Login", component: Login },
   {
-    path: "/dashboard",
+    path: "/dashboard/:userId?",
     name: "Dashboard",
     component: Dashboard,
     props: true,
