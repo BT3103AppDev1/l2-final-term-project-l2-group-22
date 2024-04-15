@@ -169,6 +169,12 @@ export default {
 	display: block;
 }
 
+.listing-image:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
 .listing-details {
 	padding: 10px;
 	text-align: center;
