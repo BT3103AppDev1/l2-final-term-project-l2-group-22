@@ -20,7 +20,7 @@
                         <img :src="offer.theirImageURL" alt="Their Offer" @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" />
                     </td>
                     <td>{{ offer.time }}</td>
-                    <td class="contactInfo" @click="$emit('goToUserProfile', offer.offeredBy)">
+                    <td class="contactInfo" @click="$emit('goToDashboard', offer.offeredBy)">
                         {{ offer.telegramHandle }}<br>{{ offer.contactInfo }}
                     </td>
                     <td class="offer-actions-cell">
@@ -51,7 +51,7 @@
                         <img :src="offer.theirImageURL" alt="Their Offer" @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" />
                     </td>
                     <td>{{ offer.time }}</td>
-                    <td class="contactInfo" @click="$emit('goToUserProfile', offer.offeredBy)">
+                    <td class="contactInfo" @click="$emit('goToDashboard', offer.offeredBy)">
                         {{ offer.telegramHandle }}<br>{{ offer.contactInfo }}
                     </td>
                     <td class="offer-actions-cell">
