@@ -8,11 +8,12 @@
       </button>
     </div>
     <div class="listings">
-      <div v-for="listing in listings" :key="listing.id" class="listing-card">
+      <div v-for="listing in listings" :key="listing.id" class="listing-card" >
         <img
           :src="listing.imageURL"
           alt="Listing Image"
           class="listing-image"
+          @click="goToViewListing(listing)"
         />
         <div class="listing-details">
           <h3>{{ listing.name }}</h3>
@@ -44,6 +45,8 @@ import { ref, computed, onMounted, watch } from "vue";
 import { auth } from "@/firebase.js";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import UserProfile from "../components/UserProfile.vue";
+import { useRouter } from "vue-router";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default {
   name: "Dashboard",
@@ -52,6 +55,7 @@ export default {
     userId: String,  // This can be passed or not
   },
   setup(props) {
+    const router = useRouter();
     const user = ref(null);
     const listings = ref([]);
     const wishlist = ref([]);
@@ -85,7 +89,19 @@ export default {
     });
 
     const firestore = getFirestore();
-
+    const goToViewListing = (listing) => {
+      if (!props.userId) {
+        router.push({
+        name: "ViewListing",
+        params: { userId: getAuth().currentUser?.uid, listingId: listing.id },
+      });
+      } else {
+      router.push({
+        name: "ViewListing",
+        params: { userId: props.userId, listingId: listing.id },
+      });
+    }
+    };
     // Function to fetch data based on UID
     const fetchData = async (dataType, setData, uid) => {
       const dataRef = collection(firestore, "users", uid, dataType);
@@ -101,7 +117,7 @@ export default {
       }
     }, { immediate: true });
 
-    return { user, listings, wishlist, userIdToDisplay, isCurrentUser };
+    return { user, listings, wishlist, userIdToDisplay, isCurrentUser, goToViewListing};
   },
   methods: {
     goToManageInventory() {
