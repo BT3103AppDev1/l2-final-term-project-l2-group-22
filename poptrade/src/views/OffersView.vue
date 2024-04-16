@@ -40,8 +40,6 @@ export default {
 		const router = useRouter();
 
 		const goToListing = (uid, listingId) => {
-			console.log(uid)
-			console.log(listingId)
 			router.push({
 				name: "ViewListing",
 				params: { userId: uid, listingId: listingId },
