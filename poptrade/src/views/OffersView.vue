@@ -42,7 +42,7 @@ export default {
 		const goToListing = (uid, listingId) => {
 			router.push({
 				name: "ViewListing",
-				params: { userId: uid, listingId },
+				params: { userId: uid, listingId: listingId },
 			});
 		};
 
@@ -141,6 +141,7 @@ export default {
 					} else {
 						// If both listings are available, add the offer to the validOffers array
 						offer.yourImageURL = yourListing.imageURL;
+						offer.yourId = currentUserUid;
 						offer.theirImageURL = theirListing.imageURL;
 						offer.telegramHandle = theirProfile.telegramHandle;
 						offer.contactInfo = theirProfile.phoneNumber;
