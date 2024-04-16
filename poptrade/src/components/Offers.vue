@@ -87,7 +87,7 @@
                     <td>
                         <span v-if="offer.tradeStatus === 'Unavailable'">Unavailable</span>
                         <button v-else-if="!offer.reviewed && offer.tradeStatus === 'Completed'" @click="$emit('reviewOffer', offer)" class="reject-button">Review</button>
-                        <span v-else>Completed</span>
+                        <span v-else> {{ offer.tradeStatus }}</span>
                     </td>
                 </tr>
             </tbody>

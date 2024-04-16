@@ -109,7 +109,7 @@ export default {
 					);
 					await updateDoc(offerDocRef, { reviewed: true });
 
-					this.$router.push({ name: "Offers" });
+					this.$router.push({ name: "OffersView" });
 				} else {
 					console.log("Document does not exist");
 				}

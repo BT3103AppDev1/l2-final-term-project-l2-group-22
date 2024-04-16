@@ -83,7 +83,6 @@ export default {
 					// Search for the listing with the given ID
 					for (const listingDoc of listingsSnapshot.docs) {
 						if (listingDoc.id === listingId) {
-							console.log(listingDoc.data().imageURL);
 							return listingDoc.data();
 						}
 					}
