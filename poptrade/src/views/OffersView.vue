@@ -1,19 +1,26 @@
 <template>
-    <Offers
-        :receivedOffers="receivedOffers"
-        :sentOffers="sentOffers"
-        :completedOffers="completedOffers"
-        @acceptOffer="acceptOffer"
-        @rejectOffer="rejectOffer"
-        @retractOffer="retractOffer"
-        @reviewOffer="review"
-        @goToListing="goToListing"
-        @goToDashboard="goToDashboard"
-    />
+	<div v-if="isLoading" class="loading-screen">
+		<div class="loading-spinner"></div>
+		<h1>Loading...</h1>
+	</div>
+	<!-- You can add a loading spinner or any other loading animation here -->
+	<div v-else>
+		<Offers
+			:receivedOffers="receivedOffers"
+			:sentOffers="sentOffers"
+			:completedOffers="completedOffers"
+			@acceptOffer="acceptOffer"
+			@rejectOffer="rejectOffer"
+			@retractOffer="retractOffer"
+			@reviewOffer="review"
+			@goToListing="goToListing"
+			@goToDashboard="goToDashboard"
+		/>
+	</div>
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import {
 	getFirestore,
 	collection,
@@ -29,10 +36,11 @@ import Offers from "../components/Offers.vue";
 
 export default {
 	name: "OffersView",
-    components: {
-        Offers
-    },
+	components: {
+		Offers,
+	},
 	setup() {
+		const isLoading = ref(true);
 		const receivedOffers = ref([]); // Create a reactive variable to store received offers
 		const sentOffers = ref([]); // Create a reactive variable to store sent offers
 		const completedOffers = ref([]);
@@ -264,11 +272,25 @@ export default {
 		};
 
 		// Call fetchReceivedOffers function when component is mounted
-		fetchReceivedOffers();
-		fetchSentOffers();
-		fetchCompletedOffers();
+		// fetchReceivedOffers();
+		// fetchSentOffers();
+		// fetchCompletedOffers();
 
-		return { receivedOffers, goToListing, sentOffers, completedOffers }; // Expose receivedOffers reactive variable to template
+		onMounted(async () => {
+			// Set isLoading to false when data fetching is complete
+			await fetchReceivedOffers();
+			await fetchSentOffers();
+			await fetchCompletedOffers();
+			isLoading.value = false;
+		});
+
+		return {
+			isLoading,
+			receivedOffers,
+			goToListing,
+			sentOffers,
+			completedOffers,
+		}; // Expose receivedOffers reactive variable to template
 	},
 
 	methods: {
@@ -410,6 +432,39 @@ export default {
 </script>
 
 <style scoped>
+.loading-screen {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+}
+
+.loading-spinner {
+	border: 4px solid rgba(0, 0, 0, 0.1);
+	border-left-color: #333;
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+	animation: spin 1s linear infinite;
+	margin-bottom: 20px;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.loading-screen h1 {
+	color: #333;
+	font-size: 24px;
+	margin-top: 10px;
+}
+
 .contactInfo {
 	color: #007bff;
 	cursor: pointer;
