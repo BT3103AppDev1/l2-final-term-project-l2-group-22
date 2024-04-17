@@ -41,15 +41,24 @@
         >
           <div class="listing-row">
             <div class="condition">{{ result.condition }}</div>
+            <!-- Updated wishlist display with conditional borders -->
             <div class="wishlist">
               <img
                 v-for="item in result.wishlistItems"
-                :key="item"
-                :src="item"
-                class="wishlist-image"
+                :key="item.name"
+                :src="item.imageURL"
+                :class="{
+                  'wishlist-image': true,
+                  match: item.match,
+                  'no-match': !item.match,
+                }"
+                alt="Wishlist Item"
               />
             </div>
-            <div class="telegram-handle" @click="goToDashboard(result.userId)">{{ result.telegramHandle }}</div>
+
+            <div class="telegram-handle" @click="goToDashboard(result.userId)">
+              {{ result.telegramHandle }}
+            </div>
             <button class="view-listing-btn" @click="goToViewListing(result)">
               View Listing
             </button>
@@ -111,9 +120,28 @@ export default {
       };
       const wishlistRef = collection(firestore, "users", userId, "wishlist");
       const wishlistSnapshot = await getDocs(wishlistRef);
-      userDetails.wishlistItems = wishlistSnapshot.docs.map(
-        (doc) => doc.data().imageURL
+      const currentUserInventoryRef = collection(
+        firestore,
+        "users",
+        currentUserUid.value,
+        "listings"
       );
+      const currentUserInventorySnapshot = await getDocs(
+        currentUserInventoryRef
+      );
+      const currentUserInventory = currentUserInventorySnapshot.docs.map(
+        (doc) => doc.data().name
+      );
+
+      userDetails.wishlistItems = wishlistSnapshot.docs.map((doc) => {
+        const itemName = doc.data().name;
+        return {
+          imageURL: doc.data().imageURL,
+          name: itemName,
+          match: currentUserInventory.includes(itemName), // Check for a match
+        };
+      });
+
       const userRef = doc(firestore, "users", userId);
       const userDoc = await getDoc(userRef);
       userDetails.telegramHandle = userDoc.exists()
@@ -127,6 +155,9 @@ export default {
       let tempResults = [];
       const usersSnapshot = await getDocs(collection(firestore, "users"));
       for (const userDoc of usersSnapshot.docs) {
+        if (userDoc.id === currentUserUid.value) {
+          continue; // Skip the current iteration if the listing belongs to the current user
+        }
         let baseQuery = query(
           collection(firestore, "users", userDoc.id, "listings"),
           where("status", "==", "Available")
@@ -230,8 +261,6 @@ export default {
       });
     };
 
-    
-
     const prevGroup = () => {
       if (currentPageIndex.value > 0) currentPageIndex.value--;
     };
@@ -261,9 +290,9 @@ export default {
   },
   methods: {
     goToDashboard(userId) {
-			this.$router.push({ name: "Dashboard", params: { userId } });
-		}
-  }
+      this.$router.push({ name: "Dashboard", params: { userId } });
+    },
+  },
 };
 </script>
 
@@ -332,18 +361,21 @@ export default {
   flex-shrink: 0;
 }
 
-.wishlist {
-  display: flex;
-  gap: 5px;
-  overflow-x: auto;
-  flex-grow: 1;
-}
-
-.wishlist img {
+.wishlist-image {
   width: 40px;
   height: 40px;
   border-radius: 5px;
   object-fit: cover;
+  margin-right: 5px;
+  border: 3px solid #ff4d4d; /* Default red border */
+}
+
+.wishlist-image.match {
+  border-color: #4caf50; /* Green border for matched items */
+}
+
+.wishlist-image.no-match {
+  border-color: #ff4d4d; /* Red border for unmatched items */
 }
 
 .view-listing-btn,

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { getAuth } from "firebase/auth";
-import { ref, onUnmounted } from "vue";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { ref } from "vue";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 // Import your views and components
@@ -81,43 +81,54 @@ const router = createRouter({
 const auth = getAuth();
 const db = getFirestore();
 
-// Centralized authentication check
-async function isAuthenticated() {
-  return !!auth.currentUser;
-}
-
-// Centralized profile completeness check
 async function isUserProfileComplete(userId) {
   const docRef = doc(db, "users", userId);
   const docSnap = await getDoc(docRef);
-  if (!docSnap.exists()) return false;
+  if (!docSnap.exists()) {
+    console.log("User document does not exist.");
+    return false;
+  }
   const userData = docSnap.data();
-  return (
+  const isComplete =
     userData.username &&
     userData.firstName &&
     userData.lastName &&
     userData.phoneNumber &&
-    userData.telegramHandle
-  );
+    userData.telegramHandle;
+  if (!isComplete) {
+    console.log("Profile is incomplete:", userData);
+  }
+  return isComplete;
 }
 
 router.beforeEach(async (to, from, next) => {
   const { requiresAuth, requiresCompleteProfile } = to.meta;
   const user = auth.currentUser;
+  console.log("Routing to:", to.path, "User logged in:", !!user);
 
   if (requiresAuth && !user) {
+    console.log("Redirecting to Login, user not authenticated.");
     next("/login");
     return;
   }
 
-  if (requiresAuth && requiresCompleteProfile && user) {
+  if (user) {
+    console.log("User is authenticated, checking profile completeness.");
     const profileComplete = await isUserProfileComplete(user.uid);
     if (!profileComplete) {
-      next("/register");
-      return;
+      console.log("Profile incomplete.");
+      // Check if the destination route is the registration page
+      if (to.path !== "/register") {
+        console.log("Redirecting to Register.");
+        next("/register");
+        return;
+      } else {
+        console.log("Proceeding to Register.");
+      }
     }
   }
 
+  console.log("No specific requirements, proceeding to:", to.path);
   next();
 });
 
