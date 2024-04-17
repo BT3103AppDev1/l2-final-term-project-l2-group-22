@@ -1,5 +1,8 @@
 <template>
   <div class="dashboard" v-if="user">
+    <div class="back-button-container" v-if="!isCurrentUser">
+      <GoBackButton></GoBackButton>
+    </div>
     <user-profile
       @sign-out="emitSignOut2"
       :userId="userIdToDisplay"
@@ -60,10 +63,11 @@ import UserProfile from "../components/UserProfile.vue";
 import { useRouter } from "vue-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import LoadingScreen from "../components/LoadingScreen.vue";
+import GoBackButton from "@/components/GoBackButton.vue";
 
 export default {
   name: "Dashboard",
-  components: { UserProfile, LoadingScreen },
+  components: { UserProfile, LoadingScreen, GoBackButton },
   props: {
     userId: String,
   },
@@ -172,6 +176,7 @@ export default {
       isCurrentUser,
       goToViewListing,
       loading,
+      GoBackButton,
     };
   },
   methods: {
@@ -191,6 +196,13 @@ export default {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
 
+.back-button-container {
+  position: relative;
+  top: 80px;
+  left: -400px;
+  z-index: 100;
+  width: 100%;
+}
 .dashboard {
   padding: 20px;
 }
