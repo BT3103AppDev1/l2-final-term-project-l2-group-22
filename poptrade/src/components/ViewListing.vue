@@ -12,16 +12,14 @@
 					<h1 class="item-brand">{{ series }}</h1>
 					<p class="item-figurine">Figurine: {{ figurine }}</p>
 					<p class="item-condition">Condition: {{ condition }}</p>
-					<p class = "item-description">Description: {{ description }}</p>
+					<p class="item-description">Description: {{ description }}</p>
 					<div class="item-seller-box">
 						<div class="seller-details">
 							<p class="item-seller">
 								Listed by:
-								<span
-									class="verified-seller"
-									@click="goToDashboard(userId)"
-									>{{ userName }}</span
-								>
+								<span class="verified-seller" @click="goToDashboard(userId)">{{
+									userName
+								}}</span>
 								<br />
 								Location: {{ location }}
 								<br />
@@ -316,15 +314,14 @@ export default {
 	object-fit: cover;
 }
 
-
 .verified-seller {
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: underline;
+	color: #007bff;
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 #make-offer-button {
-	width: 50%;
+	width: 150px;
 	height: 35px;
 	font-size: medium;
 }
