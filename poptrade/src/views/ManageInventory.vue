@@ -413,7 +413,7 @@ textarea {
 }
 
 .submit-btn {
-  width: 20%;
+  width: 30%;
   background-color: #f44336;
   color: white;
   padding: 10px;
