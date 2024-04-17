@@ -147,8 +147,12 @@ export default {
           } else {
             // If both listings are available, add the offer to the validOffers array
             offer.yourImageURL = yourListing.imageURL;
+            offer.yourCollection = yourListing.collection;
+						offer.yourFigurine = yourListing.name;
             offer.yourId = currentUserUid;
             offer.theirImageURL = theirListing.imageURL;
+            offer.theirCollection = theirListing.collection;
+						offer.theirFigurine = theirListing.name;
             offer.telegramHandle = theirProfile.telegramHandle;
             offer.contactInfo = theirProfile.phoneNumber;
             validReceivedOffers.push(offer); // Only add offers that pass the availability check
@@ -210,7 +214,11 @@ export default {
           } else {
             // Update offer details only for available listings
             offer.yourImageURL = yourListing.imageURL;
+            offer.yourCollection = yourListing.collection;
+						offer.yourFigurine = yourListing.name;
             offer.theirImageURL = theirListing.imageURL;
+            offer.theirCollection = theirListing.collection;
+						offer.theirFigurine = theirListing.name;
             offer.telegramHandle = theirProfile.telegramHandle;
             offer.contactInfo = theirProfile.phoneNumber;
             validSentOffers.push(offer); // Add offer to the list of valid offers
@@ -258,7 +266,11 @@ export default {
           const theirListing = await getListing(offer.offererListing);
           const theirProfile = await getUser(offer.offeredBy);
           offer.yourImageURL = yourListing.imageURL;
+          offer.yourCollection = yourListing.collection;
+					offer.yourFigurine = yourListing.name;
           offer.theirImageURL = theirListing.imageURL;
+          offer.theirCollection = theirListing.collection;
+					offer.theirFigurine = theirListing.name;
           offer.telegramHandle = theirProfile.telegramHandle;
           offer.contactInfo = theirProfile.phoneNumber;
         }

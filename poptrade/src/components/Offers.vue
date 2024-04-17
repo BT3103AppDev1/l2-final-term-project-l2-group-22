@@ -13,12 +13,26 @@
             </thead>
             <tbody>
                 <tr v-for="offer in receivedOffers" :key="offer.time">
-                    <td class="offer-image-cell">
-                        <img :src="offer.yourImageURL" alt="Your Offer" @click="$emit('goToListing', offer.yourId, offer.yourListing)" />
+                    <td @click="$emit('goToListing', offer.yourId, offer.yourListing)" >
+                        <div class = "listing-card">
+                            <img :src="offer.yourImageURL" alt="Your Offer" class="listing-image" />
+                            <div class="listing-details">
+                                <h3>{{ offer.yourCollection }}</h3>
+                                <p>{{ offer.yourFigurine }}</p>
+                            </div>
+                        </div>
                     </td>
-                    <td class="offer-image-cell">
-                        <img :src="offer.theirImageURL" alt="Their Offer" @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" />
+
+                    <td @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" >
+                        <div class = "listing-card">
+                            <img :src="offer.theirImageURL" alt="Their Offer" class="listing-image" />
+                            <div class="listing-details">
+                                <h3>{{ offer.theirCollection }}</h3>
+                                <p>{{ offer.theirFigurine }}</p>
+                            </div>
+                        </div>
                     </td>
+
                     <td>{{ offer.time }}</td>
                     <td class="contactInfo" @click="$emit('goToDashboard', offer.offeredBy)">
                         {{ offer.telegramHandle }}<br>{{ offer.contactInfo }}
@@ -44,12 +58,26 @@
             </thead>
             <tbody>
                 <tr v-for="offer in sentOffers" :key="offer.time">
-                    <td class="offer-image-cell">
-                        <img :src="offer.yourImageURL" alt="Your Offer" @click="$emit('goToListing', offer.yourId, offer.yourListing)" />
+                    <td @click="$emit('goToListing', offer.yourId, offer.yourListing)" >
+                        <div class = "listing-card">
+                            <img :src="offer.yourImageURL" alt="Your Offer" class="listing-image" />
+                            <div class="listing-details">
+                                <h3>{{ offer.yourCollection }}</h3>
+                                <p>{{ offer.yourFigurine }}</p>
+                            </div>
+                        </div>
                     </td>
-                    <td class="offer-image-cell">
-                        <img :src="offer.theirImageURL" alt="Their Offer" @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" />
+
+                    <td @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" >
+                        <div class = "listing-card">
+                            <img :src="offer.theirImageURL" alt="Their Offer" class="listing-image" />
+                            <div class="listing-details">
+                                <h3>{{ offer.theirCollection }}</h3>
+                                <p>{{ offer.theirFigurine }}</p>
+                            </div>
+                        </div>
                     </td>
+                    
                     <td>{{ offer.time }}</td>
                     <td class="contactInfo" @click="$emit('goToDashboard', offer.offeredBy)">
                         {{ offer.telegramHandle }}<br>{{ offer.contactInfo }}
@@ -74,12 +102,26 @@
             </thead>
             <tbody>
                 <tr v-for="offer in completedOffers" :key="offer.id">
-                    <td class="offer-image-cell">
-                        <img :src="offer.yourImageURL" alt="Your Offer" @click="$emit('goToListing', offer.yourId, offer.yourListing)" />
+                    <td @click="$emit('goToListing', offer.yourId, offer.yourListing)" >
+                        <div class = "listing-card">
+                            <img :src="offer.yourImageURL" alt="Your Offer" class="listing-image" />
+                            <div class="listing-details">
+                                <h3>{{ offer.yourCollection }}</h3>
+                                <p>{{ offer.yourFigurine }}</p>
+                            </div>
+                        </div>
                     </td>
-                    <td class="offer-image-cell">
-                        <img :src="offer.theirImageURL" alt="Their Offer" @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" />
+
+                    <td @click="$emit('goToListing', offer.offeredBy, offer.offererListing)" >
+                        <div class = "listing-card">
+                            <img :src="offer.theirImageURL" alt="Their Offer" class="listing-image" />
+                            <div class="listing-details">
+                                <h3>{{ offer.theirCollection }}</h3>
+                                <p>{{ offer.theirFigurine }}</p>
+                            </div>
+                        </div>
                     </td>
+                    
                     <td>{{ offer.time }}</td>
                     <td class="contactInfo" @click="$emit('goToDashboard', offer.offeredBy)">
                         {{ offer.telegramHandle }}<br>{{ offer.contactInfo }}
@@ -173,4 +215,40 @@ export default {
 	border-radius: 15px;
 	border-color: #f44336;
 }
+
+.listing-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  height: 17vw;
+  width: 9vw;
+}
+
+.listing-image {
+    width: 100%;
+    display: block;
+}
+
+.listing-details {
+    padding: 10px;
+    text-align: center;
+}
+
+.listing-details h3 {
+    font-size: 1rem;
+    margin-top: 5px;
+    margin-bottom: 1px;
+}
+
+.listing-details p {
+    font-size: 0.8rem;
+    margin-top: 2px;
+    margin-bottom: 33px;
+}
+
 </style>
