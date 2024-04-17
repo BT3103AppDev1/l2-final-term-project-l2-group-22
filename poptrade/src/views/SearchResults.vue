@@ -1,4 +1,7 @@
 <template>
+  <div class="back-button-container">
+    <GoBackButton></GoBackButton>
+  </div>
   <div class="search-results-container">
     <aside class="sidebar">
       <h3>Filter by:</h3>
@@ -24,10 +27,7 @@
 
     <!-- Main content area -->
     <main class="main-content">
-      <div v-if="loading" class="loading-screen">
-        <div class="loading-spinner"></div>
-        <h1>Loading...</h1>
-      </div>
+      <LoadingScreen v-if="loading" />
       <div v-else-if="currentGroup">
         <!-- Updated header to show the number of listings and item name in italics -->
         <h2>
@@ -94,8 +94,14 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import LoadingScreen from "../components/LoadingScreen.vue";
+import GoBackButton from "../components/GoBackButton.vue";
 
 export default {
+  components: {
+    LoadingScreen,
+    GoBackButton,
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -298,6 +304,12 @@ export default {
 </script>
 
 <style scoped>
+.back-button-container {
+  position: relative;
+  top: -12em;
+  left: 1em;
+  width: 10%;
+}
 .search-results-container {
   display: flex;
   background-color: #f9f9f9;
@@ -306,18 +318,18 @@ export default {
 .sidebar {
   width: 250px;
   padding: 20px;
-  background: #fff; /* Light theme */
-  border-right: 2px solid #eaeaea; /* Soft border */
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+  background: #fff;
+  border-right: 2px solid #eaeaea;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
 }
 
 .filter-option {
   margin-bottom: 15px;
   padding: 10px;
-  background-color: #f7f7f7; /* Slightly off-white background for the filter options */
-  border-radius: 10px; /* Rounded corners for the filter options */
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow for an inset look */
-  transition: background-color 0.3s; /* Smooth transition for hover effect */
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
 }
 
 .filter-option:hover {
@@ -440,49 +452,5 @@ export default {
 .next-btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
-}
-
-.loading-screen {
-  position: fixed; /* Make the loading screen fixed to cover the entire viewport */
-  top: 0;
-  left: 0;
-  width: 100vw; /* Full viewport width */
-  height: 100vh; /* Full viewport height */
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.8
-  ); /* Optional: white background with opacity */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999; /* Ensure it is above all other content */
-}
-
-.loading-spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #333;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-screen h1 {
-  color: #333;
-  font-size: 24px;
-  margin-top: 10px;
 }
 </style>

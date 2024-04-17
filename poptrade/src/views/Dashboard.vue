@@ -14,6 +14,7 @@
         Manage Inventory
       </button>
     </div>
+    <LoadingScreen v-if="loading" />
     <div class="listings">
       <div v-for="listing in listings" :key="listing.id" class="listing-card">
         <img
@@ -58,18 +59,20 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import UserProfile from "../components/UserProfile.vue";
 import { useRouter } from "vue-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import LoadingScreen from "../components/LoadingScreen.vue";
 
 export default {
   name: "Dashboard",
-  components: { UserProfile },
+  components: { UserProfile, LoadingScreen },
   props: {
-    userId: String, // This can be passed or not
+    userId: String,
   },
   setup(props) {
     const router = useRouter();
     const user = ref(null);
     const listings = ref([]);
     const wishlist = ref([]);
+    const loading = ref(false);
 
     const userIdToDisplay = computed(() => {
       return props.userId || user.value?.uid;
@@ -128,9 +131,11 @@ export default {
     };
     // Function to fetch data based on UID
     const fetchData = async (dataType, setData, uid) => {
+      loading.value = true;
       const dataRef = collection(firestore, "users", uid, dataType);
       const snapshot = await getDocs(dataRef);
       setData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      loading.value = false;
     };
 
     // Reactively fetch data when props.userId changes
@@ -166,6 +171,7 @@ export default {
       userIdToDisplay,
       isCurrentUser,
       goToViewListing,
+      loading,
     };
   },
   methods: {

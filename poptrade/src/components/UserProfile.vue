@@ -141,46 +141,46 @@ export default {
 .profile-container {
   display: flex;
   align-items: center;
-  gap: 20px; /* Space between elements */
+  gap: 20px;
   padding: 1em;
   text-align: left;
-  max-width: 600px; /* Adjust based on your preference */
-  border: 1px solid #ccc; /* Optional: adds a border around the profile */
-  border-radius: 8px; /* Optional: rounds the corners of the border */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
+  max-width: 600px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .profile-image {
-  width: 80px; /* Smaller profile image */
-  height: 80px; /* Maintain aspect ratio */
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  object-fit: cover; /* Ensures the image covers the space without stretching */
+  object-fit: cover;
 }
 
 .profile-details {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Space between text elements */
+  gap: 4px;
 }
 
 h1,
 h2,
 p {
-  margin: 0; /* Removes default margins */
+  margin: 0;
   font-family: "Oswald", sans-serif;
 }
 
 h1 {
-  font-size: 1.5rem; /* Smaller heading */
+  font-size: 1.5rem;
   color: #333;
 }
 
 h2 {
-  font-size: 1.25rem; /* Smaller subheading */
+  font-size: 1.25rem;
 }
 
 p {
-  font-size: 0.9rem; /* Smaller paragraph text */
+  font-size: 0.9rem;
   color: #666;
 }
 
@@ -193,7 +193,7 @@ p {
   border-radius: 4px;
   padding: 5px 20px;
   cursor: pointer;
-  font-family: "Oswald", sans-serif; /* Oswald font for buttons */
+  font-family: "Oswald", sans-serif;
 }
 
 .signout-button:hover,
@@ -206,10 +206,10 @@ p {
   font-family: "Oswald", sans-serif;
   margin-bottom: 8px;
   padding: 2px 12px;
-  color: #007bff; /* Change text color to match the paragraph text */
+  color: #007bff;
   cursor: pointer;
   text-decoration: underline;
-  background-color: transparent; /* Set background color to transparent */
-  border: none; /* Remove border */
+  background-color: transparent;
+  border: none;
 }
 </style>
