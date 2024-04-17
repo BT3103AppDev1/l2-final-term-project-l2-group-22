@@ -61,7 +61,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 export default {
   props: ["show"],
-  emits: ["close", "searchSubmitted"], // Include "searchSubmitted" here
+  emits: ["close", "searchSubmitted"],
   setup(props, { emit }) {
     const selectedPopmart = ref("");
     const selectedCollection = ref("");
@@ -217,13 +217,11 @@ export default {
   background-color: #f82424;
 }
 
-/* Add styling for required field */
 .required-field {
   color: red;
   font-size: 0.8rem;
 }
 
-/* Add styling to disable the submit button when Popmart is not selected */
 .submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

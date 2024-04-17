@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div class="back-button-container">
-      <button @click="goBack" class="back-button">Go Back</button>
+      <GoBackButton></GoBackButton>
     </div>
     <!-- Listings Section -->
     <div class="listings-container">
@@ -95,9 +95,13 @@ import {
   doc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import GoBackButton from "../components/GoBackButton.vue";
 
 export default {
   name: "ManageListings",
+  components: {
+    GoBackButton,
+  },
   setup() {
     const selectedPopmart = ref("");
     const selectedCollection = ref("");
@@ -139,10 +143,12 @@ export default {
             "listings"
           );
           const querySnapshot = await getDocs(listingsRef);
-          listings.value = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })).filter(listing => listing.status !== "Unavailable");
+          listings.value = querySnapshot.docs
+            .map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+            .filter((listing) => listing.status !== "Unavailable");
         } catch (error) {
           console.error("Failed to fetch listings:", error);
         }
@@ -305,32 +311,13 @@ export default {
   width: 100%;
 }
 
-.back-button {
-  padding: 10px 40px;
-  width: auto;
-}
-
-@media (max-width: 1024px) {
-  .back-button-container {
-    top: 150px;
-    left: 100px;
-  }
-}
-
-@media (max-width: 600px) {
-  .back-button-container {
-    top: 100px;
-    left: 90px;
-  }
-}
-
 .listings-container {
   display: flex;
   align-items: center; /* Vertically center items */
   flex-wrap: wrap; /* Allow items to wrap */
-  gap: 20px; /* Add space between items */
+  gap: 20px;
   width: 100%;
-  max-width: 800px; /* Adjust as needed */
+  max-width: 800px;
   margin-bottom: 30px;
   background: #fff;
   border-radius: 10px;
@@ -383,8 +370,6 @@ button {
   border: none;
   padding: 5px 10px;
   cursor: pointer;
-  text-transform: uppercase;
-  font-weight: bold;
   border-radius: 20px;
   width: calc(100% - 20px);
   margin-top: 5px;
@@ -399,7 +384,7 @@ button:hover {
 
 .form-container {
   width: 100%;
-  max-width: 800px; /* Adjust as needed */
+  max-width: 800px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -428,14 +413,14 @@ textarea {
 }
 
 .submit-btn {
-  width: 100%;
+  width: 20%;
   background-color: #f44336;
   color: white;
   padding: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  text-transform: uppercase;
+  font-size: 1em;
   font-weight: bold;
 }
 

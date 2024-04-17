@@ -1,4 +1,7 @@
 <template>
+  <div class="back-button-container">
+    <GoBackButton></GoBackButton>
+  </div>
   <div class="search-results-container">
     <aside class="sidebar">
       <h3>Filter by:</h3>
@@ -92,10 +95,12 @@ import {
 } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import LoadingScreen from "../components/LoadingScreen.vue";
+import GoBackButton from "../components/GoBackButton.vue";
 
 export default {
   components: {
     LoadingScreen,
+    GoBackButton,
   },
   setup() {
     const route = useRoute();
@@ -299,6 +304,12 @@ export default {
 </script>
 
 <style scoped>
+.back-button-container {
+  position: relative;
+  top: -12em;
+  left: 1em;
+  width: 10%;
+}
 .search-results-container {
   display: flex;
   background-color: #f9f9f9;

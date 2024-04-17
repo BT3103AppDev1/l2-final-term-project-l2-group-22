@@ -384,16 +384,14 @@ export default {
 
 .inventory li {
   margin: 5px;
-  width: calc(
-    20% - 10px
-  ); /* Adjust the width dynamically for 5 items per row */
+  width: calc(20% - 10px);
 }
 
 .inventory img {
   max-width: 85%;
   max-height: 85%;
   border-radius: 10px;
-  object-fit: contain; /* Ensure images maintain aspect ratio */
+  object-fit: contain;
 }
 
 .item-card {
@@ -449,11 +447,11 @@ export default {
   border-radius: 5px;
 }
 .matched-item {
-  border: 5px solid #4caf50; /* Green border for matched items */
+  border: 5px solid #4caf50;
 }
 
 .unmatched-item {
-  border: 5px solid #ff4d4d; /* Red border for unmatched items */
+  border: 5px solid #ff4d4d;
 }
 
 .make-offer-button {
