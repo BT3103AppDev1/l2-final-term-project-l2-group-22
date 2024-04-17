@@ -236,6 +236,7 @@ export default {
         "offers"
       );
 
+<<<<<<< Updated upstream
       try {
         const querySnapshot = await getDocs(offersRef);
         let offers = querySnapshot.docs
@@ -261,6 +262,37 @@ export default {
           offer.telegramHandle = theirProfile.telegramHandle;
           offer.contactInfo = theirProfile.phoneNumber;
         }
+=======
+			try {
+				const querySnapshot = await getDocs(offersRef);
+				let offers = querySnapshot.docs
+					.filter((doc) => doc.data().tradeStatus !== "Pending") // Filter out offers of type "Offer Received"
+					.map((doc) => {
+						let offer = doc.data();
+						offer.id = doc.id;
+						// Initialize image URLs as null
+						offer.yourImageURL = null;
+						offer.yourId = currentUserUid;
+						offer.tele = null;
+						offer.theirImageURL = null;
+						offer.contactInfo = null;
+						return offer;
+					});
+				// Simultaneously fetch all listings for the 'yourImageUrl' field
+				for (let offer of offers) {
+					const yourListing = await getListing(offer.yourListing);
+					const theirListing = await getListing(offer.offererListing);
+					const theirProfile = await getUser(offer.offeredBy);
+					offer.yourImageURL = yourListing.imageURL;
+					offer.yourListingCollection = yourListing.collection;
+					offer.yourListingName = yourListing.name;
+					offer.theirImageURL = theirListing.imageURL;
+					offer.telegramHandle = theirProfile.telegramHandle;
+					offer.theirListingCollection = theirListing.collection;
+					offer.theriListingCollection = theirListing.name;
+					offer.contactInfo = theirProfile.phoneNumber;
+				}
+>>>>>>> Stashed changes
 
         completedOffers.value = offers;
         console.log("completed", completedOffers);
