@@ -1,14 +1,21 @@
 <template>
   <div class="dashboard" v-if="user">
-    <user-profile @sign-out="emitSignOut2" :userId="userIdToDisplay"></user-profile>
+    <user-profile
+      @sign-out="emitSignOut2"
+      :userId="userIdToDisplay"
+    ></user-profile>
     <div class="header-container">
       <h2 class="header-title">My Listings</h2>
-      <button v-if="isCurrentUser" @click="goToManageInventory" class="manage-button">
+      <button
+        v-if="isCurrentUser"
+        @click="goToManageInventory"
+        class="manage-button"
+      >
         Manage Inventory
       </button>
     </div>
     <div class="listings">
-      <div v-for="listing in listings" :key="listing.id" class="listing-card" >
+      <div v-for="listing in listings" :key="listing.id" class="listing-card">
         <img
           :src="listing.imageURL"
           alt="Listing Image"
@@ -23,7 +30,11 @@
     </div>
     <div class="header-container">
       <h2 class="header-title">My Wishlist</h2>
-      <button v-if="isCurrentUser" @click="goToManageWishlist" class="manage-button">
+      <button
+        v-if="isCurrentUser"
+        @click="goToManageWishlist"
+        class="manage-button"
+      >
         Manage Wishlist
       </button>
     </div>
@@ -52,7 +63,7 @@ export default {
   name: "Dashboard",
   components: { UserProfile },
   props: {
-    userId: String,  // This can be passed or not
+    userId: String, // This can be passed or not
   },
   setup(props) {
     const router = useRouter();
@@ -68,20 +79,33 @@ export default {
       return !props.userId || props.userId === user.value?.uid;
     });
 
-
     // Listen for authentication state changes
-    auth.onAuthStateChanged(userAuth => {
+    auth.onAuthStateChanged((userAuth) => {
       if (userAuth) {
         user.value = {
           uid: userAuth.uid,
           displayName: userAuth.displayName,
           photoURL: userAuth.photoURL,
-          email: userAuth.email
+          email: userAuth.email,
         };
         // Fetch data only if userId prop is not provided
         if (!props.userId) {
-          fetchData("listings", (data) => (listings.value = data.filter(doc => doc.status !== "Unavailable")), userAuth.uid);
-          fetchData("wishlist", (data) => (wishlist.value = data.filter(doc => doc.status !== "Unavailable")), userAuth.uid);
+          fetchData(
+            "listings",
+            (data) =>
+              (listings.value = data.filter(
+                (doc) => doc.status !== "Unavailable"
+              )),
+            userAuth.uid
+          );
+          fetchData(
+            "wishlist",
+            (data) =>
+              (wishlist.value = data.filter(
+                (doc) => doc.status !== "Unavailable"
+              )),
+            userAuth.uid
+          );
         }
       } else {
         user.value = null;
@@ -92,32 +116,57 @@ export default {
     const goToViewListing = (listing) => {
       if (!props.userId) {
         router.push({
-        name: "ViewListing",
-        params: { userId: getAuth().currentUser?.uid, listingId: listing.id },
-      });
+          name: "ViewListing",
+          params: { userId: getAuth().currentUser?.uid, listingId: listing.id },
+        });
       } else {
-      router.push({
-        name: "ViewListing",
-        params: { userId: props.userId, listingId: listing.id },
-      });
-    }
+        router.push({
+          name: "ViewListing",
+          params: { userId: props.userId, listingId: listing.id },
+        });
+      }
     };
     // Function to fetch data based on UID
     const fetchData = async (dataType, setData, uid) => {
       const dataRef = collection(firestore, "users", uid, dataType);
       const snapshot = await getDocs(dataRef);
-      setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     };
 
     // Reactively fetch data when props.userId changes
-    watch(() => props.userId, (newUserId) => {
-      if (newUserId) {
-        fetchData("listings", (data) => (listings.value = data.filter(doc => doc.status !== "Unavailable")), newUserId);
-        fetchData("wishlist", (data) => (wishlist.value = data.filter(doc => doc.status !== "Unavailable")), newUserId);
-      }
-    }, { immediate: true });
+    watch(
+      () => props.userId,
+      (newUserId) => {
+        if (newUserId) {
+          fetchData(
+            "listings",
+            (data) =>
+              (listings.value = data.filter(
+                (doc) => doc.status !== "Unavailable"
+              )),
+            newUserId
+          );
+          fetchData(
+            "wishlist",
+            (data) =>
+              (wishlist.value = data.filter(
+                (doc) => doc.status !== "Unavailable"
+              )),
+            newUserId
+          );
+        }
+      },
+      { immediate: true }
+    );
 
-    return { user, listings, wishlist, userIdToDisplay, isCurrentUser, goToViewListing};
+    return {
+      user,
+      listings,
+      wishlist,
+      userIdToDisplay,
+      isCurrentUser,
+      goToViewListing,
+    };
   },
   methods: {
     goToManageInventory() {
@@ -127,14 +176,11 @@ export default {
       this.$router.push({ name: "ManageWishlist" });
     },
     emitSignOut2() {
-        this.$emit('sign-out');
+      this.$emit("sign-out");
     },
   },
 };
-
 </script>
-
-
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Oswald&display=swap");
@@ -153,7 +199,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center; /* Aligns items vertically in the center */
-  padding:15px
+  padding: 15px;
 }
 
 .header-title {
@@ -164,42 +210,43 @@ export default {
 }
 
 .listings {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-	gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 5vw;
+  white-space: nowrap; /* Prevent wrapping */
 }
 
 .listing-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	border: 1px solid #eee;
-	border-radius: 10px;
-	overflow: hidden;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
   height: 24vw;
   width: 14vw;
 }
 
 .listing-details {
-	padding: 10px;
-	text-align: center;
+  padding: 10px;
+  text-align: center;
   height: 40%;
 }
 
 .listing-details h3 {
-	/* font-size: 1rem; */
+  /* font-size: 1rem; */
   font-size: calc(1vw + 0.4vh);
-	margin-top: 0.2vw;
-	margin-bottom: 0.2vw;
+  margin-top: 0.2vw;
+  margin-bottom: 0.2vw;
 }
 
 .listing-details p {
-	/* font-size: 0.8rem; */
+  /* font-size: 0.8rem; */
   font-size: calc(0.8vw + 0.32vh);
-	margin-top: 0.2vw;
-	margin-bottom: 0.2vw;
+  margin-top: 0.2vw;
+  margin-bottom: 0.2vw;
 }
 
 .listing-image {
@@ -237,8 +284,7 @@ export default {
 
 .wishlist {
   display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-	gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 5vw;
 }
-
 </style>
