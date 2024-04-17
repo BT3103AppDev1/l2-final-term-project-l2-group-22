@@ -388,8 +388,6 @@ export default {
   border: none;
   border-radius: 20px; /* More pronounced rounded corners for buttons */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for buttons */
-  text-transform: uppercase; /* Uppercase text for a more button-like appearance */
-  font-weight: bold; /* Bold font weight for the button text */
   letter-spacing: 0.5px; /* Slightly increase spacing between letters */
   transition: all 0.3s ease; /* Transition for hover effects */
   cursor: pointer;
@@ -408,7 +406,13 @@ export default {
 .telegram-handle {
   color: #007bff;
   cursor: pointer;
-  text-decoration: underline;
+  font-family: "Arial", sans-serif; /* Choose an elegant font */
+  font-weight: bold; /* Make it bold to stand out */
+  text-decoration: none;
+}
+
+.telegram-handle:hover {
+  text-decoration: underline; /* Only underline on hover for a clean look */
 }
 
 .item-image {
