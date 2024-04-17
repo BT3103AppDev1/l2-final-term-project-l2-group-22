@@ -9,6 +9,7 @@
       @close="showModal = false"
       @searchSubmitted="goToSearchResults"
     />
+    <LoadingScreen v-if="loading" />
     <h2>Newest Listings</h2>
     <div class="listings-row">
       <div
@@ -48,8 +49,6 @@
         </div>
       </div>
     </div>
-
-
   </div>
 </template>
 <script>
@@ -64,11 +63,13 @@ import {
 import { useRouter } from "vue-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Modal from "../components/Modal.vue";
+import LoadingScreen from "../components/LoadingScreen.vue";
 
 export default {
   name: "Marketplace",
   components: {
     Modal,
+    LoadingScreen,
   },
   setup() {
     const showModal = ref(false);
@@ -77,8 +78,10 @@ export default {
     const router = useRouter();
     const auth = getAuth();
     const listingsTT = ref([]);
+    const loading = ref(false);
 
     const fetchListings = async () => {
+      loading.value = true;
       const fetchedListings = ref([]);
       let currentUserUid = auth.currentUser?.uid;
 
@@ -123,6 +126,7 @@ export default {
       }
 
       console.log("Final listings:", fetchedListings.value);
+      loading.value = false;
       return fetchedListings;
     };
 
@@ -181,7 +185,7 @@ export default {
           .forEach((doc) => {
             fetchedListingsTT.value.push({
               id: doc.id,
-              userId: userDoc.id, 
+              userId: userDoc.id,
               ...doc.data(),
             });
           });
@@ -213,13 +217,15 @@ export default {
       showModal,
       goToViewListing,
       goToSearchResults,
+      loading,
     };
   },
 };
 </script>
 
 <style scoped>
-html, body {
+html,
+body {
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -240,7 +246,10 @@ html, body {
 
 .listings {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr)); /* 20vw is just an example, adjust as needed */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(20vw, 1fr)
+  ); /* 20vw is just an example, adjust as needed */
   gap: 20px;
   padding-left: 2vw; /* Use viewport units for padding */
   padding-right: 2vw;
@@ -256,36 +265,36 @@ html, body {
 }
 
 .listing-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	border: 1px solid #eee;
-	border-radius: 10px;
-	overflow: hidden;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
   height: 24vw;
   width: 14vw;
 }
 
 .listing-details {
-	padding: 10px;
-	text-align: center;
+  padding: 10px;
+  text-align: center;
   height: 40%;
 }
 
 .listing-details h3 {
-	/* font-size: 1rem; */
+  /* font-size: 1rem; */
   font-size: calc(1vw + 0.4vh);
-	margin-top: 0.2vw;
-	margin-bottom: 0.2vw;
+  margin-top: 0.2vw;
+  margin-bottom: 0.2vw;
 }
 
 .listing-details p {
-	/* font-size: 0.8rem; */
+  /* font-size: 0.8rem; */
   font-size: calc(0.8vw + 0.32vh);
-	margin-top: 0.2vw;
-	margin-bottom: 0.2vw;
+  margin-top: 0.2vw;
+  margin-bottom: 0.2vw;
 }
 
 .listing-image {
