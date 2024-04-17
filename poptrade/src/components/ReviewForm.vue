@@ -128,10 +128,10 @@ export default {
 <style scoped>
 .review-form {
 	border: 1px solid #ccc;
-	border-radius: 5px; /* Add rounded corners */
+	border-radius: 5px; 
 	padding: 40px;
 	margin-top: 16px;
-	background-color: #f5f5f5; /* Add subtle background color */
+	background-color: #f5f5f5; 
 }
 
 .review-form h2 {
@@ -146,11 +146,11 @@ export default {
 
 .star {
 	cursor: pointer;
-	margin-right: 5px; /* Add spacing between stars */
+	margin-right: 5px; 
 }
 
 .star i {
-	font-size: 30px; /* Increase star size */
+	font-size: 30px; 
 	font-family: "FontAwesome", sans-serif;
 }
 
@@ -159,24 +159,24 @@ export default {
 }
 
 .star:hover i:not(.filled) {
-	color: #ffd700; /* Add hover effect for unfilled stars */
+	color: #ffd700; 
 }
 
 .review-form button {
 	margin-top: 10px;
-	background-color: #f44336; /* Add button background color */
+	background-color: #f44336; 
 	color: white;
 	padding: 10px 30px;
 	border: none;
-	border-radius: 5px; /* Add rounded corners to button */
+	border-radius: 5px; 
 	cursor: pointer;
 }
 
 .review-form .exit-button {
 	background-color: #f5f5f5;
 	margin-top: 16px;
-	color: #007bff; /* Change text color to blue */
-	text-decoration: underline; /* Add underline to text */
+	color: #007bff; 
+	text-decoration: underline; 
 	cursor: pointer;
 }
 </style>

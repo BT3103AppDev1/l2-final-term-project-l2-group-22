@@ -1,6 +1,6 @@
 <template>
   <div class="viewlisting-container">
-    <button class="back-button" @click="goBack">Go Back</button>
+    <GoBackButton></GoBackButton>
 
     <div class="header-body">
       <div class="item-card">
@@ -71,9 +71,14 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import GoBackButton from "../components/GoBackButton.vue";
 
 export default {
   name: "ViewListing",
+  components: {
+    GoBackButton,
+  },
+
   props: {
     userId: String,
     listingId: String,
