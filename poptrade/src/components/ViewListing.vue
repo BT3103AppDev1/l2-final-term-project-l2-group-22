@@ -353,7 +353,7 @@ export default {
 }
 
 #make-offer-button {
-  width: 50%;
+  width: 8em;
   height: 35px;
   font-size: medium;
 }
