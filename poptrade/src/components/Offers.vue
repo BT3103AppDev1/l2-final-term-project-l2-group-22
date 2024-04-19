@@ -6,7 +6,6 @@
         <tr>
           <th>Your Offer</th>
           <th>Their Offer</th>
-          <th>Time of Offer</th>
           <th>Contact Information</th>
           <th>Accept/Reject</th>
         </tr>
@@ -42,8 +41,6 @@
               </div>
             </div>
           </td>
-
-          <td>{{ offer.time }}</td>
           <td
             class="contactInfo"
             @click="$emit('goToDashboard', offer.offeredBy)"
@@ -68,7 +65,6 @@
         <tr>
           <th>Your Offer</th>
           <th>Their Offer</th>
-          <th>Time of Offer</th>
           <th>Contact Information</th>
           <th>Retract Offer</th>
         </tr>
@@ -105,7 +101,6 @@
             </div>
           </td>
 
-          <td>{{ offer.time }}</td>
           <td
             class="contactInfo"
             @click="$emit('goToDashboard', offer.offeredBy)"
@@ -127,7 +122,6 @@
         <tr>
           <th>Your Offer</th>
           <th>Their Offer</th>
-          <th>Time of Offer</th>
           <th>Contact Information</th>
           <th>Status</th>
         </tr>
@@ -164,7 +158,6 @@
             </div>
           </td>
 
-          <td>{{ offer.time }}</td>
           <td
             class="contactInfo"
             @click="$emit('goToDashboard', offer.offeredBy)"
