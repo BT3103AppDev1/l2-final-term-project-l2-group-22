@@ -44,6 +44,7 @@
             <div class="condition">{{ result.condition }}</div>
             <!-- Updated wishlist display with conditional borders -->
             <div class="wishlist">
+              Their wishlist:
               <img
                 v-for="item in result.wishlistItems"
                 :key="item.name"
@@ -125,13 +126,15 @@ export default {
         wishlistItems: [],
         telegramHandle: "",
       };
+
+      // Fetch wishlist items
       const wishlistRef = collection(firestore, "users", userId, "wishlist");
       const wishlistSnapshot = await getDocs(wishlistRef);
-      const currentUserInventoryRef = collection(
-        firestore,
-        "users",
-        currentUserUid.value,
-        "listings"
+
+      // Fetch current user's inventory where status is "Available"
+      const currentUserInventoryRef = query(
+        collection(firestore, "users", currentUserUid.value, "listings"),
+        where("status", "==", "Available") // Only fetch listings where status is "Available"
       );
       const currentUserInventorySnapshot = await getDocs(
         currentUserInventoryRef
@@ -140,6 +143,7 @@ export default {
         (doc) => doc.data().name
       );
 
+      // Map through wishlist items to check for matches
       userDetails.wishlistItems = wishlistSnapshot.docs.map((doc) => {
         const itemName = doc.data().name;
         return {
@@ -149,11 +153,13 @@ export default {
         };
       });
 
+      // Fetch Telegram handle
       const userRef = doc(firestore, "users", userId);
       const userDoc = await getDoc(userRef);
       userDetails.telegramHandle = userDoc.exists()
         ? userDoc.data().telegramHandle
         : "";
+
       return userDetails;
     };
 
@@ -366,12 +372,20 @@ export default {
   display: flex;
   align-items: center;
   gap: 20px;
+  font-family: "Helvetica", sans-serif;
 }
 
 .condition,
 .telegram-handle,
 .view-listing-btn {
   flex-shrink: 0;
+}
+
+.wishlist {
+  display: flex; /* Enables flexbox */
+  align-items: center; /* Centers items vertically */
+  justify-content: flex-start; /* Aligns items to the start of the flex container horizontally */
+  gap: 10px; /* Adds space between the text and the images */
 }
 
 .wishlist-image {
