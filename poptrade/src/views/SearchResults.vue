@@ -44,7 +44,7 @@
             <div class="condition">{{ result.condition }}</div>
             <!-- Updated wishlist display with conditional borders -->
             <div class="wishlist">
-              Their wishlist:
+              {{ result.username }}'s wishlist:
               <img
                 v-for="item in result.wishlistItems"
                 :key="item.name"
@@ -125,6 +125,7 @@ export default {
       const userDetails = {
         wishlistItems: [],
         telegramHandle: "",
+        username: "",
       };
 
       // Fetch wishlist items
@@ -159,6 +160,8 @@ export default {
       userDetails.telegramHandle = userDoc.exists()
         ? userDoc.data().telegramHandle
         : "";
+      userDetails.firstName = userDoc.exists() ? userDoc.data().firstName : "";
+      userDetails.lastName = userDoc.exists() ? userDoc.data().lastName : "";
 
       return userDetails;
     };
@@ -231,6 +234,7 @@ export default {
             ...result,
             wishlistItems: userDetails.wishlistItems,
             telegramHandle: userDetails.telegramHandle,
+            username: userDetails.firstName + " " + userDetails.lastName,
           };
         })
       );
@@ -371,7 +375,7 @@ export default {
 .listing-row {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 45px;
   font-family: "Helvetica", sans-serif;
 }
 

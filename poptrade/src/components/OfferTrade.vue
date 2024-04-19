@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import GoBackButton from "../components/GoBackButton.vue";
 
 export default {
   name: "OfferTrade",
@@ -22,6 +23,7 @@ export default {
   },
   components: {
     ViewListing,
+    GoBackButton,
   },
   data() {
     return {
@@ -265,6 +267,9 @@ export default {
 
 <template>
   <div class="trading-container">
+    <div class="back-button-container">
+      <GoBackButton></GoBackButton>
+    </div>
     <div class="trading-section">
       <h2>You are trading for:</h2>
       <div class="item-card">
@@ -492,5 +497,11 @@ export default {
 
 .confirm-checkbox {
   font-weight: bold;
+}
+.back-button-container {
+  position: relative;
+  top: 8em;
+  left: -30em;
+  width: 20%;
 }
 </style>

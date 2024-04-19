@@ -30,7 +30,7 @@
               </p>
             </div>
           </div>
-          <p class="item-wishlist">Their wishlist:</p>
+          <p class="item-wishlist">{{ userName }}'s wishlist:</p>
           <div class="wishlist-images">
             <img
               v-for="(item, index) in wishlistItems"
@@ -266,9 +266,6 @@ export default {
         params: { userId: this.userId, listingId: this.listingId },
       });
     },
-    goBack() {
-      this.$router.go(-1);
-    },
   },
 };
 </script>
@@ -378,6 +375,7 @@ export default {
   background-color: red;
   border-radius: 10px;
   border-color: red;
+  cursor: pointer;
 }
 
 .item-seller-box {
