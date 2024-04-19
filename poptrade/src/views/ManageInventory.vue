@@ -93,6 +93,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  updateDoc
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import GoBackButton from "../components/GoBackButton.vue";
@@ -257,9 +258,18 @@ export default {
       const user = auth.currentUser;
       if (user) {
         try {
-          await deleteDoc(
-            doc(firestore, "users", user.uid, "listings", listingId)
-          );
+          await updateDoc(
+          doc(
+            firestore,
+            "users",
+            auth.currentUser.uid,
+            "listings",
+            listingId
+          ),
+          {
+            status: "Unavailable",
+          }
+        );
           listings.value = listings.value.filter(
             (listing) => listing.id !== listingId
           );
