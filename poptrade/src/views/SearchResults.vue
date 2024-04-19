@@ -58,7 +58,7 @@
                   alt="Wishlist Item"
                 />
               </div>
-              <div v-else>Not Available</div>
+              <div v-else>Unavailable</div>
             </div>
 
             <div class="telegram-handle" @click="goToDashboard(result.userId)">
