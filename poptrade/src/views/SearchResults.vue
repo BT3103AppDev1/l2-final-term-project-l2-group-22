@@ -45,17 +45,20 @@
             <!-- Updated wishlist display with conditional borders -->
             <div class="wishlist">
               {{ result.username }}'s wishlist:
-              <img
-                v-for="item in result.wishlistItems"
-                :key="item.name"
-                :src="item.imageURL"
-                :class="{
-                  'wishlist-image': true,
-                  match: item.match,
-                  'no-match': !item.match,
-                }"
-                alt="Wishlist Item"
-              />
+              <div v-if="result.wishlistItems.length > 0">
+                <img
+                  v-for="item in result.wishlistItems"
+                  :key="item.name"
+                  :src="item.imageURL"
+                  :class="{
+                    'wishlist-image': true,
+                    match: item.match,
+                    'no-match': !item.match,
+                  }"
+                  alt="Wishlist Item"
+                />
+              </div>
+              <div v-else>Not Available</div>
             </div>
 
             <div class="telegram-handle" @click="goToDashboard(result.userId)">
