@@ -171,7 +171,7 @@ export default {
         if (fetchedListingsTT.value.length >= 6) break;
         if (userDoc.id === currentUserUid) continue;
         console.log(calculateAverage(userDoc.data().reviews));
-        if (calculateAverage(userDoc.data().reviews) < 3) continue;
+        if (calculateAverage(userDoc.data().reviews) < 4.5) continue;
 
         const listingsQuery = query(
           collection(firestore, "users", userDoc.id, "listings"),
