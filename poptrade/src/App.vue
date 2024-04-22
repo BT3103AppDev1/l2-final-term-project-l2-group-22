@@ -24,43 +24,64 @@
 
 // App.vue
 <script>
-import { ref, onMounted, provide } from "vue";
+import { ref, onUnmounted, provide } from "vue";
 import { auth, db } from "@/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 
 export default {
   name: "App",
   setup() {
     const currentUser = ref(null);
 
-    async function fetchUserData(uid) {
+    const fetchUserData = (uid) => {
       const userDocRef = doc(db, "users", uid);
-      const userDocSnapshot = await getDoc(userDocRef);
-      if (userDocSnapshot.exists()) {
-        const userData = userDocSnapshot.data();
-        return {
-          uid: uid,
-          username: userData.username,
-          fullname: userData.firstName + " " + userData.lastName,
-          reviews: userData.reviews,
-          phoneNo: userData.phoneNumber,
-          telegram: userData.telegramHandle,
-          email: userData.email,
-        };
-      }
-      return null;
-    }
+      const unsubscribe = onSnapshot(
+        userDocRef,
+        (doc) => {
+          if (doc.exists()) {
+            const userData = doc.data();
+            currentUser.value = {
+              uid: uid,
+              username: userData.username,
+              fullname: `${userData.firstName} ${userData.lastName}`,
+              reviews: userData.reviews,
+              phoneNo: userData.phoneNumber,
+              telegram: userData.telegramHandle,
+              email: userData.email,
+            };
+          } else {
+            currentUser.value = null; // Handle case where doc might not exist
+          }
+        },
+        (error) => {
+          console.error("Error fetching user data:", error);
+        }
+      );
+      return unsubscribe; // Return the function to unsubscribe when the component unmounts
+    };
 
-    auth.onAuthStateChanged(async (user) => {
+    let unsubscribeAuth = null;
+    let unsubscribeUserData = null;
+    auth.onAuthStateChanged((user) => {
       if (user) {
-        const userDetails = await fetchUserData(user.uid);
-        currentUser.value = userDetails;
+        if (unsubscribeUserData) {
+          unsubscribeUserData(); // Unsubscribe previous listener if exists
+        }
+        unsubscribeUserData = fetchUserData(user.uid); // Set up a new listener
       } else {
         currentUser.value = null;
+        if (unsubscribeUserData) {
+          unsubscribeUserData();
+        }
       }
     });
 
     provide("currentUser", currentUser);
+
+    onUnmounted(() => {
+      if (unsubscribeAuth) unsubscribeAuth();
+      if (unsubscribeUserData) unsubscribeUserData();
+    });
 
     return {
       currentUser,
@@ -69,7 +90,7 @@ export default {
   methods: {
     signOut() {
       auth.signOut().then(() => {
-        this.currentUser = null;
+        this.currentUser.value = null;
         this.$router.push("/login");
       });
     },
