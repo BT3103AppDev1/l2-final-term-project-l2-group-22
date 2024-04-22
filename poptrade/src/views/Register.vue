@@ -30,6 +30,7 @@
 
 <script>
 import { firebase, auth } from "@/firebase.js";
+import { nextTick } from "vue";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 export default {
@@ -70,7 +71,18 @@ export default {
         uid: this.user.uid,
       });
 
-      this.$router.push("/dashboard");
+      this.$root.$emit('user-updated', {
+        uid: this.user.uid,
+        username: this.username,
+        fullname: `${this.firstName} ${this.lastName}`,
+        phoneNumber: this.phoneNumber,
+        telegramHandle: this.telegramHandle
+      });
+      this.$router.push("/dashboard").then(() => {
+        nextTick(() => {
+          window.location.reload();
+        });
+      });
     },
   },
 };
