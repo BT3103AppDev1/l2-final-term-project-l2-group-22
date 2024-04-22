@@ -93,7 +93,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import GoBackButton from "../components/GoBackButton.vue";
@@ -259,17 +259,17 @@ export default {
       if (user) {
         try {
           await updateDoc(
-          doc(
-            firestore,
-            "users",
-            auth.currentUser.uid,
-            "listings",
-            listingId
-          ),
-          {
-            status: "Unavailable",
-          }
-        );
+            doc(
+              firestore,
+              "users",
+              auth.currentUser.uid,
+              "listings",
+              listingId
+            ),
+            {
+              status: "Unavailable",
+            }
+          );
           listings.value = listings.value.filter(
             (listing) => listing.id !== listingId
           );
@@ -423,7 +423,7 @@ textarea {
 }
 
 .submit-btn {
-  width: 30%;
+  width: 40%;
   background-color: #f44336;
   color: white;
   padding: 10px;

@@ -181,7 +181,7 @@ export default {
         const listingsSnapshot = await getDocs(listingsQuery);
 
         listingsSnapshot.docs
-          .slice(0, 6 - fetchedListingsTT.value.length)
+          .slice(0, 5 - fetchedListingsTT.value.length)
           .forEach((doc) => {
             fetchedListingsTT.value.push({
               id: doc.id,

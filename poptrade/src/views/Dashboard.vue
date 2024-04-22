@@ -244,7 +244,7 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative;
   height: 24vw;
-  width: 14vw;
+  width: 15.5vw;
 }
 
 .listing-details {
