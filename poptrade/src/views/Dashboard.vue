@@ -24,7 +24,6 @@
           :src="listing.imageURL"
           alt="Listing Image"
           class="listing-image"
-          @click="goToViewListing(listing)"
         />
         <div class="listing-details">
           <h3>{{ listing.name }}</h3>
@@ -230,7 +229,7 @@ export default {
 .listings {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 5vw;
+  gap: 6.5vw;
   white-space: nowrap; /* Prevent wrapping */
 }
 
@@ -244,7 +243,8 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative;
   height: 24vw;
-  width: 15.5vw;
+  width: 15vw;
+  object-fit: contain;
 }
 
 .listing-details {
@@ -279,7 +279,7 @@ export default {
 .listing-card:hover {
   transform: scale(1.03);
   transition: transform 0.3s ease;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .manage-button,

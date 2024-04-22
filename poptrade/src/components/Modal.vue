@@ -6,9 +6,9 @@
       <form @submit.prevent="submitSearch">
         <!-- Popmart Selector -->
         <div class="form-group">
-          <label for="popmart">Popmart:</label>
+          <label for="popmart">Character:</label>
           <select id="popmart" v-model="selectedPopmart" required>
-            <option value="" disabled>Select a Popmart</option>
+            <option value="" disabled>Select a Character</option>
             <option v-for="popmart in popmarts" :value="popmart" :key="popmart">
               {{ popmart }}
             </option>
