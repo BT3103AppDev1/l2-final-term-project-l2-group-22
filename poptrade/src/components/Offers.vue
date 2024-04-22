@@ -226,8 +226,8 @@ export default {
 
 .offer-image-cell img,
 .their-offer-images img {
-  max-width: 150px;
-  max-height: 150px;
+  max-width: 200px;
+  max-height: 300px;
   object-fit: contain;
   display: block;
   padding-left: 25px;
@@ -270,7 +270,7 @@ export default {
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative;
-  height: 17vw;
+  height: 19vw;
   width: 9vw;
 }
 

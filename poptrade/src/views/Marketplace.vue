@@ -104,7 +104,7 @@ export default {
       console.log(`Found ${usersSnapshot.docs.length} users`);
 
       for (const userDoc of usersSnapshot.docs) {
-        if (fetchedListings.value.length >= 6) break;
+        if (fetchedListings.value.length >= 5) break;
         if (userDoc.id === currentUserUid) continue;
 
         const listingsQuery = query(
@@ -115,7 +115,7 @@ export default {
         const listingsSnapshot = await getDocs(listingsQuery);
 
         listingsSnapshot.docs
-          .slice(0, 6 - fetchedListings.value.length)
+          .slice(0, 5 - fetchedListings.value.length)
           .forEach((doc) => {
             fetchedListings.value.push({
               id: doc.id,
