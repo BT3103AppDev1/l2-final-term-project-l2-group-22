@@ -204,7 +204,7 @@ export default {
   width: 100%;
 }
 .dashboard {
-  padding: 20px;
+  padding: 1.5vw;
 }
 
 .header-container {
@@ -217,14 +217,14 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center; /* Aligns items vertically in the center */
-  padding: 15px;
+  padding: 1vw;
 }
 
 .header-title {
   margin: 0; /* Removes default margin from h2 */
   font-family: "Oswald", sans-serif;
-  font-size: 24px; /* Adjust based on your preference */
-  padding: 50px;
+  font-size: calc(1.5vw + 0.6vh); /* Adjust based on your preference */
+  padding: 3vw 0 3vw 0;
 }
 
 .listings {
@@ -248,7 +248,7 @@ export default {
 }
 
 .listing-details {
-  padding: 10px;
+  padding: 0.6vw;
   text-align: center;
   height: 40%;
 }
@@ -289,7 +289,7 @@ export default {
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 10px 15px;
+  padding: 1vw 1.5vw;
   cursor: pointer;
   font-family: "Oswald", sans-serif; /* Oswald font for buttons */
 }
