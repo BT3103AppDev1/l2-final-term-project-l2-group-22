@@ -53,6 +53,16 @@ export default {
       });
     };
 
+    const fetchOffersUpdate = async () => {
+      isLoading.value = true;
+      await Promise.all([
+        fetchReceivedOffers(),
+        fetchSentOffers(),
+        fetchCompletedOffers(),
+      ]);
+      isLoading.value = false;
+    };
+
     async function getUser(uid) {
       const firestore = getFirestore();
       const userRef = doc(firestore, "users", uid);
@@ -301,6 +311,7 @@ export default {
       goToListing,
       sentOffers,
       completedOffers,
+      fetchOffersUpdate
     }; // Expose receivedOffers reactive variable to template
   },
 
@@ -397,7 +408,8 @@ export default {
         console.log(
           "Offer rejected. Status updated to 'Rejected' for both users."
         );
-        window.location.reload();
+        //window.location.reload();
+        await this.fetchOffersUpdate();
       } catch (error) {
         console.error("Error rejecting offer:", error);
       }
@@ -421,10 +433,12 @@ export default {
         console.log(
           "Offer retracted. Offer is removed from both users' offers collection"
         );
-        window.location.reload();
+        await this.fetchOffersUpdate();
+        //window.location.reload();
       } catch (error) {
         console.error("Error retracting offer:", error);
       }
+      
     },
 
     async review(offer) {
