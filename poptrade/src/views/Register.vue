@@ -71,19 +71,7 @@ export default {
         uid: this.user.uid,
       });
 
-      this.$root.$emit("user-updated", {
-        uid: this.user.uid,
-        username: this.username,
-        fullname: `${this.firstName} ${this.lastName}`,
-        phoneNumber: this.phoneNumber,
-        telegramHandle: this.telegramHandle,
-      });
       this.$router.push("/dashboard");
-      // // this.$router.push("/dashboard").then(() => {
-      // //   nextTick(() => {
-      // //     window.location.reload();
-      // //   });
-      // });
     },
   },
 };

@@ -158,11 +158,11 @@ export default {
             // If both listings are available, add the offer to the validOffers array
             offer.yourImageURL = yourListing.imageURL;
             offer.yourCollection = yourListing.collection;
-						offer.yourFigurine = yourListing.name;
+            offer.yourFigurine = yourListing.name;
             offer.yourId = currentUserUid;
             offer.theirImageURL = theirListing.imageURL;
             offer.theirCollection = theirListing.collection;
-						offer.theirFigurine = theirListing.name;
+            offer.theirFigurine = theirListing.name;
             offer.telegramHandle = theirProfile.telegramHandle;
             offer.contactInfo = theirProfile.phoneNumber;
             validReceivedOffers.push(offer); // Only add offers that pass the availability check
@@ -225,10 +225,10 @@ export default {
             // Update offer details only for available listings
             offer.yourImageURL = yourListing.imageURL;
             offer.yourCollection = yourListing.collection;
-						offer.yourFigurine = yourListing.name;
+            offer.yourFigurine = yourListing.name;
             offer.theirImageURL = theirListing.imageURL;
             offer.theirCollection = theirListing.collection;
-						offer.theirFigurine = theirListing.name;
+            offer.theirFigurine = theirListing.name;
             offer.telegramHandle = theirProfile.telegramHandle;
             offer.contactInfo = theirProfile.phoneNumber;
             validSentOffers.push(offer); // Add offer to the list of valid offers
@@ -276,10 +276,10 @@ export default {
           const theirProfile = await getUser(offer.offeredBy);
           offer.yourImageURL = yourListing.imageURL;
           offer.yourCollection = yourListing.collection;
-					offer.yourFigurine = yourListing.name;
+          offer.yourFigurine = yourListing.name;
           offer.theirImageURL = theirListing.imageURL;
           offer.theirCollection = theirListing.collection;
-					offer.theirFigurine = theirListing.name;
+          offer.theirFigurine = theirListing.name;
           offer.telegramHandle = theirProfile.telegramHandle;
           offer.contactInfo = theirProfile.phoneNumber;
         }
@@ -311,7 +311,7 @@ export default {
       goToListing,
       sentOffers,
       completedOffers,
-      fetchOffersUpdate
+      fetchOffersUpdate,
     }; // Expose receivedOffers reactive variable to template
   },
 
@@ -370,7 +370,6 @@ export default {
         console.log(
           "Trade accepted and listings removed. Offer marked as completed."
         );
-        // window.location.reload();
         this.$router.push({
           name: "ReviewForm",
           params: {
@@ -408,7 +407,6 @@ export default {
         console.log(
           "Offer rejected. Status updated to 'Rejected' for both users."
         );
-        //window.location.reload();
         await this.fetchOffersUpdate();
       } catch (error) {
         console.error("Error rejecting offer:", error);
@@ -434,11 +432,9 @@ export default {
           "Offer retracted. Offer is removed from both users' offers collection"
         );
         await this.fetchOffersUpdate();
-        //window.location.reload();
       } catch (error) {
         console.error("Error retracting offer:", error);
       }
-      
     },
 
     async review(offer) {
