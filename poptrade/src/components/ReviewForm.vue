@@ -119,7 +119,7 @@ export default {
 		},
 
     async exitForm() {
-      this.$router.push({ name: "Offers" });
+      this.$router.push({ name: "OffersView" });
     },
 	},
 };
