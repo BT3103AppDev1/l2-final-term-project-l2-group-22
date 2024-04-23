@@ -251,6 +251,7 @@ export default {
   padding: 10px 10px;
   border-radius: 15px;
   border-color: #45a049;
+  cursor: pointer;
 }
 .reject-button {
   margin: 2px;
@@ -259,6 +260,7 @@ export default {
   padding: 10px 25px;
   border-radius: 15px;
   border-color: #f44336;
+  cursor: pointer;
 }
 
 .listing-card {

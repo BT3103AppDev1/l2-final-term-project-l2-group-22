@@ -71,7 +71,7 @@ export default {
         uid: this.user.uid,
       });
 
-      this.$router.push("/dashboard");
+      this.$router.push("/");
     },
   },
 };
