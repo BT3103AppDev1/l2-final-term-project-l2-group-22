@@ -85,9 +85,9 @@ export default {
         reviews: [],
       });
 
-      await setDoc(usernameRef, {
-        uid: this.user.uid,
-      });
+      // await setDoc(usernameRef, {
+      //   uid: this.user.uid,
+      // });
 
       this.$router.push("/dashboard");
     },
