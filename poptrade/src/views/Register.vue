@@ -30,7 +30,15 @@
 
 <script>
 import { firebase, auth } from "@/firebase.js";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDocs,
+  setDoc,
+  collection,
+  query,
+  where,
+} from "firebase/firestore";
 
 export default {
   name: "Register",
@@ -60,7 +68,9 @@ export default {
     async registerUser() {
       const db = getFirestore();
       const usersRef = collection(db, "users");
-      const querySnapshot = await getDocs(query(usersRef, where("username", "==", this.username)));
+      const querySnapshot = await getDocs(
+        query(usersRef, where("username", "==", this.username))
+      );
       if (!querySnapshot.empty) {
         alert("Username already taken. Please choose another one.");
         return;
