@@ -30,7 +30,6 @@
 
 <script>
 import { firebase, auth } from "@/firebase.js";
-import { nextTick } from "vue";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 export default {
@@ -49,11 +48,20 @@ export default {
     this.user = auth.currentUser;
   },
   methods: {
+    // async registerUser() {
+    //   const db = getFirestore();
+    //   const usernameRef = doc(db, "usernames", this.username);
+    //   const usernameSnapshot = await getDoc(usernameRef);
+    //   if (usernameSnapshot.exists()) {
+    //     alert("Username already taken. Please choose another one.");
+    //     return;
+    //   }
+
     async registerUser() {
       const db = getFirestore();
-      const usernameRef = doc(db, "usernames", this.username);
-      const usernameSnapshot = await getDoc(usernameRef);
-      if (usernameSnapshot.exists()) {
+      const usersRef = collection(db, "users");
+      const querySnapshot = await getDocs(query(usersRef, where("username", "==", this.username)));
+      if (!querySnapshot.empty) {
         alert("Username already taken. Please choose another one.");
         return;
       }
@@ -71,7 +79,7 @@ export default {
         uid: this.user.uid,
       });
 
-      this.$router.push("/");
+      this.$router.push("/dashboard");
     },
   },
 };
