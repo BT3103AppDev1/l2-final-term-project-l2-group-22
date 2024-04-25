@@ -48,7 +48,6 @@
           <h3>{{ item.name }}</h3>
           <p>{{ item.collection }}</p>
         </div>
-        <!-- Add more wishlist details as needed -->
       </div>
     </div>
   </div>
