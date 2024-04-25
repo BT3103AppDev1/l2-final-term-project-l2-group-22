@@ -244,6 +244,7 @@ export default {
   height: 24vw;
   width: 15vw;
   object-fit: contain;
+  cursor: pointer;
 }
 
 .listing-details {
@@ -276,7 +277,6 @@ export default {
 .listing-card:hover {
   transform: scale(1.03);
   transition: transform 0.3s ease;
-  cursor: pointer;
 }
 
 .manage-button,
