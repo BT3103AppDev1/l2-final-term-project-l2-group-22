@@ -7,7 +7,10 @@
       <div v-if="showPopup" class="popup">
       <div class="popup-content">
         <p>
-          At POPTRADE, our mission is to cultivate a thriving digital hub for Popmart collectors like you. By revolutionizing the collectibles trading landscape, we provide a seamless and intuitive environment where users can engage in trading activities with like-minded individuals. Join us to be part of a vibrant community, where your passion for Popmart is celebrated and shared.
+          At POPTRADE, our mission is to cultivate a thriving digital hub for Popmart collectors like you. 
+            By revolutionizing the collectibles trading landscape, 
+            we provide a seamless and intuitive environment where users can engage in trading activities with like-minded individuals. 
+            Join us to be part of a vibrant community, where your passion for Popmart is celebrated and shared.
         </p>
         <button @click="closePopup">Close</button>
       </div>
@@ -46,8 +49,8 @@
     background-size: cover; /* Ensures the image covers the entire background */
     background-position: center; /* Centers the background image */
     background-repeat: no-repeat; /* Prevents the background image from repeating */
-    width: 100vw; /* 100% of viewport width */
-    height: 100vh; /* 100% of viewport height */
+    width: 100vw;
+    height: 100vh;
   }
 
   .text {
