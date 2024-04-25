@@ -253,11 +253,12 @@ export default {
   border-color: #45a049;
   cursor: pointer;
 }
+  
 .reject-button {
   margin: 2px;
   background-color: #f44336;
   color: white;
-  padding: 10px 25px;
+  padding: 10px 10px;
   border-radius: 15px;
   border-color: #f44336;
   cursor: pointer;
@@ -274,6 +275,7 @@ export default {
   position: relative;
   height: 19.5vw;
   width: 9vw;
+  cursor: pointer
 }
 
 .listing-image {
