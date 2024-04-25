@@ -56,15 +56,6 @@ export default {
     this.user = auth.currentUser;
   },
   methods: {
-    // async registerUser() {
-    //   const db = getFirestore();
-    //   const usernameRef = doc(db, "usernames", this.username);
-    //   const usernameSnapshot = await getDoc(usernameRef);
-    //   if (usernameSnapshot.exists()) {
-    //     alert("Username already taken. Please choose another one.");
-    //     return;
-    //   }
-
     async registerUser() {
       const db = getFirestore();
       const usersRef = collection(db, "users");
@@ -84,10 +75,6 @@ export default {
         telegramHandle: this.telegramHandle,
         reviews: [],
       });
-
-      // await setDoc(usernameRef, {
-      //   uid: this.user.uid,
-      // });
 
       this.$router.push("/");
     },
