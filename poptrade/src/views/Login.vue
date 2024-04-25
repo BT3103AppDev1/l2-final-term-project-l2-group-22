@@ -35,7 +35,6 @@ export default {
         },
         EmailAuthProvider.PROVIDER_ID,
       ],
-      // Other configuration options...
     };
 
     ui.start("#firebaseui-auth-container", uiConfig);
@@ -48,13 +47,8 @@ export default {
         console.log(userDocSnapshot);
 
         if (!userDocSnapshot.exists()) {
-          // User does not exist, redirect to registration page manually
           this.$router.push("/register");
-        } else {
-          // For existing users, you might redirect them to a profile page or simply return true
-          // to follow signInSuccessURL or no redirection if URL is not set
-          // Firebase UI will handle the redirectif signInSuccessURL is set
-        }
+        } 
       }
     });
   },
