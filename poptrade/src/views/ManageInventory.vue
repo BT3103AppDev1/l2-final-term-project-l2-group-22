@@ -313,6 +313,7 @@ export default {
   align-items: center;
   margin: 20px;
 }
+  
 .back-button-container {
   position: relative;
   top: 100px;
@@ -350,6 +351,7 @@ export default {
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative;
+  cursor: pointer;
 }
 
 .listing-image {
