@@ -544,11 +544,12 @@ export default {
   border-radius: 15px;
   border-color: #45a049;
 }
+  
 .reject-button {
   margin: 2px;
   background-color: #f44336;
   color: white;
-  padding: 10px 25px;
+  padding: 10px 10px;
   border-radius: 15px;
   border-color: #f44336;
 }
