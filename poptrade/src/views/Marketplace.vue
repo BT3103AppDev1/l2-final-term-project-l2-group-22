@@ -230,32 +230,27 @@ body {
   overflow-x: hidden;
 }
 
-/* Header styles */
 .marketplace h1 {
   color: red;
   text-align: center;
   font-size: 2em;
   margin: 0.5em 0;
-  margin-top: 0; /* Removes top margin */
+  margin-top: 0;
   padding-top: 20px;
 }
 
 .marketplace h2 {
-  margin-top: 80px; /* Reduces space above the h2 if necessary */
+  margin-top: 80px;
 }
 
 .listings {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(20vw, 1fr)
-  ); /* 20vw is just an example, adjust as needed */
+  grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
   gap: 20px;
-  padding-left: 2vw; /* Use viewport units for padding */
+  padding-left: 2vw;
   padding-right: 2vw;
 }
 
-/* Layout styles for listings */
 .listings-row {
   display: flex;
   flex-wrap: nowrap; /* Prevent wrapping by default */
@@ -275,6 +270,7 @@ body {
   position: relative;
   height: 24vw;
   width: 14vw;
+  cursor: pointer;
 }
 
 .listing-details {
@@ -284,14 +280,12 @@ body {
 }
 
 .listing-details h3 {
-  /* font-size: 1rem; */
   font-size: calc(1vw + 0.4vh);
   margin-top: 0.2vw;
   margin-bottom: 0.2vw;
 }
 
 .listing-details p {
-  /* font-size: 0.8rem; */
   font-size: calc(0.8vw + 0.32vh);
   margin-top: 0.2vw;
   margin-bottom: 0.2vw;
@@ -299,9 +293,9 @@ body {
 
 .listing-image {
   width: 100%;
-  height: 80%; /* Adjust the percentage based on your design */
+  height: 80%;
   object-fit: cover;
-  border-radius: 4px; /* Optional: Adds slight rounding to the image corners */
+  border-radius: 4px;
   margin-bottom: 0.1vw;
   max-width: 100%;
 }
@@ -309,13 +303,11 @@ body {
 .listing-card:hover {
   transform: scale(1.03);
   transition: transform 0.3s ease;
-  cursor: pointer;
 }
 
-/* Responsive design adjustments */
 @media (max-width: 768px) {
   .listing {
-    width: 120px; /* Smaller width on small screens */
+    width: 120px;
   }
 }
 
@@ -329,21 +321,21 @@ body {
 }
 
 .search-button {
-  padding: 10px 20px; /* Adjust padding to suit your design */
-  background-color: #ff4d4d; /* A vibrant red; change as needed */
-  color: white; /* Text color */
-  border: none; /* Remove default border */
-  border-radius: 15px; /* More pronounced rounded corners for a pill shape */
-  font-size: 16px; /* Font size */
-  cursor: pointer; /* Change mouse cursor on hover */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  padding: 10px 20px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .search-button:hover {
-  background-color: #e60000; /* A slightly darker shade of red for hover effect */
+  background-color: #e60000;
 }
 
 .search-button:focus {
-  outline: none; /* Remove outline on focus for a clean look */
+  outline: none;
 }
 </style>
