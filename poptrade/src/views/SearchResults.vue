@@ -346,17 +346,17 @@ export default {
 }
 
 .filter-option:hover {
-  background-color: #e9e9e9; /* Slightly darker background on hover for interaction feedback */
+  background-color: #e9e9e9;
 }
 
 .filter-option label {
   display: flex;
-  align-items: center; /* Align the checkbox and label text */
+  align-items: center;
   cursor: pointer;
 }
 
 .filter-option input[type="checkbox"] {
-  margin-right: 10px; /* Space out the checkbox from the label */
+  margin-right: 10px;
   cursor: pointer;
 }
 
@@ -389,10 +389,10 @@ export default {
 }
 
 .wishlist {
-  display: flex; /* Enables flexbox */
-  align-items: center; /* Centers items vertically */
-  justify-content: flex-start; /* Aligns items to the start of the flex container horizontally */
-  gap: 10px; /* Adds space between the text and the images */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
 }
 
 .wishlist-image {
@@ -401,15 +401,15 @@ export default {
   border-radius: 5px;
   object-fit: cover;
   margin-right: 5px;
-  border: 3px solid #ff4d4d; /* Default red border */
+  border: 3px solid #ff4d4d;
 }
 
 .wishlist-image.match {
-  border-color: #4caf50; /* Green border for matched items */
+  border-color: #4caf50;
 }
 
 .wishlist-image.no-match {
-  border-color: #ff4d4d; /* Red border for unmatched items */
+  border-color: #ff4d4d;
 }
 
 .view-listing-btn,
@@ -419,10 +419,10 @@ export default {
   background-color: #ff4d4d;
   color: #fff;
   border: none;
-  border-radius: 20px; /* More pronounced rounded corners for buttons */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for buttons */
-  letter-spacing: 0.5px; /* Slightly increase spacing between letters */
-  transition: all 0.3s ease; /* Transition for hover effects */
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
   cursor: pointer;
 }
 
@@ -430,22 +430,20 @@ export default {
 .prev-btn:hover,
 .next-btn:hover {
   background-color: #e60000;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Larger shadow on hover for a lifting effect */
-  transform: translateY(
-    -2px
-  ); /* Slight upward movement on hover for a "button press" feel */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .telegram-handle {
   color: #007bff;
   cursor: pointer;
-  font-family: "Arial", sans-serif; /* Choose an elegant font */
-  font-weight: bold; /* Make it bold to stand out */
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
   text-decoration: none;
 }
 
 .telegram-handle:hover {
-  text-decoration: underline; /* Only underline on hover for a clean look */
+  text-decoration: underline;
 }
 
 .item-image {

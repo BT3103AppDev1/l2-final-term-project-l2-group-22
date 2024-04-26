@@ -289,26 +289,26 @@ export default {
 .back-button {
   margin-top: 20px;
   margin-left: 22px;
-  padding: 10px 20px; /* Adjust padding to increase or decrease the button size */
-  background-color: #f44336; /* Red background */
-  color: white; /* White text */
-  border: none; /* No border */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer; /* Change mouse cursor to pointer when hovering over the button */
-  transition: background-color 0.3s, transform 0.2s; /* Smooth background color change and transform effect */
-  font-size: 16px; /* Text size */
-  text-align: center; /* Center text */
-  display: inline-block; /* Allows setting width and height */
-  text-decoration: none; /* Remove underline from link */
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; 
+  font-size: 16px;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
 }
 
 .back-button:hover {
-  background-color: #d32f2f; /* Darker shade of red on hover */
-  transform: scale(1.05); /* Slightly increase the button size */
+  background-color: #d32f2f;
+  transform: scale(1.05);
 }
 
 .back-button:focus {
-  outline: none; /* Remove outline on focus for a cleaner look */
+  outline: none;
 }
 
 .item-card {
@@ -328,17 +328,17 @@ export default {
 .item-card {
   display: flex;
   align-items: flex-start;
-  justify-content: center; /* Changed to space-between */
+  justify-content: center;
   background-color: white;
   border-radius: 5px;
-  padding: 20px; /* Adjust padding as needed */
+  padding: 20px;
   margin-bottom: 1rem;
   text-align: left;
 }
 
 .item-card .item-image {
   width: auto;
-  max-width: 35%; /* Adjust the value to make the image smaller */
+  max-width: 35%;
   height: auto;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -399,12 +399,13 @@ export default {
   margin-right: 10px;
   border-radius: 5px;
 }
+	
 .matched-item {
-  border: 5px solid #4caf50; /* Green border for matched items */
+  border: 5px solid #4caf50;
 }
 
 .unmatched-item {
-  border: 5px solid #ff4d4d; /* Red border for unmatched items */
+  border: 5px solid #ff4d4d;
 }
 
 .item-figurine {
@@ -415,9 +416,4 @@ export default {
 .item-details {
   margin-left: 2rem;
 }
-/* .disabled-button {
-	color: grey;
-	background-color: lightgrey;
-	cursor: not-allowed;
-} */
 </style>

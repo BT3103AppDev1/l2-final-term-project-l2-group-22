@@ -292,11 +292,6 @@ export default {
       }
     };
 
-    // Call fetchReceivedOffers function when component is mounted
-    // fetchReceivedOffers();
-    // fetchSentOffers();
-    // fetchCompletedOffers();
-
     onMounted(async () => {
       // Set isLoading to false when data fetching is complete
       await fetchReceivedOffers();
@@ -543,13 +538,16 @@ export default {
   padding: 10px 10px;
   border-radius: 15px;
   border-color: #45a049;
+  cursor: pointer;
 }
+  
 .reject-button {
   margin: 2px;
   background-color: #f44336;
   color: white;
-  padding: 10px 25px;
+  padding: 10px 10px;
   border-radius: 15px;
   border-color: #f44336;
+  cursor: pointer;
 }
 </style>

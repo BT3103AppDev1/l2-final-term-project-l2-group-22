@@ -186,7 +186,6 @@ p {
 
 .signout-button,
 .button {
-  /* This selector targets both your manage button and any other button */
   background-color: #ff4d4d;
   color: white;
   border: none;
@@ -198,7 +197,6 @@ p {
 
 .signout-button:hover,
 .button:hover {
-  /* Hover effects for both manage and other buttons */
   background-color: #e60000;
 }
 

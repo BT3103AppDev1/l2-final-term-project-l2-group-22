@@ -48,7 +48,6 @@
           <h3>{{ item.name }}</h3>
           <p>{{ item.collection }}</p>
         </div>
-        <!-- Add more wishlist details as needed -->
       </div>
     </div>
   </div>
@@ -209,20 +208,20 @@ export default {
 .header-container {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Aligns items vertically in the center */
+  align-items: center;
 }
 
 .signout-container {
   display: flex;
   justify-content: center;
-  align-items: center; /* Aligns items vertically in the center */
+  align-items: center;
   padding: 1vw;
 }
 
 .header-title {
   margin: 0; /* Removes default margin from h2 */
   font-family: "Oswald", sans-serif;
-  font-size: calc(1.5vw + 0.6vh); /* Adjust based on your preference */
+  font-size: calc(1.5vw + 0.6vh);
   padding: 3vw 0 3vw 0;
 }
 
@@ -230,7 +229,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 6.5vw;
-  white-space: nowrap; /* Prevent wrapping */
+  white-space: nowrap;
 }
 
 .listing-card {
@@ -245,6 +244,7 @@ export default {
   height: 24vw;
   width: 15vw;
   object-fit: contain;
+  cursor: pointer;
 }
 
 .listing-details {
@@ -254,14 +254,12 @@ export default {
 }
 
 .listing-details h3 {
-  /* font-size: 1rem; */
   font-size: calc(1vw + 0.4vh);
   margin-top: 0.2vw;
   margin-bottom: 0.2vw;
 }
 
 .listing-details p {
-  /* font-size: 0.8rem; */
   font-size: calc(0.8vw + 0.32vh);
   margin-top: 0.2vw;
   margin-bottom: 0.2vw;
@@ -269,9 +267,9 @@ export default {
 
 .listing-image {
   width: 100%;
-  height: 80%; /* Adjust the percentage based on your design */
+  height: 80%;
   object-fit: cover;
-  border-radius: 4px; /* Optional: Adds slight rounding to the image corners */
+  border-radius: 4px; 
   margin-bottom: 0.1vw;
   max-width: 100%;
 }
@@ -279,24 +277,21 @@ export default {
 .listing-card:hover {
   transform: scale(1.03);
   transition: transform 0.3s ease;
-  /* cursor: pointer; */
 }
 
 .manage-button,
 .button {
-  /* This selector targets both your manage button and any other button */
   background-color: #ff4d4d;
   color: white;
   border: none;
   border-radius: 4px;
   padding: 1vw 1.5vw;
   cursor: pointer;
-  font-family: "Oswald", sans-serif; /* Oswald font for buttons */
+  font-family: "Oswald", sans-serif;
 }
 
 .manage-button:hover,
 .button:hover {
-  /* Hover effects for both manage and other buttons */
   background-color: #e60000;
 }
 
